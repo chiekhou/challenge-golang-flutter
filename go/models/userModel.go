@@ -4,11 +4,11 @@ import "gorm.io/gorm"
 
 type User struct {
 	gorm.Model
-	FirstName string     `gorm:"type:varchar(30);not null"`
-	LastName  string     `gorm:"type:varchar(30);not null"`
-	Username  string     `gorm:"username:varchar(30);not null"`
-	Password  string     `gorm:"password:varchar(30);not null"`
-	Email     string     `gorm:"email:varchar(30);not null"`
-	Address   string     `gorm:"adress:varchar(30);not null"`
+	FirstName string     `gorm:"size:64"`
+	LastName  string     `gorm:"size:64"`
+	Username  string     `gorm:"size:64"`
+	Password  string     `gorm:"size:255"`
+	Email     string     `gorm:"size:100"`
+	Address   string     `gorm:"size:255"`
 	Feedbacks []Feedback `gorm:"feedbacks"`
 }
