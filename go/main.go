@@ -3,6 +3,8 @@ package main
 import (
 	"example/hello/initializers"
 	"fmt"
+	"github.com/zc2638/swag"
+	"log"
 	"net/http"
 )
 
@@ -14,9 +16,13 @@ func init() {
 }
 
 func main() {
-	s := http.NewServeMux()
-	s.HandleFunc("/", helloWorld)
-	http.ListenAndServe(port, s)
+	handle := swag.UIHandler("/swagger/ui", "", false)
+	patterns := swag.UIPatterns("/swagger/ui")
+	for _, pattern := range patterns {
+		http.DefaultServeMux.Handle(pattern, handle)
+	}
+
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
 func helloWorld(w http.ResponseWriter, r *http.Request) {
