@@ -16,6 +16,7 @@ func init() {
 }
 
 func main() {
+
 	handle := swag.UIHandler("/swagger/ui", "", false)
 	patterns := swag.UIPatterns("/swagger/ui")
 	for _, pattern := range patterns {
@@ -27,4 +28,5 @@ func main() {
 
 func helloWorld(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(w, "Hello World")
+
 }
