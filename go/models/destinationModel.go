@@ -7,8 +7,8 @@ import (
 
 type Destination struct {
 	gorm.Model
-	Departure       time.Time `gorm:"type:varchar(30);not null"`
-	Return          time.Time `gorm:"type:varchar(30);not null"`
-	NameDestination string    `json:"name_destination"`
-	Type            string    `json:"type"`
+	Departure       time.Time `gorm:"not null" json:"departure"`
+	Return          time.Time `gorm:"not null" json:"return"`
+	NameDestination string    `gorm:"size: 255;not null" json:"name_destination"`
+	Type            string    `json:"type; not null" json:"type"`
 }

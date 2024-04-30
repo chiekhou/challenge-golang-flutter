@@ -7,8 +7,8 @@ import (
 
 type Hotel struct {
 	gorm.Model
-	Checkin   time.Time `gorm:"type:varchar(30);not null"`
-	Checkout  time.Time `gorm:"type:varchar(30);not null"`
+	Checkin   time.Time `gorm:"not null" json:"checkin"`
+	Checkout  time.Time `gorm:"not null" json:"checkout"`
 	Options   string
 	Feedbacks []Feedback `gorm:"foreignkey:HotelID"`
 }
