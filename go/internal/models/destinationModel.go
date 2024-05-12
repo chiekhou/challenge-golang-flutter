@@ -11,4 +11,5 @@ type Destination struct {
 	Return          time.Time `gorm:"not null" json:"return"`
 	NameDestination string    `gorm:"size: 255;not null" json:"name_destination"`
 	Type            string    `json:"type; not null" json:"type"`
+	UserID          uint      `gorm:"foreignkey:UserID; not null" json:"user_id"`
 }
