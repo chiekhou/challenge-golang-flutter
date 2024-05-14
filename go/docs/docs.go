@@ -135,7 +135,7 @@ const docTemplate = `{
             "get": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "Bearer": []
                     }
                 ],
                 "description": "Retourne les informations du profil de l'utilisateur connecté",
@@ -149,6 +149,16 @@ const docTemplate = `{
                     "Auth"
                 ],
                 "summary": "Récupère le profil de l'utilisateur actuellement connecté",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Success",

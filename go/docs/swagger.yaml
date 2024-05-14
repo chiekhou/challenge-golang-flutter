@@ -118,6 +118,13 @@ paths:
       consumes:
       - application/json
       description: Retourne les informations du profil de l'utilisateur connecté
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -130,7 +137,7 @@ paths:
           schema:
             $ref: '#/definitions/gin.H'
       security:
-      - ApiKeyAuth: []
+      - Bearer: []
       summary: Récupère le profil de l'utilisateur actuellement connecté
       tags:
       - Auth

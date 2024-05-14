@@ -129,7 +129,8 @@ func Login(c *gin.Context) {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Security ApiKeyAuth
+// @Security Bearer
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
 // @Success 200 {object} gin.H "Success"
 // @Failure 401 {object} gin.H "Unauthorized"
 // @Router /profile [get]
