@@ -1,67 +1,43 @@
 definitions:
-  gin.H:
-    additionalProperties: {}
-    type: object
-  gorm.DeletedAt:
+  auth.LoginRequest:
     properties:
-      time:
+      email:
         type: string
-      valid:
-        description: Valid is true if Time is not NULL
-        type: boolean
+      password:
+        type: string
+    required:
+    - email
+    - password
     type: object
-  models.Feedback:
-    properties:
-      commentaire:
-        type: string
-      createdAt:
-        type: string
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
-      hotel_id:
-        type: integer
-      id:
-        type: integer
-      note:
-        type: integer
-      updatedAt:
-        type: string
-      user_id:
-        type: integer
-    type: object
-  models.User:
+  auth.SignupRequest:
     properties:
       address:
         type: string
-      createdAt:
-        type: string
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
       email:
         type: string
-      feedbacks:
-        items:
-          $ref: '#/definitions/models.Feedback'
-        type: array
       first_name:
         type: string
-      id:
-        type: integer
       last_name:
         type: string
       password:
         type: string
-      role_id:
-        type: integer
-      updatedAt:
-        type: string
       username:
         type: string
+    required:
+    - address
+    - email
+    - first_name
+    - last_name
+    - password
+    - username
+    type: object
+  gin.H:
+    additionalProperties: {}
     type: object
 info:
   contact: {}
 paths:
-  /signup:
+  /Signup:
     post:
       consumes:
       - application/json
@@ -72,15 +48,19 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/models.User'
+          $ref: '#/definitions/auth.SignupRequest'
       produces:
       - application/json
       responses:
         "201":
           description: User created
           schema:
-            $ref: '#/definitions/models.User'
+            $ref: '#/definitions/auth.SignupRequest'
         "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
           description: Bad request
           schema:
             $ref: '#/definitions/gin.H'
@@ -92,7 +72,66 @@ paths:
           description: Internal server error
           schema:
             $ref: '#/definitions/gin.H'
-      summary: Create a new user
+      summary: Allow you to register as a new User
       tags:
-      - User
+      - Auth
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: login to the app
+      parameters:
+      - description: User data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/auth.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Connexion réussie
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Allow you to log and have an JWT Token
+      tags:
+      - Auth
+  /profile:
+    get:
+      consumes:
+      - application/json
+      description: Retourne les informations du profil de l'utilisateur connecté
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/gin.H'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - ApiKeyAuth: []
+      summary: Récupère le profil de l'utilisateur actuellement connecté
+      tags:
+      - Auth
 swagger: "2.0"

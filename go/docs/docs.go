@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/signup": {
+        "/Signup": {
             "post": {
                 "description": "Create a new user with the provided information",
                 "consumes": [
@@ -25,9 +25,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "Auth"
                 ],
-                "summary": "Create a new user",
+                "summary": "Allow you to register as a new User",
                 "parameters": [
                     {
                         "description": "User data",
@@ -35,7 +35,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/auth.SignupRequest"
                         }
                     }
                 ],
@@ -43,10 +43,16 @@ const docTemplate = `{
                     "201": {
                         "description": "User created",
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/auth.SignupRequest"
                         }
                     },
                     "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "404": {
                         "description": "Bad request",
                         "schema": {
                             "$ref": "#/definitions/gin.H"
@@ -66,80 +72,135 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/login": {
+            "post": {
+                "description": "login to the app",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Allow you to log and have an JWT Token",
+                "parameters": [
+                    {
+                        "description": "User data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/auth.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Connexion réussie",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "404": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
+        "/profile": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retourne les informations du profil de l'utilisateur connecté",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Récupère le profil de l'utilisateur actuellement connecté",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
-        "gin.H": {
+        "auth.LoginRequest": {
             "type": "object",
-            "additionalProperties": {}
-        },
-        "gorm.DeletedAt": {
-            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
             "properties": {
-                "time": {
+                "email": {
                     "type": "string"
                 },
-                "valid": {
-                    "description": "Valid is true if Time is not NULL",
-                    "type": "boolean"
+                "password": {
+                    "type": "string"
                 }
             }
         },
-        "models.Feedback": {
+        "auth.SignupRequest": {
             "type": "object",
-            "properties": {
-                "commentaire": {
-                    "type": "string"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
-                },
-                "hotel_id": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "note": {
-                    "type": "integer"
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "user_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "models.User": {
-            "type": "object",
+            "required": [
+                "address",
+                "email",
+                "first_name",
+                "last_name",
+                "password",
+                "username"
+            ],
             "properties": {
                 "address": {
                     "type": "string"
                 },
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
-                },
                 "email": {
                     "type": "string"
                 },
-                "feedbacks": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Feedback"
-                    }
-                },
                 "first_name": {
                     "type": "string"
-                },
-                "id": {
-                    "type": "integer"
                 },
                 "last_name": {
                     "type": "string"
@@ -147,16 +208,14 @@ const docTemplate = `{
                 "password": {
                     "type": "string"
                 },
-                "role_id": {
-                    "type": "integer"
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
                 "username": {
                     "type": "string"
                 }
             }
+        },
+        "gin.H": {
+            "type": "object",
+            "additionalProperties": {}
         }
     }
 }`

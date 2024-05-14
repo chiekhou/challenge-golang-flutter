@@ -16,7 +16,10 @@ func init() {
 
 func main() {
 	server := gin.Default()
-	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	server.Run(":8080")
 	routes.RegisterRoutes(server)
+	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	err := server.Run(":8080")
+	if err != nil {
+		return
+	}
 }

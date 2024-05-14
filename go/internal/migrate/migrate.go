@@ -17,14 +17,18 @@ func main() {
 	&models2.Destination{},
 	&models2.Hotel{},
 	&models2.Feedback{},
-	&models2.GroupeVoyage{})*/
+	&models2.GroupeVoyage{},
+	&models2.Option{},
+	&models2.Role{})*/
 
-	initializers2.DB.AutoMigrate(
+	err := initializers2.DB.AutoMigrate(
 		&models2.User{},
 		&models2.Destination{},
 		&models2.Hotel{},
 		&models2.Feedback{},
 		&models2.GroupeVoyage{},
-		&models2.Option{},
-		&models2.Role{})
+		&models2.Option{})
+	if err != nil {
+		return
+	}
 }
