@@ -3,6 +3,7 @@ package auth
 import (
 	"example/hello/internal/initializers"
 	"example/hello/internal/models"
+	mailer2 "example/hello/pkg/mailer"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
@@ -68,6 +69,7 @@ func Signup(c *gin.Context) {
 		Email:     signupReq.Email,
 		Address:   signupReq.Address,
 	}
+	mailer2.SendGoMail(user.Email, "Inscription", "./pkg/mailer/templates/registry.html")
 	initializers.DB.Create(&user)
 	c.JSON(http.StatusCreated, gin.H{"data": user})
 }
