@@ -28,6 +28,10 @@ type LoginRequest struct {
 	Password string `form:"password" json:"password" binding:"required"`
 }
 
+type EmailRequest struct {
+	Email string `form:"email" json:"email" binding:"required"`
+}
+
 // @Summary Allow you to register as a new User
 // @Description Create a new user with the provided information
 // @Tags Auth
@@ -141,4 +145,35 @@ func UserProfile(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"user": user})
 }
 
-//TODO mot de passe oublié
+// @Summary Envoie un mail à un user existant afin de réinitialiser son mot de passe
+// @Description Envoie un mail de reset de mot de passe
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param user body EmailRequest true "User data"
+// @Success 200 {object} gin.H "Connexion réussie"
+// @Failure 400 {object} gin.H "Bad request"
+// @Failure 404 {object} gin.H "Bad request"
+// @Failure 409 {object} gin.H "Conflict"
+// @Failure 500 {object} gin.H "Internal server error"
+// @Router /forgotten_password [post]
+func MailRecovery(c *gin.Context) {
+	var EmailReq EmailRequest
+
+	err := c.ShouldBindJSON(&EmailReq)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var userFound models.User
+	initializers.DB.Where("email=?", EmailReq.Email).Find(&userFound)
+	mailer2.SendGoMail(userFound.Email,
+		"Réinitialiser votre mot de passe",
+		"./pkg/mailer/templates/forgottenpass.html",
+		userFound)
+
+	c.JSON(200, gin.H{
+		"message": "mail envoyé",
+	})
+}
