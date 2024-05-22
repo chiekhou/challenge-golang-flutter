@@ -1,26 +1,33 @@
 package mailer
 
 import (
+	"bytes"
+	"example/hello/internal/models"
 	"gopkg.in/gomail.v2"
-	"io/ioutil"
-	"log"
 	"os"
+	"text/template"
 )
 
-func SendGoMail(to string, subject string, templateFile string) {
+func SendGoMail(to string, subject string, templateFile string, user models.User) {
 	// Lire le contenu du template HTML
-	body, err := ioutil.ReadFile(templateFile)
+	var body bytes.Buffer
+	t, err := template.ParseFiles(templateFile)
 	if err != nil {
-		log.Fatalf("Erreur de lecture du template HTML : %v", err)
+		panic(err)
+		return
+	}
+
+	err = t.Execute(&body, user)
+	if err != nil {
+		panic(err)
+		return
 	}
 
 	m := gomail.NewMessage()
 	m.SetHeader("From", os.Getenv("GMAIL_USER"))
 	m.SetHeader("To", to)
-	//m.SetAddressHeader("Cc", "dan@example.com", "Dan")
 	m.SetHeader("Subject", subject)
-	m.SetBody("text/html", string(body))
-	//m.Attach("/home/Alex/lolcat.jpg")
+	m.SetBody("text/html", body.String())
 
 	d := gomail.NewDialer(
 		os.Getenv("GMAIL_HOST"),
@@ -28,7 +35,7 @@ func SendGoMail(to string, subject string, templateFile string) {
 		os.Getenv("GMAIL_USER"),
 		os.Getenv("GMAIL_PASSWORD"))
 
-	// Send the email to Bob, Cora and Dan.
+	// Envoyer l'email
 	if err := d.DialAndSend(m); err != nil {
 		panic(err)
 	}

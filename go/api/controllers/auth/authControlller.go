@@ -69,7 +69,7 @@ func Signup(c *gin.Context) {
 		Email:     signupReq.Email,
 		Address:   signupReq.Address,
 	}
-	mailer2.SendGoMail(user.Email, "Inscription", "./pkg/mailer/templates/registry.html")
+	mailer2.SendGoMail(user.Email, "Inscription", "./pkg/mailer/templates/registry.html", user)
 	initializers.DB.Create(&user)
 	c.JSON(http.StatusCreated, gin.H{"data": user})
 }
