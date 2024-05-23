@@ -1,32 +1,26 @@
 package main
 
 import (
-	"example/hello/initializers"
-	"fmt"
-	"log"
-	"net/http"
+	"example/hello/api/routes"
+	_ "example/hello/docs"
+	initializers2 "example/hello/internal/initializers"
 
-	"github.com/zc2638/swag"
+	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-const port = ":3000"
-
 func init() {
-	initializers.LoadEnvVariables()
-	initializers.ConnectToDatabase()
+	initializers2.LoadEnvVariables()
+	initializers2.ConnectToDatabase()
 }
 
 func main() {
-
-	handle := swag.UIHandler("/swagger/ui", "", false)
-	patterns := swag.UIPatterns("/swagger/ui")
-	for _, pattern := range patterns {
-		http.DefaultServeMux.Handle(pattern, handle)
+	server := gin.Default()
+	routes.RegisterRoutes(server)
+	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	err := server.Run(":8080")
+	if err != nil {
+		return
 	}
-
-	log.Fatal(http.ListenAndServe(":8080", nil))
-}
-
-func helloWorld(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(w, "Hello World")
 }
