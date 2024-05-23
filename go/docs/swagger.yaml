@@ -16,6 +16,16 @@ definitions:
     - email
     - password
     type: object
+  auth.ResetPasswordRequest:
+    properties:
+      new_password:
+        type: string
+      token:
+        type: string
+    required:
+    - new_password
+    - token
+    type: object
   auth.SignupRequest:
     properties:
       address:
@@ -185,6 +195,35 @@ paths:
       security:
       - Bearer: []
       summary: Récupère le profil de l'utilisateur actuellement connecté
+      tags:
+      - Auth
+  /reset_password:
+    put:
+      consumes:
+      - application/json
+      description: Permet à l'utilisateur de réinitialiser son mot de passe en utilisant
+        un jeton de réinitialisation valide.
+      parameters:
+      - description: Données pour réinitialiser le mot de passe
+        in: body
+        name: resetPasswordRequest
+        required: true
+        schema:
+          $ref: '#/definitions/auth.ResetPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Mot de passe réinitialisé avec succès
+        "400":
+          description: Token invalide ou expiré
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Erreur interne du serveur
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Réinitialiser le mot de passe
       tags:
       - Auth
 swagger: "2.0"

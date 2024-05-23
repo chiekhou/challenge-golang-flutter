@@ -1,9 +1,11 @@
 package auth
 
 import (
+	"example/hello/bin/utils"
 	"example/hello/internal/initializers"
 	"example/hello/internal/models"
 	mailer2 "example/hello/pkg/mailer"
+	jwt2 "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
@@ -168,6 +170,15 @@ func MailRecovery(c *gin.Context) {
 
 	var userFound models.User
 	initializers.DB.Where("email=?", EmailReq.Email).Find(&userFound)
+
+	token, err := utils.GenerateToken(userFound.Email)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	resetUrl := "localhost:8080/reset?token=" + token
+
 	mailer2.SendGoMail(userFound.Email,
 		"Réinitialiser votre mot de passe",
 		"./pkg/mailer/templates/forgottenpass.html",
@@ -175,5 +186,58 @@ func MailRecovery(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"message": "mail envoyé",
+		"url":     resetUrl,
 	})
+}
+
+type ResetPasswordRequest struct {
+	Token       string `json:"token" binding:"required"`
+	NewPassword string `json:"new_password" binding:"required"`
+}
+
+// @Summary Réinitialiser le mot de passe
+// @Description Permet à l'utilisateur de réinitialiser son mot de passe en utilisant un jeton de réinitialisation valide.
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param resetPasswordRequest body ResetPasswordRequest true "Données pour réinitialiser le mot de passe"
+// @Success 204 "Mot de passe réinitialisé avec succès"
+// @Failure 400 {object} gin.H "Token invalide ou expiré"
+// @Failure 500 {object} gin.H "Erreur interne du serveur"
+// @Router /reset_password [put]
+func ResetPassword(c *gin.Context) {
+	var ResetPassReq ResetPasswordRequest
+	var jwtKey = []byte("votre_clé_secrète")
+
+	if err := c.ShouldBindJSON(&ResetPassReq); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	claims := &jwt2.StandardClaims{}
+	token, err := jwt2.ParseWithClaims(ResetPassReq.Token, claims, func(token *jwt2.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+	if err != nil || !token.Valid {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Token invalide ou expiré"})
+		return
+	}
+
+	var user models.User
+	initializers.DB.Where("email = ?", claims.Subject).First(&user)
+	if user.ID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Utilisateur non trouvé"})
+		return
+	}
+
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(ResetPassReq.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur de génération de hash de mot de passe"})
+		return
+	}
+
+	user.Password = string(passwordHash)
+	initializers.DB.Save(&user)
+
+	c.JSON(http.StatusOK, gin.H{"message": "Mot de passe réinitialisé avec succès"})
 }
