@@ -3,9 +3,10 @@ package main
 import (
 	"example/hello/initializers"
 	"fmt"
-	"github.com/zc2638/swag"
 	"log"
 	"net/http"
+
+	"github.com/zc2638/swag"
 )
 
 const port = ":3000"
@@ -28,5 +29,4 @@ func main() {
 
 func helloWorld(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(w, "Hello World")
-
 }
