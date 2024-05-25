@@ -35,7 +35,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.SignupRequest"
+                            "$ref": "#/definitions/requests.SignupRequest"
                         }
                     }
                 ],
@@ -43,7 +43,7 @@ const docTemplate = `{
                     "201": {
                         "description": "User created",
                         "schema": {
-                            "$ref": "#/definitions/auth.SignupRequest"
+                            "$ref": "#/definitions/requests.SignupRequest"
                         }
                     },
                     "400": {
@@ -93,7 +93,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.EmailRequest"
+                            "$ref": "#/definitions/requests.EmailRequest"
                         }
                     }
                 ],
@@ -151,13 +151,75 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.LoginRequest"
+                            "$ref": "#/definitions/requests.LoginRequest"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "Connexion réussie",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "404": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Delete your token session",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Déconnexion réussie",
                         "schema": {
                             "$ref": "#/definitions/gin.H"
                         }
@@ -249,11 +311,11 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Données pour réinitialiser le mot de passe",
-                        "name": "resetPasswordRequest",
+                        "name": "requests.ResetPasswordRequest",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.ResetPasswordRequest"
+                            "$ref": "#/definitions/requests.ResetPasswordRequest"
                         }
                     }
                 ],
@@ -275,10 +337,76 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/send_invitation": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Envoie un mail d'invitation afin de de rejoindre un groupen de voyage",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Voyage"
+                ],
+                "summary": "Rejoindre un groupe de voyage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Invitation envoyée",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "404": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
-        "auth.EmailRequest": {
+        "gin.H": {
+            "type": "object",
+            "additionalProperties": {}
+        },
+        "requests.EmailRequest": {
             "type": "object",
             "required": [
                 "email"
@@ -289,7 +417,7 @@ const docTemplate = `{
                 }
             }
         },
-        "auth.LoginRequest": {
+        "requests.LoginRequest": {
             "type": "object",
             "required": [
                 "email",
@@ -304,7 +432,7 @@ const docTemplate = `{
                 }
             }
         },
-        "auth.ResetPasswordRequest": {
+        "requests.ResetPasswordRequest": {
             "type": "object",
             "required": [
                 "new_password",
@@ -319,7 +447,7 @@ const docTemplate = `{
                 }
             }
         },
-        "auth.SignupRequest": {
+        "requests.SignupRequest": {
             "type": "object",
             "required": [
                 "address",
@@ -349,10 +477,6 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
-        },
-        "gin.H": {
-            "type": "object",
-            "additionalProperties": {}
         }
     }
 }`

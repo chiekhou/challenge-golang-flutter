@@ -1,11 +1,13 @@
 package auth
 
 import (
+	"example/hello/api/controllers/requests"
 	"example/hello/bin/utils"
 	"example/hello/internal/initializers"
 	"example/hello/internal/models"
 	mailer2 "example/hello/pkg/mailer"
 	jwt2 "github.com/dgrijalva/jwt-go"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
@@ -14,40 +16,20 @@ import (
 	"time"
 )
 
-// Requête personnalisée que l'on va binder sur le model de "User" enregistré en base de données
-type SignupRequest struct {
-	FirstName string `form:"first_name" json:"first_name" binding:"required"`
-	LastName  string `form:"last_name" json:"last_name" binding:"required"`
-	Address   string `form:"address" json:"address" binding:"required"`
-	Email     string `form:"email" json:"email" binding:"required"`
-	Username  string `json:"username" binding:"required"`
-	Password  string `json:"password" binding:"required"`
-}
-
-// Requête pour pouvoir se loguer
-type LoginRequest struct {
-	Email    string `form:"email" json:"email" binding:"required"`
-	Password string `form:"password" json:"password" binding:"required"`
-}
-
-type EmailRequest struct {
-	Email string `form:"email" json:"email" binding:"required"`
-}
-
 // @Summary Allow you to register as a new User
 // @Description Create a new user with the provided information
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param user body SignupRequest true "User data"
-// @Success 201 {object} SignupRequest "User created"
+// @Param user body requests.SignupRequest true "User data"
+// @Success 201 {object} requests.SignupRequest "User created"
 // @Failure 400 {object} gin.H "Bad request"
 // @Failure 404 {object} gin.H "Bad request"
 // @Failure 409 {object} gin.H "Conflict"
 // @Failure 500 {object} gin.H "Internal server error"
 // @Router /Signup [post]
 func Signup(c *gin.Context) {
-	var signupReq SignupRequest
+	var signupReq requests.SignupRequest
 
 	if err := c.ShouldBindJSON(&signupReq); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -85,7 +67,7 @@ func Signup(c *gin.Context) {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param user body LoginRequest true "User data"
+// @Param user body requests.LoginRequest true "User data"
 // @Success 200 {object} gin.H "Connexion réussie"
 // @Failure 400 {object} gin.H "Bad request"
 // @Failure 404 {object} gin.H "Bad request"
@@ -93,7 +75,8 @@ func Signup(c *gin.Context) {
 // @Failure 500 {object} gin.H "Internal server error"
 // @Router /login [post]
 func Login(c *gin.Context) {
-	var loginReq LoginRequest
+	session := sessions.Default(c)
+	var loginReq requests.LoginRequest
 
 	err := c.ShouldBindJSON(&loginReq)
 	if err != nil {
@@ -118,6 +101,11 @@ func Login(c *gin.Context) {
 		"id":  userFound.ID,
 		"exp": time.Now().Add(time.Hour * 24).Unix(),
 	})
+	session.Set("token", generateToken)
+	if err := session.Save(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
+		return
+	}
 
 	token, err := generateToken.SignedString([]byte(os.Getenv("SECRET")))
 
@@ -130,7 +118,36 @@ func Login(c *gin.Context) {
 	})
 }
 
-//func Logout(c *gin.Context) {}
+// @Summary Logout
+// @Description Delete your token session
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)//
+// @Success 200 {object} gin.H "Déconnexion réussie"
+// @Failure 400 {object} gin.H "Bad request"
+// @Failure 404 {object} gin.H "Bad request"
+// @Failure 409 {object} gin.H "Conflict"
+// @Failure 500 {object} gin.H "Internal server error"
+// @Router /logout [post]
+func Logout(c *gin.Context) {
+	session := sessions.Default(c)
+	user := session.Get("token")
+	if user == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	session.Delete("token")
+	if err := session.Save(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Successfully logged out",
+	})
+}
 
 // @Summary Récupère le profil de l'utilisateur actuellement connecté
 // @Description Retourne les informations du profil de l'utilisateur connecté
@@ -152,7 +169,7 @@ func UserProfile(c *gin.Context) {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param user body EmailRequest true "User data"
+// @Param user body requests.EmailRequest true "User data"
 // @Success 200 {object} gin.H "Connexion réussie"
 // @Failure 400 {object} gin.H "Bad request"
 // @Failure 404 {object} gin.H "Bad request"
@@ -160,7 +177,7 @@ func UserProfile(c *gin.Context) {
 // @Failure 500 {object} gin.H "Internal server error"
 // @Router /forgotten_password [post]
 func MailRecovery(c *gin.Context) {
-	var EmailReq EmailRequest
+	var EmailReq requests.EmailRequest
 
 	err := c.ShouldBindJSON(&EmailReq)
 	if err != nil {
@@ -171,13 +188,19 @@ func MailRecovery(c *gin.Context) {
 	var userFound models.User
 	initializers.DB.Where("email=?", EmailReq.Email).Find(&userFound)
 
+	type EmailData struct {
+		userFound models.User
+		urlToken  string
+	}
+
 	token, err := utils.GenerateToken(userFound.Email)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	resetUrl := "localhost:8080/reset?token=" + token
+	var emailData EmailData
+	emailData.urlToken = token
 
 	mailer2.SendGoMail(userFound.Email,
 		"Réinitialiser votre mot de passe",
@@ -186,13 +209,8 @@ func MailRecovery(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"message": "mail envoyé",
-		"url":     resetUrl,
+		"url":     emailData.urlToken,
 	})
-}
-
-type ResetPasswordRequest struct {
-	Token       string `json:"token" binding:"required"`
-	NewPassword string `json:"new_password" binding:"required"`
 }
 
 // @Summary Réinitialiser le mot de passe
@@ -200,13 +218,13 @@ type ResetPasswordRequest struct {
 // @Tags Auth
 // @Accept json
 // @Produce json
-// @Param resetPasswordRequest body ResetPasswordRequest true "Données pour réinitialiser le mot de passe"
+// @Param requests.ResetPasswordRequest body requests.ResetPasswordRequest true "Données pour réinitialiser le mot de passe"
 // @Success 204 "Mot de passe réinitialisé avec succès"
 // @Failure 400 {object} gin.H "Token invalide ou expiré"
 // @Failure 500 {object} gin.H "Erreur interne du serveur"
 // @Router /reset_password [put]
 func ResetPassword(c *gin.Context) {
-	var ResetPassReq ResetPasswordRequest
+	var ResetPassReq requests.ResetPasswordRequest
 	var jwtKey = []byte("votre_clé_secrète")
 
 	if err := c.ShouldBindJSON(&ResetPassReq); err != nil {

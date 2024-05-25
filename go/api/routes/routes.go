@@ -12,4 +12,5 @@ func RegisterRoutes(r *gin.Engine) {
 	//r.POST("/logout", auth.Logout)
 	r.GET("/profile", middlewares.CheckAuth, auth.UserProfile)
 	r.POST("/forgotten_password", auth.MailRecovery)
+	r.PUT("/reset_password", auth.ResetPassword)
 }

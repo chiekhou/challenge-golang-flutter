@@ -1,12 +1,15 @@
 definitions:
-  auth.EmailRequest:
+  gin.H:
+    additionalProperties: {}
+    type: object
+  requests.EmailRequest:
     properties:
       email:
         type: string
     required:
     - email
     type: object
-  auth.LoginRequest:
+  requests.LoginRequest:
     properties:
       email:
         type: string
@@ -16,7 +19,7 @@ definitions:
     - email
     - password
     type: object
-  auth.ResetPasswordRequest:
+  requests.ResetPasswordRequest:
     properties:
       new_password:
         type: string
@@ -26,7 +29,7 @@ definitions:
     - new_password
     - token
     type: object
-  auth.SignupRequest:
+  requests.SignupRequest:
     properties:
       address:
         type: string
@@ -48,9 +51,6 @@ definitions:
     - password
     - username
     type: object
-  gin.H:
-    additionalProperties: {}
-    type: object
 info:
   contact: {}
 paths:
@@ -65,14 +65,14 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/auth.SignupRequest'
+          $ref: '#/definitions/requests.SignupRequest'
       produces:
       - application/json
       responses:
         "201":
           description: User created
           schema:
-            $ref: '#/definitions/auth.SignupRequest'
+            $ref: '#/definitions/requests.SignupRequest'
         "400":
           description: Bad request
           schema:
@@ -103,7 +103,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/auth.EmailRequest'
+          $ref: '#/definitions/requests.EmailRequest'
       produces:
       - application/json
       responses:
@@ -142,7 +142,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/auth.LoginRequest'
+          $ref: '#/definitions/requests.LoginRequest'
       produces:
       - application/json
       responses:
@@ -167,6 +167,46 @@ paths:
           schema:
             $ref: '#/definitions/gin.H'
       summary: Allow you to log and have an JWT Token
+      tags:
+      - Auth
+  /logout:
+    post:
+      consumes:
+      - application/json
+      description: Delete your token session
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Déconnexion réussie
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Logout
       tags:
       - Auth
   /profile:
@@ -206,10 +246,10 @@ paths:
       parameters:
       - description: Données pour réinitialiser le mot de passe
         in: body
-        name: resetPasswordRequest
+        name: requests.ResetPasswordRequest
         required: true
         schema:
-          $ref: '#/definitions/auth.ResetPasswordRequest'
+          $ref: '#/definitions/requests.ResetPasswordRequest'
       produces:
       - application/json
       responses:
@@ -226,4 +266,45 @@ paths:
       summary: Réinitialiser le mot de passe
       tags:
       - Auth
+  /send_invitation:
+    post:
+      consumes:
+      - application/json
+      description: Envoie un mail d'invitation afin de de rejoindre un groupen de
+        voyage
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Invitation envoyée
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Rejoindre un groupe de voyage
+      tags:
+      - Voyage
 swagger: "2.0"
