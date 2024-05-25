@@ -2,13 +2,12 @@ package mailer
 
 import (
 	"bytes"
-	"example/hello/internal/models"
 	"gopkg.in/gomail.v2"
 	"os"
 	"text/template"
 )
 
-func SendGoMail(to string, subject string, templateFile string, user models.User) {
+func SendGoMail(to string, subject string, templateFile string, data interface{}) {
 	// Lire le contenu du template HTML
 	var body bytes.Buffer
 	t, err := template.ParseFiles(templateFile)
@@ -17,7 +16,7 @@ func SendGoMail(to string, subject string, templateFile string, user models.User
 		return
 	}
 
-	err = t.Execute(&body, user)
+	err = t.Execute(&body, data)
 	if err != nil {
 		panic(err)
 		return

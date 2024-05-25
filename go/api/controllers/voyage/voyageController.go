@@ -1,7 +1,13 @@
 package voyage
 
 import (
+	"example/hello/api/controllers/requests"
+	"example/hello/bin/utils"
+	"example/hello/internal/initializers"
+	"example/hello/internal/models"
+	mailer2 "example/hello/pkg/mailer"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 // @Summary Invitation groupe de voyage
@@ -18,13 +24,44 @@ import (
 // @Failure 500 {object} gin.H "Internal server error"
 // @Router /send_invitation [post]
 func SendInvitation(c *gin.Context) {
-	//var emailRequest models.EmailRequest
-	/*	err := c.ShouldBindJSON()
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
-		}*/
+	var emailRequest requests.EmailRequest
 
+	err := c.ShouldBindJSON(&emailRequest)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	token, err := utils.GenerateToken(emailRequest.Email)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var userFound models.User
+	type emailData struct {
+		userFound models.User
+		token     string
+	}
+	var email emailData
+
+	initializers.DB.Where("email=?", emailRequest.Email).First(&userFound)
+	if userFound.ID == 0 {
+		mailer2.SendGoMail(userFound.Email,
+			"Inscription",
+			"./pkg/mailer/templates/forgottenpass.html",
+			email)
+	} else {
+		mailer2.SendGoMail(userFound.Email,
+			"Invitation dans un groupen e voyage",
+			"./pkg/mailer/templates/invite.html",
+			email)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Email envoyé",
+		"token":   token,
+	})
 }
 
 // @Summary Rejoindre un groupe de voyage

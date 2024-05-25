@@ -178,6 +178,10 @@ func UserProfile(c *gin.Context) {
 // @Router /forgotten_password [post]
 func MailRecovery(c *gin.Context) {
 	var EmailReq requests.EmailRequest
+	type EmailData struct {
+		userFound models.User
+		urlToken  string
+	}
 
 	err := c.ShouldBindJSON(&EmailReq)
 	if err != nil {
@@ -187,11 +191,6 @@ func MailRecovery(c *gin.Context) {
 
 	var userFound models.User
 	initializers.DB.Where("email=?", EmailReq.Email).Find(&userFound)
-
-	type EmailData struct {
-		userFound models.User
-		urlToken  string
-	}
 
 	token, err := utils.GenerateToken(userFound.Email)
 	if err != nil {
@@ -205,13 +204,15 @@ func MailRecovery(c *gin.Context) {
 	mailer2.SendGoMail(userFound.Email,
 		"Réinitialiser votre mot de passe",
 		"./pkg/mailer/templates/forgottenpass.html",
-		userFound)
+		emailData)
 
 	c.JSON(200, gin.H{
 		"message": "mail envoyé",
 		"url":     emailData.urlToken,
 	})
 }
+
+//TODO revoir la méthode de reset password (changer les paramètres)
 
 // @Summary Réinitialiser le mot de passe
 // @Description Permet à l'utilisateur de réinitialiser son mot de passe en utilisant un jeton de réinitialisation valide.
