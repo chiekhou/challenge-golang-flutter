@@ -85,7 +85,7 @@ func Login(c *gin.Context) {
 	}
 
 	var userFound models.User
-	initializers.DB.Where("username=?", loginReq.Email).Find(&userFound)
+	initializers.DB.Where("email=?", loginReq.Email).Find(&userFound)
 
 	if userFound.ID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "user not found"})
@@ -101,16 +101,16 @@ func Login(c *gin.Context) {
 		"id":  userFound.ID,
 		"exp": time.Now().Add(time.Hour * 24).Unix(),
 	})
-	session.Set("token", generateToken)
+
+	token, err := generateToken.SignedString([]byte(os.Getenv("SECRET")))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to generate token"})
+	}
+
+	session.Set("token", token)
 	if err := session.Save(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
 		return
-	}
-
-	token, err := generateToken.SignedString([]byte(os.Getenv("SECRET")))
-
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to generate token"})
 	}
 
 	c.JSON(200, gin.H{
