@@ -131,68 +131,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/join_group": {
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Envoie un mail d'invitation afin de de rejoindre un groupen de voyage",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Voyage"
-                ],
-                "summary": "Rejoindre un groupe de voyage",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "default": "Bearer \u003cAdd access token here\u003e",
-                        "description": "Insert your access token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Invitation envoyée",
-                        "schema": {
-                            "$ref": "#/definitions/gin.H"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "$ref": "#/definitions/gin.H"
-                        }
-                    },
-                    "404": {
-                        "description": "Bad request",
-                        "schema": {
-                            "$ref": "#/definitions/gin.H"
-                        }
-                    },
-                    "409": {
-                        "description": "Conflict",
-                        "schema": {
-                            "$ref": "#/definitions/gin.H"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/gin.H"
-                        }
-                    }
-                }
-            }
-        },
         "/login": {
             "post": {
                 "description": "login to the app",
@@ -417,7 +355,7 @@ const docTemplate = `{
                 "tags": [
                     "Voyage"
                 ],
-                "summary": "Invitation groupe de voyage",
+                "summary": "Rejoindre un groupe de voyage",
                 "parameters": [
                     {
                         "type": "string",

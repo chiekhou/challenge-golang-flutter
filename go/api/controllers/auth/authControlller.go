@@ -75,7 +75,6 @@ func Signup(c *gin.Context) {
 // @Failure 500 {object} gin.H "Internal server error"
 // @Router /login [post]
 func Login(c *gin.Context) {
-	session := sessions.Default(c)
 	var loginReq requests.LoginRequest
 
 	err := c.ShouldBindJSON(&loginReq)
@@ -103,14 +102,9 @@ func Login(c *gin.Context) {
 	})
 
 	token, err := generateToken.SignedString([]byte(os.Getenv("SECRET")))
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "failed to generate token"})
-	}
-
-	session.Set("token", token)
-	if err := session.Save(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
-		return
 	}
 
 	c.JSON(200, gin.H{
@@ -133,13 +127,13 @@ func Login(c *gin.Context) {
 // @Router /logout [post]
 func Logout(c *gin.Context) {
 	session := sessions.Default(c)
-	user := session.Get("token")
+	user := session.Get("currentUser")
 	if user == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
 
-	session.Delete("token")
+	session.Delete("currentUser")
 	if err := session.Save(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
 		return
