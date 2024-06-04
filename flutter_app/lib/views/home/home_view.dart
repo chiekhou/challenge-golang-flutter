@@ -36,10 +36,10 @@ class _HomeState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    DestinationProvider cityProvider =
+    DestinationProvider destinationProvider =
         Provider.of<DestinationProvider>(context);
     List<Destination> filteredDestinations =
-        cityProvider.getFilteredCities(searchController.text);
+        destinationProvider.getFilteredDestinations(searchController.text);
     return Scaffold(
       appBar: AppBar(
         title: const Text('esgivoyage'),
@@ -78,7 +78,7 @@ class _HomeState extends State<HomeView> {
                 onRefresh:
                     Provider.of<DestinationProvider>(context, listen: false)
                         .fetchData,
-                child: cityProvider.isLoading
+                child: destinationProvider.isLoading
                     ? const AppLoader()
                     : filteredDestinations.isNotEmpty
                         ? ListView.builder(

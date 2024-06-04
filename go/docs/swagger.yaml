@@ -1,10 +1,20 @@
 definitions:
+  activity.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
   auth.EmailRequest:
     properties:
       email:
         type: string
     required:
     - email
+    type: object
+  auth.ErrorResponse:
+    properties:
+      error:
+        type: string
     type: object
   auth.LoginRequest:
     properties:
@@ -15,6 +25,11 @@ definitions:
     required:
     - email
     - password
+    type: object
+  auth.MessageResponse:
+    properties:
+      message:
+        type: string
     type: object
   auth.SignupRequest:
     properties:
@@ -38,8 +53,112 @@ definitions:
     - password
     - username
     type: object
-  gin.H:
-    additionalProperties: {}
+  auth.TokenResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  auth.UserResponse:
+    properties:
+      data:
+        $ref: '#/definitions/models.User'
+    type: object
+  destinations.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  models.Activity:
+    properties:
+      address:
+        type: string
+      destination:
+        type: string
+      id:
+        description: gorm.Model
+        type: integer
+      image:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      price:
+        type: number
+      status:
+        type: integer
+    type: object
+  models.Destination:
+    properties:
+      activities:
+        items:
+          $ref: '#/definitions/models.Activity'
+        type: array
+      id:
+        description: gorm.Model
+        type: integer
+      image:
+        type: string
+      name:
+        type: string
+    type: object
+  models.GroupeVoyage:
+    properties:
+      budget:
+        type: number
+      id:
+        description: gorm.Model
+        type: integer
+      roadmap:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      group_voyage:
+        allOf:
+        - $ref: '#/definitions/models.GroupeVoyage'
+        description: Role        Role         `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET
+          NULL;" json:"role"`
+      id:
+        description: gorm.Model
+        type: integer
+      last_name:
+        type: string
+      password:
+        type: string
+      role_id:
+        type: integer
+      username:
+        type: string
+    type: object
+  models.Voyage:
+    properties:
+      activities:
+        items:
+          $ref: '#/definitions/models.Activity'
+        type: array
+      date:
+        type: string
+      destination:
+        type: string
+      id:
+        description: gorm.Model
+        type: integer
+    type: object
+  voyages.ErrorResponse:
+    properties:
+      error:
+        type: string
     type: object
 info:
   contact: {}
@@ -62,31 +181,502 @@ paths:
         "201":
           description: User created
           schema:
-            $ref: '#/definitions/auth.SignupRequest'
+            $ref: '#/definitions/auth.UserResponse'
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/gin.H'
-        "404":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/gin.H'
+            $ref: '#/definitions/auth.ErrorResponse'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/gin.H'
+            $ref: '#/definitions/auth.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/gin.H'
+            $ref: '#/definitions/auth.ErrorResponse'
       summary: Allow you to register as a new User
       tags:
       - Auth
+  /api/activity/images:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload file
+      parameters:
+      - description: account image
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Activity'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/activity.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/activity.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/activity.ErrorResponse'
+      summary: Upload image
+      tags:
+      - Activity
+  /api/destination/{id}/activities/verify/{name}:
+    get:
+      consumes:
+      - application/json
+      description: verify by json activity name
+      parameters:
+      - description: Destination ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Activity Name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Destination'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+      summary: Verify an activity Name
+      tags:
+      - Destinations
+  /api/destinations:
+    get:
+      consumes:
+      - application/json
+      description: Get Destinations
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Destination'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+      summary: List Destinations
+      tags:
+      - Destinations
+    post:
+      consumes:
+      - application/json
+      description: Add by JSON destination
+      parameters:
+      - description: Add destination
+        in: body
+        name: destination
+        required: true
+        schema:
+          $ref: '#/definitions/models.Destination'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Destination'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+      summary: Add a destination
+      tags:
+      - Destinations
+  /api/destinations/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get string by ID
+      parameters:
+      - description: Destination ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Destination'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+      summary: Show a destination
+      tags:
+      - Destinations
+  /api/destinations/{id}/activity:
+    post:
+      consumes:
+      - application/json
+      description: add by json activity destination
+      parameters:
+      - description: Destination ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Activity to add
+        in: body
+        name: activity
+        required: true
+        schema:
+          $ref: '#/definitions/models.Activity'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Destination'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+      summary: Add a activity to destination
+      tags:
+      - Destinations
+  /api/destinations/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete by destination ID
+      parameters:
+      - description: Destination ID
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Destination'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+      summary: Delete a destination
+      tags:
+      - Destinations
+  /api/destinations/update/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Update by json destination
+      parameters:
+      - description: Destination ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Destination
+        in: body
+        name: destination
+        required: true
+        schema:
+          $ref: '#/definitions/models.Destination'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Destination'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+      summary: Update a destination
+      tags:
+      - Destinations
+  /api/voyages:
+    get:
+      consumes:
+      - application/json
+      description: Get Voyages
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Voyage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+      summary: List Voyages
+      tags:
+      - Voyages
+    post:
+      consumes:
+      - application/json
+      description: Add by JSON voyage
+      parameters:
+      - description: Add voyage
+        in: body
+        name: voyage
+        required: true
+        schema:
+          $ref: '#/definitions/models.Voyage'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Voyage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+      summary: Add a voyage
+      tags:
+      - Voyages
+    put:
+      consumes:
+      - application/json
+      description: Update a trip by ID
+      parameters:
+      - description: Voyage data
+        in: body
+        name: voyage
+        required: true
+        schema:
+          $ref: '#/definitions/models.Voyage'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Voyage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+      summary: Update a trip
+      tags:
+      - Voyages
+  /api/voyages/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get string by ID
+      parameters:
+      - description: Voyages ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Voyage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+      summary: Show a voyage
+      tags:
+      - Voyages
+  /api/voyages/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete by voyage ID
+      parameters:
+      - description: Voyage ID
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Voyage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+      summary: Delete a voyage
+      tags:
+      - Voyages
+  /api/voyages/update/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Update by json destination
+      parameters:
+      - description: Voyage ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Voyage
+        in: body
+        name: voyage
+        required: true
+        schema:
+          $ref: '#/definitions/models.Voyage'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Voyage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+      summary: Update a voyage
+      tags:
+      - Voyages
   /forgotten_password:
     post:
       consumes:
       - application/json
-      description: Envoie un mail de reset de mot de passe
+      description: Sends a password reset email
       parameters:
       - description: User data
         in: body
@@ -98,34 +688,29 @@ paths:
       - application/json
       responses:
         "200":
-          description: Connexion réussie
+          description: Email sent
           schema:
-            $ref: '#/definitions/gin.H'
+            $ref: '#/definitions/auth.MessageResponse'
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/gin.H'
+            $ref: '#/definitions/auth.ErrorResponse'
         "404":
-          description: Bad request
+          description: User not found
           schema:
-            $ref: '#/definitions/gin.H'
-        "409":
-          description: Conflict
-          schema:
-            $ref: '#/definitions/gin.H'
+            $ref: '#/definitions/auth.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/gin.H'
-      summary: Envoie un mail à un user existant afin de réinitialiser son mot de
-        passe
+            $ref: '#/definitions/auth.ErrorResponse'
+      summary: Send an email to an existing user to reset their password
       tags:
       - Auth
   /login:
     post:
       consumes:
       - application/json
-      description: login to the app
+      description: Login to the app
       parameters:
       - description: User data
         in: body
@@ -137,33 +722,25 @@ paths:
       - application/json
       responses:
         "200":
-          description: Connexion réussie
+          description: Successful login
           schema:
-            $ref: '#/definitions/gin.H'
+            $ref: '#/definitions/auth.TokenResponse'
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/gin.H'
-        "404":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/gin.H'
-        "409":
-          description: Conflict
-          schema:
-            $ref: '#/definitions/gin.H'
+            $ref: '#/definitions/auth.ErrorResponse'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/gin.H'
-      summary: Allow you to log and have an JWT Token
+            $ref: '#/definitions/auth.ErrorResponse'
+      summary: Allow you to log in and get a JWT Token
       tags:
       - Auth
   /profile:
     get:
       consumes:
       - application/json
-      description: Retourne les informations du profil de l'utilisateur connecté
+      description: Returns the profile information of the logged-in user
       parameters:
       - default: Bearer <Add access token here>
         description: Insert your access token
@@ -177,14 +754,14 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/gin.H'
+            $ref: '#/definitions/auth.UserResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/gin.H'
+            $ref: '#/definitions/auth.ErrorResponse'
       security:
       - Bearer: []
-      summary: Récupère le profil de l'utilisateur actuellement connecté
+      summary: Get the profile of the currently logged-in user
       tags:
       - Auth
 swagger: "2.0"

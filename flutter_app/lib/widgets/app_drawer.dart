@@ -23,7 +23,7 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
             child: const Text(
-              'Dyma Trip',
+              'Esgi Voyages',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 30,

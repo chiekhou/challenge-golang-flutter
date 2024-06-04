@@ -26,7 +26,7 @@ class DestinationCard extends StatelessWidget {
               onTap: () {
                 Navigator.pushNamed(
                   context,
-                  '/city',
+                  '/destination',
                   arguments: destination.name,
                 );
               },

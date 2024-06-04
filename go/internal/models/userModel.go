@@ -12,5 +12,4 @@ type User struct {
 	RoleID    uint   `gorm:"size: 64; default:1; not null" json:"role_id"`
 	//Role        Role         `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`
 	GroupVoyage GroupeVoyage `json:"group_voyage"`
-	Destination Destination  `json:"destination"`
 }

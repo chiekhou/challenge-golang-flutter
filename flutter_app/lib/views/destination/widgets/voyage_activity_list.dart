@@ -27,7 +27,7 @@ class VoyageActivityList extends StatelessWidget {
                 color: Colors.red,
               ),
               onPressed: () {
-                deleteVoyageActivity(activity.id);
+                deleteVoyageActivity(activities[index]);
                 ScaffoldMessenger.of(context)
                   ..removeCurrentSnackBar()
                   ..showSnackBar(
