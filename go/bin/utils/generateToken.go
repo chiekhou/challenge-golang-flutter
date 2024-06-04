@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-var jwtKey = []byte("secret")
+var jwtKey = []byte("SECRET")
 
 func GenerateToken(email string) (string, error) {
 	expiration := time.Now().Add(time.Hour * 2).Unix()

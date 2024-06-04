@@ -49,7 +49,7 @@ func SendInvitation(c *gin.Context) {
 	if userFound.ID == 0 {
 		mailer2.SendGoMail(userFound.Email,
 			"Inscription",
-			"./pkg/mailer/templates/forgottenpass.html",
+			"./pkg/mailer/templates/registry.html",
 			email)
 	} else {
 		mailer2.SendGoMail(userFound.Email,
@@ -77,6 +77,6 @@ func SendInvitation(c *gin.Context) {
 // @Failure 409 {object} gin.H "Conflict"
 // @Failure 500 {object} gin.H "Internal server error"
 // @Router /send_invitation [post]
-func JoinGroupr(c *gin.Context) {
+func JoinGroup(c *gin.Context) {
 
 }
