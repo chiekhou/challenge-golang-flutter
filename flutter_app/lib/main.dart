@@ -6,11 +6,12 @@ import 'package:flutter_app/views/activity_fom/activity_form_view.dart';
 import 'package:flutter_app/views/login/login_screen.dart';
 import 'package:flutter_app/views/profile/profile_screen.dart';
 import 'package:flutter_app/views/register/register_screen.dart';
+import 'package:flutter_app/views/google_map/google_map_view.dart';
+import 'package:flutter_app/views/voyage/voyage_view.dart';
 import 'package:provider/provider.dart';
 import 'views/destination/destination_view.dart';
 import 'views/voyages/voyages_view.dart';
 import 'views/not-found/not_found.dart';
-import 'views/voyage/voyage_view.dart';
 import './views/home/home_view.dart';
 
 main() => runApp(const MyApp());
@@ -47,12 +48,15 @@ class _AppVoyageState extends State<MyApp> {
         routes: {
           '/': (context) => const LoginScreen(),
           DestinationView.routeName: (_) => const DestinationView(),
+          VoyageView.routeName: (_) => const VoyageView(),
           VoyagesView.routeName: (_) => const VoyagesView(),
           VoyageView.routeName: (_) => const VoyagesView(),
           ActivityFormView.routeName: (_) => const ActivityFormView(),
           ProfileScreen.routeName: (_)=> const ProfileScreen(),
           RegisterScreen.routeName: (_) => const RegisterScreen(),
           HomeView.routeName: (_) => const HomeView(),
+          GoogleMapView.routeName: (_) => const GoogleMapView(),
+          ActivityFormView.routeName: (_) => const ActivityFormView()
         },
         onUnknownRoute: (_) => MaterialPageRoute(
           builder: (_) => const NotFound(),

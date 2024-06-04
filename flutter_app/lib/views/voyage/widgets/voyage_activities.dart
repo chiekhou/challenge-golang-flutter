@@ -3,7 +3,7 @@ import '../../../models/activity_model.dart';
 import 'voyage_activity_list.dart';
 
 class VoyageActivities extends StatelessWidget {
-  final String voyageId;
+  final int voyageId;
 
   const VoyageActivities({super.key, required this.voyageId});
 

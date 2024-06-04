@@ -3,22 +3,22 @@ import 'dart:convert';
 import '../models/activity_model.dart';
 import '../models/place_model.dart';
 
-const GOOGLE_KEY_API = 'VOTRE_CLE_GOOGLE_API';
+const googleKeyApi = 'AIzaSyC_PzmOv7Hy8jyJbx2ERFDL4iRV6CWqRkI';
 
 Uri _queryAutocompleteBuilder(String query) {
   return Uri.parse(
-      'https://maps.googleapis.com/maps/api/place/queryautocomplete/json?&key=$GOOGLE_KEY_API&input=$query');
+      'https://maps.googleapis.com/maps/api/place/queryautocomplete/json?&key=$googleKeyApi&input=$query');
 }
 
 Uri _queryPlaceDetailsBuilder(String placeId) {
   return Uri.parse(
-      "https://maps.googleapis.com/maps/api/place/details/json?placeid=$placeId&fields=formatted_address,geometry&key=$GOOGLE_KEY_API");
+      "https://maps.googleapis.com/maps/api/place/details/json?placeid=$placeId&fields=formatted_address,geometry&key=$googleKeyApi");
 }
 
 Uri _queryGetAddressFromLatLngBuilder(
     {required double lat, required double lng}) {
   return Uri.parse(
-      "https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=$GOOGLE_KEY_API");
+      "https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=$googleKeyApi");
 }
 
 Future<List<Place>> getAutocompleteSuggestions(String query) async {

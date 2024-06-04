@@ -4,6 +4,7 @@ import (
 	"example/hello/api/routes"
 	_ "example/hello/docs"
 	initializers2 "example/hello/internal/initializers"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -16,8 +17,19 @@ func init() {
 }
 
 func main() {
+	// Servir des fichiers statiques depuis le dossier assets
+	fs := http.FileServer(http.Dir("assets"))
+	http.Handle("/assets/", http.StripPrefix("/assets/", fs))
+
 	server := gin.Default()
+
+	// Configurer le chemin pour servir les fichiers statiques
+	server.Static("/images", "./assets/images")
+
 	routes.RegisterRoutes(server)
+	routes.VoyageRoutes(server)
+	routes.DestinationRoutes(server)
+	routes.ActivityRoutes(server)
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	err := server.Run(":8080")
 	if err != nil {

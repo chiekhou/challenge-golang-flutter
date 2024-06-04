@@ -1,49 +1,43 @@
 import 'activity_model.dart';
 
 class Voyage {
-  String? id;
+  int? id;
   String destination;
   List<Activity> activities;
   DateTime? date;
   Voyage({
-    this.id,
     required this.destination,
     required this.activities,
     this.date,
+    this.id,
   });
 
-  Voyage.fromJson(Map<String, dynamic> json)
-      : id = json['_id'],
-        destination = json['destination'],
-        date = DateTime.parse(json['date']),
-        activities = (json['activities'] as List)
-            .map(
-              (activityJson) => Activity.fromJson(activityJson),
-            )
-            .toList();
+  @override
+  String toString() {
+    return 'Voyage{id: $id, destination: $destination, date: $date, activities: $activities}';
+  }
 
+  factory Voyage.fromJson(Map<String, dynamic> json) {
+    var activitiesFromJson = json['activities'] as List;
+    List<Activity> activityList = activitiesFromJson
+        .map((activityJson) =>
+            Activity.fromJson(activityJson as Map<String, dynamic>))
+        .toList();
+
+    return Voyage(
+      id: json['id'],
+      activities: activityList,
+      date: DateTime.parse(json['date']),
+      destination: json['destination'],
+    );
+  }
   Map<String, dynamic> toJson() {
-    if (id != null) {
-      return {
-        '_id': id,
-        'destination': destination,
-        'date': date!.toIso8601String(),
-        'activities': activities
-            .map(
-              (activity) => activity.toJson(),
-            )
-            .toList()
-      };
-    } else {
-      return {
-        'destination': destination,
-        'date': date!.toIso8601String(),
-        'activities': activities
-            .map(
-              (activity) => activity.toJson(),
-            )
-            .toList(),
-      };
-    }
+    final dateFormatted = date?.toIso8601String();
+    return {
+      'id': id,
+      'activities': activities.map((activity) => activity.toJson()).toList(),
+      'date': dateFormatted,
+      'destination': destination,
+    };
   }
 }

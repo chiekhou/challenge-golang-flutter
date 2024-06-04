@@ -1,7 +1,7 @@
 enum ActivityStatus { ongoing, done }
 
 class Activity {
-  String? id;
+  int id;
   String name;
   String image;
   String destination;
@@ -13,13 +13,17 @@ class Activity {
     required this.destination,
     required this.image,
     required this.price,
-    this.id,
+    required this.id,
     this.location,
     this.status = ActivityStatus.ongoing,
   });
 
+  String toString() {
+    return 'Activity{id: $id, name: $name, destination: $destination, price: $price}';
+  }
+
   Activity.fromJson(Map<String, dynamic> json)
-      : id = json['_id'],
+      : id = json['id'],
         name = json['name'],
         image = json['image'],
         destination = json['destination'],
@@ -34,6 +38,7 @@ class Activity {
 
   Map<String, dynamic> toJson() {
     Map<String, dynamic> value = {
+      'id': id,
       'name': name,
       'image': image,
       'destination': destination,
@@ -43,9 +48,7 @@ class Activity {
       'latitude': location?.latitude,
       'status': status == ActivityStatus.ongoing ? 0 : 1
     };
-    if (id != null) {
-      value['_id'] = id;
-    }
+    value['id'] = id;
     return value;
   }
 }

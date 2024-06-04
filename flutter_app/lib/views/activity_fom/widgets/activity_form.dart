@@ -33,6 +33,7 @@ class _ActivityFormState extends State<ActivityForm> {
   @override
   void initState() {
     _newActivity = Activity(
+      id: 0,
       destination: widget.destinationName,
       name: '',
       price: 0,

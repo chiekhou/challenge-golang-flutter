@@ -22,7 +22,7 @@ class VoyageList extends StatelessWidget {
           trailing: const Icon(Icons.info),
           onTap: () =>
               Navigator.pushNamed(context, VoyageView.routeName, arguments: {
-            'voyageId': voyage.id as String,
+            'voyageId': voyage.id,
             'destinationName': voyage.destination,
           }),
         );

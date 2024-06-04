@@ -16,55 +16,54 @@ class ActivityCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: double.infinity,
-      child: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          Ink.image(
-            image: AssetImage(activity.image),
-            fit: BoxFit.cover,
-            child: InkWell(
-              onTap: toggleActivity,
+        height: 150,
+        child: Stack(
+          fit: StackFit.expand,
+          children: <Widget>[
+            Ink.image(
+              image: NetworkImage(activity.image),
+              fit: BoxFit.cover,
+              child: InkWell(
+                onTap: toggleActivity,
+              ),
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      if (isSelected)
-                        const Icon(
-                          Icons.check,
-                          size: 40,
-                          color: Colors.white,
-                        ),
-                    ],
-                  ),
-                ),
-                Row(
-                  children: <Widget>[
-                    Flexible(
-                      child: FittedBox(
-                        child: Text(
-                          activity.name,
-                          style: const TextStyle(
-                            fontSize: 20,
+            Container(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        if (isSelected)
+                          const Icon(
+                            Icons.check,
+                            size: 40,
                             color: Colors.white,
+                          ),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Flexible(
+                        child: FittedBox(
+                          child: Text(
+                            activity.name,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          )
-        ],
-      ),
-    );
+                    ],
+                  )
+                ],
+              ),
+            )
+          ],
+        ));
   }
 }

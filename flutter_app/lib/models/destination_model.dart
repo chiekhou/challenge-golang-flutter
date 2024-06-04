@@ -1,7 +1,7 @@
 import 'activity_model.dart';
 
 class Destination {
-  String? id;
+  int id;
   String image;
   String name;
   List<Activity> activities;
@@ -13,7 +13,7 @@ class Destination {
   });
 
   Destination.fromJson(Map<String, dynamic> json)
-      : id = json['_id'],
+      : id = json['id'],
         image = json['image'],
         name = json['name'],
         activities = (json['activities'] as List)

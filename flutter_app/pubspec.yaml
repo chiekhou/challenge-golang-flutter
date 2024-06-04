@@ -41,6 +41,9 @@ dependencies:
   http_parser: ^4.0.2
   path: ^1.8.2
   location: ^6.0.1
+  google_maps_flutter: ^2.5.3
+  url_launcher: ^6.2.4
+  google_maps_flutter_ios: ^2.6.1
 
 dev_dependencies:
   flutter_test:
@@ -65,9 +68,9 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  assets:
-    - assets/images/
-    - assets/images/activities/
+  # assets:
+  #   - assets/images/
+  #   - assets/images/activities/
 
   #   - images/a_dot_ham.jpeg
 

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/widgets/app_loader.dart';
 import 'package:provider/provider.dart';
 import '../../providers/voyage_provider.dart';
+import '../../widgets/app_loader.dart';
 import 'widgets/voyage_list.dart';
 import '../../widgets/app_drawer.dart';
 

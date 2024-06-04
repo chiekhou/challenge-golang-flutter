@@ -9,8 +9,8 @@ import 'package:path/path.dart';
 import 'dart:io';
 
 class DestinationProvider extends ChangeNotifier {
-  final String host = '10.0.2.2'; // version emulateur
-  // final String host = 'localhost'; // version web
+   final String host = '10.0.2.2:8080'; // version emulateur
+  // final String host = 'localhost:8080'; // version web
   List<Destination> _destinations = [];
   bool isLoading = false;
 
@@ -20,7 +20,7 @@ class DestinationProvider extends ChangeNotifier {
   Destination getDestinationByName(String destinationName) => destinations
       .firstWhere((destination) => destination.name == destinationName);
 
-  UnmodifiableListView<Destination> getFilteredCities(String filter) =>
+  UnmodifiableListView<Destination> getFilteredDestinations(String filter) =>
       UnmodifiableListView(
         _destinations
             .where(
@@ -34,24 +34,40 @@ class DestinationProvider extends ChangeNotifier {
   Future<void> fetchData() async {
     try {
       isLoading = true;
-      http.Response response =
-          await http.get(Uri.http(host, '/api/destinations'));
+      notifyListeners();
+
+      final url = Uri.http(host, '/api/destinations');
+      final response = await http.get(url);
+      print('Fetching data from $url');
+      print('Response body: ${response.body}');
+
       if (response.statusCode == 200) {
-        _destinations = (json.decode(response.body) as List)
-            .map((destinationJson) => Destination.fromJson(destinationJson))
-            .toList();
-        isLoading = false;
-        notifyListeners();
+        final responseData = json.decode(response.body);
+        if (responseData is List) {
+          _destinations = responseData
+              .map((destinationJson) => Destination.fromJson(destinationJson))
+              .toList();
+        } else if (responseData is Map && responseData.containsKey('data')) {
+          _destinations = (responseData['data'] as List)
+              .map((voyageJson) => Destination.fromJson(voyageJson))
+              .toList();
+        } else {
+          throw Exception('Unexpected response format');
+        }
+      } else {
+        throw Exception('Failed to load destinations');
       }
     } catch (e) {
+      print('Error: $e');
+    } finally {
       isLoading = false;
-      rethrow;
+      notifyListeners();
     }
   }
 
   Future<void> addActivityToDestination(Activity newActivity) async {
     try {
-      String destinationId = getDestinationByName(newActivity.destination).id!;
+      int destinationId = getDestinationByName(newActivity.destination).id;
       http.Response response = await http.post(
         Uri.http(host, '/api/destination/$destinationId/activity'),
         headers: {'Content-type': 'application/json'},

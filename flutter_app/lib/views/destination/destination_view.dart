@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/providers/destination_provider.dart';
 import 'package:flutter_app/views/activity_fom/activity_form_view.dart';
-import 'package:flutter_app/views/destination/widgets/voyage_activity_list.dart';
-import 'package:flutter_app/views/destination/widgets/voyage_overview.dart';
 import 'package:flutter_app/widgets/app_drawer.dart';
 import 'package:provider/provider.dart';
 import '../../models/destination_model.dart';
 import '../../models/activity_model.dart';
 import '../../models/voyage_model.dart';
+import '../../providers/destination_provider.dart';
 import '../../providers/voyage_provider.dart';
 import '../home/home_view.dart';
+import 'widgets/voyage_activity_list.dart';
 import 'widgets/activity_list.dart';
+import 'widgets/voyage_overview.dart';
 
 class DestinationView extends StatefulWidget {
   static const String routeName = '/destination';
@@ -28,6 +28,7 @@ class _DestinationState extends State<DestinationView> {
   @override
   void initState() {
     super.initState();
+
     index = 0;
     myvoyage = Voyage(
       activities: [],
@@ -45,13 +46,13 @@ class _DestinationState extends State<DestinationView> {
   void setDate() {
     showDatePicker(
       context: context,
-      initialDate: DateTime.now().add(const Duration(days: 1)),
-      firstDate: DateTime.now(),
+      initialDate: DateTime.now().add(const Duration(days: 1)).toUtc(),
+      firstDate: DateTime.now().toUtc(),
       lastDate: DateTime(2030),
     ).then((newDate) {
       if (newDate != null) {
         setState(() {
-          myvoyage.date = newDate;
+          myvoyage.date = newDate.toUtc();
         });
       }
     });
@@ -82,14 +83,14 @@ class _DestinationState extends State<DestinationView> {
       context: context,
       builder: (context) {
         return SimpleDialog(
-          title: const Text('Voulez vous sauvegarder ?'),
+          title: const Text('Voulez-vous sauvegarder ?'),
           contentPadding: const EdgeInsets.all(20),
           children: <Widget>[
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
                 ElevatedButton(
-                  child: const Text('annuler'),
+                  child: const Text('Annuler'),
                   onPressed: () {
                     Navigator.pop(context, 'cancel');
                   },
@@ -104,17 +105,21 @@ class _DestinationState extends State<DestinationView> {
                     Navigator.pop(context, 'save');
                   },
                   child: const Text(
-                    'sauvegarder',
+                    'Sauvegarder',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
               ],
-            )
+            ),
           ],
         );
       },
     );
+
+    print('Résultat de la boîte de dialogue: $result');
+
     if (myvoyage.date == null) {
+      print('Date du voyage non définie');
       if (mounted) {
         showDialog(
           context: context,
@@ -125,7 +130,7 @@ class _DestinationState extends State<DestinationView> {
               TextButton(
                 child: const Text('Ok'),
                 onPressed: () => Navigator.pop(context),
-              )
+              ),
             ],
           ),
         );
@@ -133,7 +138,9 @@ class _DestinationState extends State<DestinationView> {
     } else if (result == 'save') {
       if (mounted) {
         myvoyage.destination = destinationName;
+        print('Sauvegarde du voyage avant ajout au fournisseur: $myvoyage');
         Provider.of<VoyageProvider>(context, listen: false).addVoyage(myvoyage);
+        print('Voyage ajouté au fournisseur: $myvoyage');
         Navigator.pushNamed(context, HomeView.routeName);
       }
     }
