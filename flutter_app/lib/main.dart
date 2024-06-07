@@ -50,14 +50,12 @@ class _AppVoyageState extends State<MyApp> {
           DestinationView.routeName: (_) => const DestinationView(),
           VoyageView.routeName: (_) => const VoyageView(),
           VoyagesView.routeName: (_) => const VoyagesView(),
-          VoyageView.routeName: (_) => const VoyagesView(),
           ActivityFormView.routeName: (_) => const ActivityFormView(),
           ProfileScreen.routeName: (_)=> const ProfileScreen(),
           RegisterScreen.routeName: (_) => const RegisterScreen(),
           HomeView.routeName: (_) => const HomeView(),
           GoogleMapView.routeName: (_) => const GoogleMapView(),
-          ActivityFormView.routeName: (_) => const ActivityFormView()
-        },
+         },
         onUnknownRoute: (_) => MaterialPageRoute(
           builder: (_) => const NotFound(),
         ),

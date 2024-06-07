@@ -206,29 +206,44 @@ func MailRecovery(c *gin.Context) {
 	})
 }
 
-//TODO revoir la méthode de reset password (changer les paramètres)
-
 // @Summary Réinitialiser le mot de passe
 // @Description Permet à l'utilisateur de réinitialiser son mot de passe en utilisant un jeton de réinitialisation valide.
 // @Tags Auth
 // @Accept json
 // @Produce json
+// @Security Bearer
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
 // @Param requests.ResetPasswordRequest body requests.ResetPasswordRequest true "Données pour réinitialiser le mot de passe"
 // @Success 204 "Mot de passe réinitialisé avec succès"
 // @Failure 400 {object} gin.H "Token invalide ou expiré"
 // @Failure 500 {object} gin.H "Erreur interne du serveur"
 // @Router /reset_password [put]
 func ResetPassword(c *gin.Context) {
-	var ResetPassReq requests.ResetPasswordRequest
-	var jwtKey = []byte("votre_clé_secrète")
+	var resetPassReq requests.ResetPasswordRequest
+	var jwtKey = []byte("SECRET")
 
-	if err := c.ShouldBindJSON(&ResetPassReq); err != nil {
+	if err := c.ShouldBindJSON(&resetPassReq); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
+	// Extraire le token du header Authorization
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Token manquant"})
+		return
+	}
+
+	// Valider le format du token
+	if len(authHeader) < 7 || authHeader[:7] != "Bearer " {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Format de token invalide"})
+		return
+	}
+
+	tokenString := authHeader[7:]
+
 	claims := &jwt2.StandardClaims{}
-	token, err := jwt2.ParseWithClaims(ResetPassReq.Token, claims, func(token *jwt2.Token) (interface{}, error) {
+	token, err := jwt2.ParseWithClaims(tokenString, claims, func(token *jwt2.Token) (interface{}, error) {
 		return jwtKey, nil
 	})
 	if err != nil || !token.Valid {
@@ -243,7 +258,7 @@ func ResetPassword(c *gin.Context) {
 		return
 	}
 
-	passwordHash, err := bcrypt.GenerateFromPassword([]byte(ResetPassReq.NewPassword), bcrypt.DefaultCost)
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(resetPassReq.NewPassword), bcrypt.DefaultCost)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur de génération de hash de mot de passe"})
 		return

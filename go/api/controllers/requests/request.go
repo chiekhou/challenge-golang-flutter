@@ -24,3 +24,8 @@ type ResetPasswordRequest struct {
 	Token       string `json:"token" binding:"required"`
 	NewPassword string `json:"new_password" binding:"required"`
 }
+
+type InvitationGroupRequest struct {
+	Email   string `form:"email" json:"email" binding:"required"`
+	GroupID uint64 `form:"group_id" json:"group_id" binding:"required"`
+}

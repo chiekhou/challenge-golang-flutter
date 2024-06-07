@@ -5,20 +5,22 @@ import (
 	"time"
 )
 
-var jwtKey = []byte("SECRET")
+func GenerateToken(email string, groupID ...uint) (string, error) {
+	claims := jwt.MapClaims{
+		"email": email,
+		"exp":   time.Now().Add(time.Hour * 72).Unix(),
+	}
 
-func GenerateToken(email string) (string, error) {
-	expiration := time.Now().Add(time.Hour * 2).Unix()
-
-	claims := &jwt.StandardClaims{
-		Subject:   email,
-		ExpiresAt: expiration,
+	if len(groupID) > 0 && groupID[0] != 0 {
+		claims["groupID"] = groupID[0]
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(jwtKey)
+
+	tokenString, err := token.SignedString([]byte("SECRET"))
 	if err != nil {
 		return "", err
 	}
+
 	return tokenString, nil
 }

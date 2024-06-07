@@ -15,20 +15,20 @@ func init() {
 
 func main() {
 	//Drop la BDD afin de faire de nouvelle migrations
-	// initializers2.DB.Migrator().DropTable(
+	/*	initializers2.DB.Migrator().DropTable(
 
-	// 	&models2.Activity{},
-	// 	&models2.Destination{},
-	// 	&models2.Hotel{},
-	// 	&models2.Feedback{},
-	// 	&models2.GroupeVoyage{},
-	// 	&models2.Option{},
-	// 	&models2.Role{},
-	// 	&models2.User{},
-	// 	&models2.Voyage{},
-	// 	&models2.DestinationActivity{},
-	// 	&models2.VoyageActivity{},
-	// )
+		&models2.Activity{},
+		&models2.Destination{},
+		&models2.Hotel{},
+		&models2.Feedback{},
+		&models2.GroupeVoyage{},
+		&models2.Option{},
+		&models2.Role{},
+		&models2.User{},
+		&models2.Voyage{},
+		&models2.DestinationActivity{},
+		&models2.VoyageActivity{},
+	)*/
 
 	// Supprimer explicitement les tables de jointure
 	// initializers2.DB.Migrator().DropTable("destination_activity", "destination_activities", "voyage_activities", "voyage_activity")
@@ -42,7 +42,8 @@ func main() {
 		&models2.GroupeVoyage{},
 		&models2.Voyage{},
 		&models2.VoyageActivity{},
-		&models2.Option{})
+		&models2.Option{},
+		&models2.GroupMember{})
 	if err != nil {
 		return
 	}
