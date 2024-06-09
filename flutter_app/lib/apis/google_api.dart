@@ -1,9 +1,10 @@
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
 import '../models/activity_model.dart';
 import '../models/place_model.dart';
 
-const googleKeyApi = 'AIzaSyC_PzmOv7Hy8jyJbx2ERFDL4iRV6CWqRkI';
+String? googleKeyApi = dotenv.env['GOOGLE_API_KEY'];
 
 Uri _queryAutocompleteBuilder(String query) {
   return Uri.parse(
