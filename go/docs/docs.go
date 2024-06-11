@@ -1319,14 +1319,10 @@ const docTemplate = `{
         "requests.ResetPasswordRequest": {
             "type": "object",
             "required": [
-                "new_password",
-                "token"
+                "password"
             ],
             "properties": {
-                "new_password": {
-                    "type": "string"
-                },
-                "token": {
+                "password": {
                     "type": "string"
                 }
             }

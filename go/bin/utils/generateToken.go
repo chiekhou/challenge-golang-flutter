@@ -1,23 +1,25 @@
 package utils
 
 import (
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v4"
+	"os"
 	"time"
 )
 
-func GenerateToken(email string, groupID ...uint) (string, error) {
+func GenerateToken(email string, ID uint) (string, error) {
+	now := time.Now()
 	claims := jwt.MapClaims{
 		"email": email,
-		"exp":   time.Now().Add(time.Hour * 72).Unix(),
+		"ID":    ID,
+		"exp":   now.Add(time.Hour * 72).Unix(),
+		"iat":   now.Unix(),
 	}
 
-	if len(groupID) > 0 && groupID[0] != 0 {
-		claims["groupID"] = groupID[0]
-	}
+	secret := []byte(os.Getenv("SECRET"))
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	tokenString, err := token.SignedString([]byte("SECRET"))
+	tokenString, err := token.SignedString(secret)
 	if err != nil {
 		return "", err
 	}

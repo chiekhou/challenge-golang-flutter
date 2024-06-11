@@ -6,10 +6,12 @@ import (
 	"example/hello/internal/initializers"
 	"example/hello/internal/models"
 	mailer2 "example/hello/pkg/mailer"
-	jwt2 "github.com/dgrijalva/jwt-go"
+	"log"
+
+	//jwt2 "github.com/dgrijalva/jwt-go"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"os"
@@ -184,11 +186,17 @@ func MailRecovery(c *gin.Context) {
 	}
 
 	var userFound models.User
-	initializers.DB.Where("email=?", EmailReq.Email).Find(&userFound)
+	initializers.DB.Where("email = ?", EmailReq.Email).Find(&userFound)
 
-	token, err := utils.GenerateToken(userFound.Email)
+	if userFound.ID == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Utilisateur non trouvé"})
+		return
+	}
+
+	// Générer le token en utilisant l'email et l'ID de l'utilisateur
+	token, err := utils.GenerateToken(userFound.Email, userFound.ID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur de génération de token"})
 		return
 	}
 
@@ -220,7 +228,6 @@ func MailRecovery(c *gin.Context) {
 // @Router /reset_password [put]
 func ResetPassword(c *gin.Context) {
 	var resetPassReq requests.ResetPasswordRequest
-	var jwtKey = []byte("SECRET")
 
 	if err := c.ShouldBindJSON(&resetPassReq); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -241,24 +248,40 @@ func ResetPassword(c *gin.Context) {
 	}
 
 	tokenString := authHeader[7:]
+	log.Println("Received Token:", tokenString)
 
-	claims := &jwt2.StandardClaims{}
-	token, err := jwt2.ParseWithClaims(tokenString, claims, func(token *jwt2.Token) (interface{}, error) {
-		return jwtKey, nil
+	claims := &jwt.MapClaims{}
+	secret := []byte(os.Getenv("SECRET"))
+
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		return secret, nil
 	})
 	if err != nil || !token.Valid {
+		log.Println("Token Parsing Error:", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Token invalide ou expiré"})
 		return
 	}
 
+	log.Println("Token Claims:", claims)
+
+	email := (*claims)["email"].(string)
+	userID := uint((*claims)["userID"].(float64))
+
 	var user models.User
-	initializers.DB.Where("email = ?", claims.Subject).First(&user)
+	initializers.DB.Where("id = ? AND email = ?", userID, email).First(&user)
 	if user.ID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Utilisateur non trouvé"})
 		return
 	}
 
-	passwordHash, err := bcrypt.GenerateFromPassword([]byte(resetPassReq.NewPassword), bcrypt.DefaultCost)
+	// Vérifier si le nouveau mot de passe est différent de l'ancien
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(resetPassReq.Password))
+	if err == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Le nouveau mot de passe doit être différent de l'ancien"})
+		return
+	}
+
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(resetPassReq.Password), bcrypt.DefaultCost)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur de génération de hash de mot de passe"})
 		return

@@ -81,13 +81,10 @@ definitions:
     type: object
   requests.ResetPasswordRequest:
     properties:
-      new_password:
-        type: string
-      token:
+      password:
         type: string
     required:
-    - new_password
-    - token
+    - password
     type: object
   requests.SignupRequest:
     properties:
