@@ -28,3 +28,18 @@ type InvitationGroupRequest struct {
 	Email   string `form:"email" json:"email" binding:"required"`
 	GroupID uint64 `form:"group_id" json:"group_id" binding:"required"`
 }
+
+type GroupRequest struct {
+	Budget        float32 `json:"budget"`
+	Roadmap       string  `json:"roadmap"`
+	UserID        uint    `json:"user_id"`
+	NbPersonnes   int     `json:"nb_personnes"`
+	DateDepart    string  `json:"date_depart"`
+	DateRetour    string  `json:"date_retour"`
+	Nom           string  `json:"nom"`
+	DestinationID uint    `json:"destination_id"`
+}
+
+type UpdateBudgetRequest struct {
+	Budget float32 `json:"budget"`
+}

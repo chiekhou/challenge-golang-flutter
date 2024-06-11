@@ -5,8 +5,13 @@ import (
 	"example/hello/api/controllers/auth"
 	"example/hello/api/controllers/destinations"
 	voyage "example/hello/api/controllers/voyages"
+	"example/hello/api/controllers/voyage"
 	"example/hello/api/middlewares"
 
+	"os"
+
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 )
 
@@ -42,4 +47,9 @@ func DestinationRoutes(r *gin.Engine) {
 
 func ActivityRoutes(r *gin.Engine) {
 	r.POST("/api/activity/images", activity.UploadImage)
+	r.PUT("/reset_password", auth.ResetPassword)
+
+	r.POST("/groups", middlewares.CheckAuth, voyage.CreateGroup)
+	r.POST("/groups/:group_id/join", middlewares.CheckAuth, voyage.JoinGroup)
+	r.PUT("/groups/:id/budget", middlewares.CheckAuth, voyage.UpdateBudget)
 }
