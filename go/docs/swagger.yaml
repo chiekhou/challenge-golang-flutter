@@ -69,6 +69,13 @@ definitions:
     required:
     - email
     type: object
+  requests.GroupRequest:
+    properties:
+      budget:
+        type: number
+      nom:
+        type: string
+    type: object
   requests.LoginRequest:
     properties:
       email:
@@ -107,6 +114,11 @@ definitions:
     - last_name
     - password
     - username
+    type: object
+  requests.UpdateBudgetRequest:
+    properties:
+      budget:
+        type: number
     type: object
   voyages.ErrorResponse:
     properties:
@@ -460,11 +472,11 @@ paths:
     post:
       consumes:
       - application/json
-      description: Add by JSON voyage
+      description: Add by JSON groupeVoyage
       parameters:
-      - description: Add voyage
+      - description: Add groupeVoyage
         in: body
-        name: voyage
+        name: groupeVoyage
         required: true
         schema:
           $ref: '#/definitions/models.Voyage'
@@ -487,7 +499,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
-      summary: Add a voyage
+      summary: Add a groupeVoyage
       tags:
       - Voyages
     put:
@@ -497,7 +509,7 @@ paths:
       parameters:
       - description: Voyage data
         in: body
-        name: voyage
+        name: groupeVoyage
         required: true
         schema:
           $ref: '#/definitions/models.Voyage'
@@ -553,14 +565,14 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
-      summary: Show a voyage
+      summary: Show a groupeVoyage
       tags:
       - Voyages
   /api/voyages/delete/{id}:
     delete:
       consumes:
       - application/json
-      description: Delete by voyage ID
+      description: Delete by groupeVoyage ID
       parameters:
       - description: Voyage ID
         format: int64
@@ -587,7 +599,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
-      summary: Delete a voyage
+      summary: Delete a groupeVoyage
       tags:
       - Voyages
   /api/voyages/update/{id}:
@@ -603,7 +615,7 @@ paths:
         type: integer
       - description: Update Voyage
         in: body
-        name: voyage
+        name: groupeVoyage
         required: true
         schema:
           $ref: '#/definitions/models.Voyage'
@@ -626,9 +638,55 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
-      summary: Update a voyage
+      summary: Update a groupeVoyage
       tags:
       - Voyages
+  /create_group:
+    post:
+      consumes:
+      - application/json
+      description: Permet aux user de créé un groupe de groupeVoyage
+      parameters:
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Mise à jour du budget
+        in: body
+        name: budget
+        required: true
+        schema:
+          $ref: '#/definitions/requests.GroupRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Groupe créé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Créé un groupe de groupeVoyage
+      tags:
+      - Groupe Voyage
   /forgotten_password:
     post:
       consumes:
@@ -668,12 +726,12 @@ paths:
         passe
       tags:
       - Auth
-  /join_group:
+  /groupes/{group_id}/join:
     post:
       consumes:
       - application/json
-      description: Envoie un mail d'invitation afin de de rejoindre un groupen de
-        voyage
+      description: Permet à un utilisateur de rejoindre un groupe de groupeVoyage
+        en utilisant un token d'invitation
       parameters:
       - default: Bearer <Add access token here>
         description: Insert your access token
@@ -681,6 +739,64 @@ paths:
         name: Authorization
         required: true
         type: string
+      - description: ID du groupe de groupeVoyage
+        in: path
+        name: group_id
+        required: true
+        type: string
+      - description: Token d'invitation
+        in: query
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Vous avez rejoint le groupe avec succès
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Rejoindre un groupe de groupeVoyage
+      tags:
+      - Groupe Voyage
+  /groupes/{group_id}/send_invitation:
+    post:
+      consumes:
+      - application/json
+      description: Envoie un mail d'invitation afin de de rejoindre un groupen de
+        groupeVoyage
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ID du groupe de groupeVoyage
+        in: path
+        name: group_id
+        required: true
+        type: string
+      - description: Mise à jour du budget
+        in: body
+        name: budget
+        required: true
+        schema:
+          $ref: '#/definitions/requests.EmailRequest'
       produces:
       - application/json
       responses:
@@ -706,9 +822,57 @@ paths:
             $ref: '#/definitions/gin.H'
       security:
       - Bearer: []
-      summary: Rejoindre un groupe de voyage
+      summary: Invitation groupe de groupeVoyage
       tags:
-      - Voyages
+      - Groupe Voyage
+  /groupes/{group_id}/update_budget:
+    put:
+      consumes:
+      - application/json
+      description: Met à jour le budget d'un groupe de groupeVoyage spécifique en
+        utilisant son ID
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ID du groupe de groupeVoyage
+        in: path
+        name: group_id
+        required: true
+        type: string
+      - description: Mise à jour du budget
+        in: body
+        name: budget
+        required: true
+        schema:
+          $ref: '#/definitions/requests.UpdateBudgetRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Budget mis à jour avec succès
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Groupe de groupeVoyage non trouvé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Impossible de mettre à jour le budget
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Met à jour le budget d'un groupe de groupeVoyage
+      tags:
+      - Groupe Voyage
   /login:
     post:
       consumes:
@@ -852,45 +1016,4 @@ paths:
       summary: Réinitialiser le mot de passe
       tags:
       - Auth
-  /send_invitation:
-    post:
-      consumes:
-      - application/json
-      description: Envoie un mail d'invitation afin de de rejoindre un groupen de
-        voyage
-      parameters:
-      - default: Bearer <Add access token here>
-        description: Insert your access token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Invitation envoyée
-          schema:
-            $ref: '#/definitions/gin.H'
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/gin.H'
-        "404":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/gin.H'
-        "409":
-          description: Conflict
-          schema:
-            $ref: '#/definitions/gin.H'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/gin.H'
-      security:
-      - Bearer: []
-      summary: Invitation groupe de voyage
-      tags:
-      - Voyages
 swagger: "2.0"

@@ -98,7 +98,7 @@ func main() {
 	initializers2.DB.Create(&voyage)
 	initializers2.DB.Create(&voyage2)
 
-	// Associer les activités au voyage
+	// Associer les activités au groupeVoyage
 	var voyages []models2.Voyage
 	initializers2.DB.Preload("Activities").Preload("Destination").Find(&voyages)
 

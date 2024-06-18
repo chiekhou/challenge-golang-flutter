@@ -1,11 +1,8 @@
 package voyages
 
 import (
-	"example/hello/api/controllers/requests"
-	"example/hello/bin/utils"
 	"example/hello/internal/initializers"
 	"example/hello/internal/models"
-	mailer2 "example/hello/pkg/mailer"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -54,7 +51,7 @@ func GetVoyages(c *gin.Context) {
 }
 
 // ShowVoyage godoc
-// @Summary      Show a voyage
+// @Summary      Show a groupeVoyage
 // @Description  get string by ID
 // @Tags         Voyages
 // @Accept       json
@@ -90,12 +87,12 @@ func GetVoyage(c *gin.Context) {
 }
 
 // AddVoyage godoc
-// @Summary     Add a voyage
-// @Description Add by JSON voyage
+// @Summary     Add a groupeVoyage
+// @Description Add by JSON groupeVoyage
 // @Tags        Voyages
 // @Accept      json
 // @Produce     json
-// @Param       voyage body models.Voyage true "Add voyage"
+// @Param       groupeVoyage body models.Voyage true "Add groupeVoyage"
 // @Success     200 {object} models.Voyage
 // @Failure     400 {object} ErrorResponse
 // @Failure     404 {object} ErrorResponse
@@ -129,7 +126,7 @@ func CreateVoyage(c *gin.Context) {
 
 	if err := initializers.DB.Create(&voyage).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		fmt.Println("Erreur de création de voyage:", err.Error())
+		fmt.Println("Erreur de création de groupeVoyage:", err.Error())
 		return
 	}
 
@@ -139,13 +136,13 @@ func CreateVoyage(c *gin.Context) {
 }
 
 // UpdateVoyage godoc
-// @Summary		Update a voyage
+// @Summary		Update a groupeVoyage
 // @Description	Update by json destination
 // @Tags		Voyages
 // @Accept		json
 // @Produce		json
 // @Param       id path int true "Voyage ID"
-// @Param       voyage body models.Voyage true "Update Voyage"
+// @Param       groupeVoyage body models.Voyage true "Update Voyage"
 // @Success      200  {object}  models.Voyage
 // @Failure      400  {object}  ErrorResponse
 // @Failure      404  {object}  ErrorResponse
@@ -192,7 +189,7 @@ func UpdateVoyage(c *gin.Context) {
 // @Tags Voyages
 // @Accept json
 // @Produce json
-// @Param voyage body models.Voyage true "Voyage data"
+// @Param groupeVoyage body models.Voyage true "Voyage data"
 // @Success      200  {object}  models.Voyage
 // @Failure      400  {object}  ErrorResponse
 // @Failure      404  {object}  ErrorResponse
@@ -225,8 +222,8 @@ func UpdatePutVoyage(c *gin.Context) {
 
 // DeleteVoyage godoc
 //
-//	@Summary		Delete a voyage
-//	@Description	Delete by voyage ID
+//	@Summary		Delete a groupeVoyage
+//	@Description	Delete by groupeVoyage ID
 //	@Tags			Voyages
 //	@Accept			json
 //	@Produce		json
@@ -266,123 +263,4 @@ func DeleteVoyage(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, SuccessResponse{Data: true})
-}
-
-// @Summary Invitation groupe de voyage
-// @Description Envoie un mail d'invitation afin de de rejoindre un groupen de voyage
-// @Tags Voyages
-// @Accept json
-// @Produce json
-// @Security Bearer
-// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
-// @Success 200 {object} gin.H "Invitation envoyée"
-// @Failure 400 {object} gin.H "Bad request"
-// @Failure 404 {object} gin.H "Bad request"
-// @Failure 409 {object} gin.H "Conflict"
-// @Failure 500 {object} gin.H "Internal server error"
-// @Router /send_invitation [post]
-func SendInvitation(c *gin.Context) {
-	var emailRequest requests.InvitationGroupRequest
-
-	// Chercher si le groupe de voyage existe
-	var group models.GroupeVoyage
-	if err := initializers.DB.Where("id = ?", c.Param("id")).First(&group).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Groupe non trouvé"})
-		return
-	}
-
-	if err := c.ShouldBindJSON(&emailRequest); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	token, err := utils.GenerateToken(emailRequest.Email, group.ID)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	var userFound models.User
-	type emailData struct {
-		UserFound models.User
-		Token     string
-		GroupID   uint
-	}
-	var email emailData
-	email.Token = token
-	email.GroupID = group.ID
-
-	initializers.DB.Where("email = ?", emailRequest.Email).First(&userFound)
-	email.UserFound = userFound
-
-	if userFound.ID == 0 {
-		mailer2.SendGoMail(emailRequest.Email,
-			"Inscription",
-			"./pkg/mailer/templates/registry.html",
-			email)
-	} else {
-		mailer2.SendGoMail(emailRequest.Email,
-			"Invitation dans un groupe de voyage",
-			"./pkg/mailer/templates/invite.html",
-			email)
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Email envoyé",
-		"token":   token,
-	})
-}
-
-// @Summary Rejoindre un groupe de voyage
-// @Description Envoie un mail d'invitation afin de de rejoindre un groupen de voyage
-// @Tags Voyages
-// @Accept json
-// @Produce json
-// @Security Bearer
-// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
-// @Success 200 {object} gin.H "Invitation envoyée"
-// @Failure 400 {object} gin.H "Bad request"
-// @Failure 404 {object} gin.H "Bad request"
-// @Failure 409 {object} gin.H "Conflict"
-// @Failure 500 {object} gin.H "Internal server error"
-// @Router /join_group [post]
-func JoinGroup(c *gin.Context) {
-	var request struct {
-		Token string `json:"token" binding:"required"`
-	}
-
-	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	email, groupID, err := utils.ParseToken(request.Token)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Token invalide"})
-		return
-	}
-
-	var user models.User
-	if err := initializers.DB.Where("email = ?", email).First(&user).Error; err != nil {
-		// Si l'utilisateur n'existe pas, le créer
-		user = models.User{Email: email}
-		if err := initializers.DB.Create(&user).Error; err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur lors de la création de l'utilisateur"})
-			return
-		}
-	}
-
-	var group models.GroupeVoyage
-	if err := initializers.DB.Where("id = ?", groupID).First(&group).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Groupe non trouvé"})
-		return
-	}
-
-	// Ajouter l'utilisateur au groupe
-	if err := initializers.DB.Model(&group).Association("Members").Append(&user).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur lors de l'ajout de l'utilisateur au groupe"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "Groupe rejoint"})
 }
