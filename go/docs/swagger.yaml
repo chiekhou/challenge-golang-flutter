@@ -48,6 +48,47 @@ definitions:
       name:
         type: string
     type: object
+  models.GroupeVoyage:
+    properties:
+      budget:
+        type: number
+      id:
+        type: integer
+      members:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+      nom:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      groupe_voyage:
+        items:
+          $ref: '#/definitions/models.GroupeVoyage'
+        type: array
+      id:
+        description: gorm.Model
+        type: integer
+      last_name:
+        type: string
+      password:
+        type: string
+      photo:
+        type: string
+      role_id:
+        type: integer
+      username:
+        type: string
+    type: object
   models.Voyage:
     properties:
       activities:
@@ -726,6 +767,52 @@ paths:
         passe
       tags:
       - Auth
+  /groupes/{group_id}:
+    get:
+      consumes:
+      - application/json
+      description: Récupère un groupe de voyage par son ID si l'utilisateur est le
+        créateur ou un membre du groupe
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ID du groupe de voyage
+        in: path
+        name: group_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Détails du groupe de voyage
+          schema:
+            $ref: '#/definitions/models.GroupeVoyage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/gin.H'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Récupérer un groupe de voyage par ID
+      tags:
+      - Groupe Voyage
   /groupes/{group_id}/join:
     post:
       consumes:
@@ -871,6 +958,43 @@ paths:
       security:
       - Bearer: []
       summary: Met à jour le budget d'un groupe de groupeVoyage
+      tags:
+      - Groupe Voyage
+  /groupes/my_groups:
+    get:
+      consumes:
+      - application/json
+      description: Permet de voir le contenu du groupe de voyage pour celui qui l'a
+        créé mais également les membres du groupe
+      parameters:
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Voir un groupe de voyage
       tags:
       - Groupe Voyage
   /login:

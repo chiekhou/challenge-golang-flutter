@@ -46,4 +46,6 @@ func ActivityRoutes(r *gin.Engine) {
 	r.POST("/groupes/:group_id/join", middlewares.CheckAuth, groupVoyage.Join)
 	r.POST("/groupes/:group_id/send_invitation", middlewares.CheckAuth, groupVoyage.SendInvitation)
 	r.PUT("/groupes/:group_id/update_budget", middlewares.CheckAuth, groupVoyage.UpdateBudget)
+	r.GET("/groupes/my_groups", middlewares.CheckAuth, groupVoyage.GetMyGroups)
+	r.GET("/groupes/:group_id", middlewares.CheckAuth, groupVoyage.GetGroupById)
 }
