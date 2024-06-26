@@ -16,8 +16,8 @@ class VoyageList extends StatelessWidget {
         var voyage = voyages[i];
         return ListTile(
           title: Text(voyage.destination),
-          subtitle: voyage.date != null
-              ? Text(DateFormat("d/M/y").format(voyage.date!))
+          subtitle: voyage.dateAller != null
+              ? Text(DateFormat("d/M/y").format(voyage.dateAller!))
               : null,
           trailing: const Icon(Icons.info),
           onTap: () =>

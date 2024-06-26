@@ -13,9 +13,11 @@ import (
 func RegisterRoutes(r *gin.Engine) {
 	r.POST("/Signup", auth.Signup)
 	r.POST("/login", auth.Login)
-	//r.POST("/logout", auth.Logout)
+	r.POST("/logout", auth.Logout)
 	r.GET("/profile", middlewares.CheckAuth, auth.UserProfile)
 	r.POST("/forgotten_password", auth.MailRecovery)
+	r.PUT("/reset_password", auth.ResetPassword)
+	r.POST("/join_group", middlewares.CheckAuth, voyage.JoinGroup)
 }
 
 func VoyageRoutes(r *gin.Engine) {
@@ -23,7 +25,7 @@ func VoyageRoutes(r *gin.Engine) {
 	r.GET("/api/voyages/:id", voyage.GetVoyage)
 	r.POST("/api/voyages", voyage.CreateVoyage)
 	r.PUT("/api/voyages", voyage.UpdatePutVoyage)
-	r.PATCH("/api/voyages/update/:id", voyage.UpdateVoyage)
+	r.PUT("/api/voyages/hotel", voyage.UpdatePutVoyageHotel)
 	r.DELETE("/api/voyages/delete/:id", voyage.DeleteVoyage)
 }
 

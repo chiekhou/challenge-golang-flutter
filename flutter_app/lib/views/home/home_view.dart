@@ -7,7 +7,7 @@ import '../../widgets/app_loader.dart';
 import 'widgets/destination_card.dart';
 
 class HomeView extends StatefulWidget {
-  static const String routeName = '/';
+  static const String routeName = '/home';
 
   const HomeView({super.key});
 

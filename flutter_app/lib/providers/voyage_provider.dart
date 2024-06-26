@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_app/models/hotel_model.dart';
 import '../models/activity_model.dart';
 import '../models/voyage_model.dart';
 import 'package:http/http.dart' as http;
@@ -100,6 +101,29 @@ class VoyageProvider extends ChangeNotifier {
     }
   }
 
+
+  Future<void> updateVoyageHotel(Voyage voyage, int hotelId) async {
+    try {
+      Hotel hotel =
+      voyage.hotels.firstWhere((hotel) => hotel.id == hotelId);
+      hotel.status = HotelStatus.done;
+      http.Response response = await http.put(
+        Uri.http(host, '/api/voyages'),
+        body: json.encode(
+          voyage.toJson(),
+        ),
+        headers: {'Content-type': 'application/json'},
+      );
+      if (response.statusCode != 200) {
+        hotel.status = HotelStatus.ongoing;
+        throw const HttpException('error');
+      }
+      notifyListeners();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Voyage getById(int id) {
     return voyages.firstWhere((voyage) => voyage.id == id);
   }
@@ -108,5 +132,12 @@ class VoyageProvider extends ChangeNotifier {
     return getById(voyageId)
         .activities
         .firstWhere((activity) => activity.id == activityId);
+  }
+
+
+  Hotel getHotelByIds({required int hotelId, required int voyageId}) {
+    return getById(voyageId)
+        .hotels
+        .firstWhere((hotel) => hotel.id == hotelId);
   }
 }

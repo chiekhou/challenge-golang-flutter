@@ -1,3 +1,4 @@
+import 'package:flutter_app/models/hotel_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
@@ -49,6 +50,24 @@ Future<LocationActivity> getPlaceDetailsApi(String placeId) async {
     if (response.statusCode == 200) {
       var body = json.decode(response.body)['result'];
       return LocationActivity(
+        address: body['formatted_address'],
+        longitude: body['geometry']['location']['lng'],
+        latitude: body['geometry']['location']['lat'],
+      );
+    } else {
+      throw 'Erreur !';
+    }
+  } catch (e) {
+    rethrow;
+  }
+}
+
+Future<LocationHotel> getPlaceDetailsApiHotel(String placeId) async {
+  try {
+    var response = await http.get(_queryPlaceDetailsBuilder(placeId));
+    if (response.statusCode == 200) {
+      var body = json.decode(response.body)['result'];
+      return LocationHotel(
         address: body['formatted_address'],
         longitude: body['geometry']['location']['lng'],
         latitude: body['geometry']['location']['lat'],

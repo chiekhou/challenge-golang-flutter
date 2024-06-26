@@ -1,20 +1,27 @@
+import 'package:flutter_app/models/hotel_model.dart';
+import 'package:intl/intl.dart';
+
 import 'activity_model.dart';
 
 class Voyage {
   int? id;
   String destination;
   List<Activity> activities;
-  DateTime? date;
+  List<Hotel> hotels;
+  DateTime? dateAller;
+  DateTime? dateRetour;
   Voyage({
     required this.destination,
     required this.activities,
-    this.date,
+    required this.hotels,
+    this.dateAller,
+    this.dateRetour,
     this.id,
   });
 
   @override
   String toString() {
-    return 'Voyage{id: $id, destination: $destination, date: $date, activities: $activities}';
+    return 'Voyage{id: $id, destination: $destination, dateAller: $dateAller,dateRetour: $dateRetour, activities: $activities, hotels: $hotels}';
   }
 
   factory Voyage.fromJson(Map<String, dynamic> json) {
@@ -24,19 +31,31 @@ class Voyage {
             Activity.fromJson(activityJson as Map<String, dynamic>))
         .toList();
 
+    var hotelsFromJson = json['hotels'] as List;
+    List<Hotel> hotelList = hotelsFromJson
+        .map((hotelJson) =>
+        Hotel.fromJson(hotelJson as Map<String, dynamic>))
+        .toList();
+
     return Voyage(
       id: json['id'],
       activities: activityList,
-      date: DateTime.parse(json['date']),
+      hotels: hotelList,
+      dateAller: DateTime.parse(json['dateAller']),
+      dateRetour: DateTime.parse(json['dateRetour']),
       destination: json['destination'],
     );
   }
   Map<String, dynamic> toJson() {
-    final dateFormatted = date?.toIso8601String();
+    final DateFormat formatter = DateFormat("yyyy-MM-ddTHH:mm:ss'Z'");
+    final String? dateFormattedA = dateAller != null ? formatter.format(dateAller!) : null;
+    final String? dateFormattedR = dateRetour != null ? formatter.format(dateRetour!) : null;
     return {
       'id': id,
       'activities': activities.map((activity) => activity.toJson()).toList(),
-      'date': dateFormatted,
+      'hotels': hotels.map((hotel) => hotel.toJson()).toList(),
+      'dateAller': dateFormattedA,
+      'dateRetour': dateFormattedR,
       'destination': destination,
     };
   }

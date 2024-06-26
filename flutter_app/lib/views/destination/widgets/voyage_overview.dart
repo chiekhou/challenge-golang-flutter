@@ -4,7 +4,8 @@ import 'voyage_overview_destination.dart';
 import '../../../models/voyage_model.dart';
 
 class VoyageOverview extends StatelessWidget {
-  final VoidCallback setDate;
+  final VoidCallback setDateAller;
+  final VoidCallback setDateRetour;
   final Voyage voyage;
   final String destinationName;
   final String destinationImage;
@@ -12,7 +13,8 @@ class VoyageOverview extends StatelessWidget {
 
   const VoyageOverview({
     super.key,
-    required this.setDate,
+    required this.setDateAller,
+    required this.setDateRetour,
     required this.voyage,
     required this.destinationName,
     required this.amount,
@@ -38,16 +40,41 @@ class VoyageOverview extends StatelessWidget {
               children: <Widget>[
                 Expanded(
                   child: Text(
-                    voyage.date != null
-                        ? DateFormat("d/M/y").format(voyage.date!)
-                        : 'Choisissez une date',
+                    voyage.dateAller != null
+                        ? DateFormat("d/M/y").format(voyage.dateAller!)
+                        : 'Date aller',
                     style: const TextStyle(fontSize: 15),
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: setDate,
+                  onPressed: setDateAller,
                   child: const Text('Sélectionner une date'),
-                )
+                ),
+
+              ],
+            ),
+          ),
+
+          const SizedBox(
+            height: 30,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    voyage.dateRetour != null
+                        ? DateFormat("d/M/y").format(voyage.dateRetour!)
+                        : 'Date retour',
+                    style: const TextStyle(fontSize: 15),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: setDateRetour,
+                  child: const Text('Sélectionner une date'),
+                ),
+
               ],
             ),
           ),

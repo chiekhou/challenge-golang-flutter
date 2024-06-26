@@ -6,64 +6,60 @@ class ActivityCard extends StatelessWidget {
   final bool isSelected;
   final VoidCallback toggleActivity;
 
-  const ActivityCard({
-    super.key,
+
+  ActivityCard({
     required this.activity,
     required this.isSelected,
     required this.toggleActivity,
+
   });
+
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-        height: 150,
+    return GestureDetector(
+      onTap: toggleActivity,
+      child: Card(
         child: Stack(
-          fit: StackFit.expand,
-          children: <Widget>[
+          children: [
             Ink.image(
               image: NetworkImage(activity.image),
               fit: BoxFit.cover,
               child: InkWell(
-                onTap: toggleActivity,
+                onTap:  toggleActivity,
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                children: <Widget>[
-                  Expanded(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: <Widget>[
-                        if (isSelected)
-                          const Icon(
-                            Icons.check,
-                            size: 40,
-                            color: Colors.white,
-                          ),
-                      ],
-                    ),
+            if (isSelected)
+              Container(
+                color: Colors.black.withOpacity(0.5),
+                child: Center(
+                  child: Icon(
+                    Icons.check,
+                    color: Colors.white,
+                    size: 48.0,
                   ),
-                  Row(
-                    children: <Widget>[
-                      Flexible(
-                        child: FittedBox(
-                          child: Text(
-                            activity.name,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                ],
+                ),
               ),
-            )
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                color: Colors.black.withOpacity(0.7),
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  activity.name,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
           ],
-        ));
+        ),
+      ),
+    );
   }
 }

@@ -4,69 +4,13 @@ definitions:
       error:
         type: string
     type: object
-  auth.EmailRequest:
-    properties:
-      email:
-        type: string
-    required:
-    - email
-    type: object
-  auth.ErrorResponse:
-    properties:
-      error:
-        type: string
-    type: object
-  auth.LoginRequest:
-    properties:
-      email:
-        type: string
-      password:
-        type: string
-    required:
-    - email
-    - password
-    type: object
-  auth.MessageResponse:
-    properties:
-      message:
-        type: string
-    type: object
-  auth.SignupRequest:
-    properties:
-      address:
-        type: string
-      email:
-        type: string
-      first_name:
-        type: string
-      last_name:
-        type: string
-      password:
-        type: string
-      username:
-        type: string
-    required:
-    - address
-    - email
-    - first_name
-    - last_name
-    - password
-    - username
-    type: object
-  auth.TokenResponse:
-    properties:
-      token:
-        type: string
-    type: object
-  auth.UserResponse:
-    properties:
-      data:
-        $ref: '#/definitions/models.User'
-    type: object
   destinations.ErrorResponse:
     properties:
       error:
         type: string
+    type: object
+  gin.H:
+    additionalProperties: {}
     type: object
   models.Activity:
     properties:
@@ -96,6 +40,10 @@ definitions:
         items:
           $ref: '#/definitions/models.Activity'
         type: array
+      hotels:
+        items:
+          $ref: '#/definitions/models.Hotel'
+        type: array
       id:
         description: gorm.Model
         type: integer
@@ -104,42 +52,27 @@ definitions:
       name:
         type: string
     type: object
-  models.GroupeVoyage:
-    properties:
-      budget:
-        type: number
-      id:
-        description: gorm.Model
-        type: integer
-      roadmap:
-        type: string
-      user_id:
-        type: integer
-    type: object
-  models.User:
+  models.Hotel:
     properties:
       address:
         type: string
-      email:
+      destination:
         type: string
-      first_name:
-        type: string
-      group_voyage:
-        allOf:
-        - $ref: '#/definitions/models.GroupeVoyage'
-        description: Role        Role         `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET
-          NULL;" json:"role"`
       id:
         description: gorm.Model
         type: integer
-      last_name:
+      image:
         type: string
-      password:
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
         type: string
-      role_id:
+      price:
+        type: number
+      status:
         type: integer
-      username:
-        type: string
     type: object
   models.Voyage:
     properties:
@@ -147,13 +80,68 @@ definitions:
         items:
           $ref: '#/definitions/models.Activity'
         type: array
-      date:
+      dateAller:
+        type: string
+      dateRetour:
         type: string
       destination:
         type: string
+      hotels:
+        items:
+          $ref: '#/definitions/models.Hotel'
+        type: array
       id:
         description: gorm.Model
         type: integer
+    type: object
+  requests.EmailRequest:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  requests.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  requests.ResetPasswordRequest:
+    properties:
+      new_password:
+        type: string
+      token:
+        type: string
+    required:
+    - new_password
+    - token
+    type: object
+  requests.SignupRequest:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - address
+    - email
+    - first_name
+    - last_name
+    - password
+    - username
     type: object
   voyages.ErrorResponse:
     properties:
@@ -174,26 +162,30 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/auth.SignupRequest'
+          $ref: '#/definitions/requests.SignupRequest'
       produces:
       - application/json
       responses:
         "201":
           description: User created
           schema:
-            $ref: '#/definitions/auth.UserResponse'
+            $ref: '#/definitions/requests.SignupRequest'
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/auth.ErrorResponse'
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/auth.ErrorResponse'
+            $ref: '#/definitions/gin.H'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/auth.ErrorResponse'
+            $ref: '#/definitions/gin.H'
       summary: Allow you to register as a new User
       tags:
       - Auth
@@ -633,18 +625,13 @@ paths:
       summary: Delete a voyage
       tags:
       - Voyages
-  /api/voyages/update/{id}:
-    patch:
+  /api/voyages/hotel:
+    put:
       consumes:
       - application/json
-      description: Update by json destination
+      description: Update a trip by ID
       parameters:
-      - description: Voyage ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Update Voyage
+      - description: Voyage data
         in: body
         name: voyage
         required: true
@@ -669,78 +656,172 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
-      summary: Update a voyage
+      summary: Update a trip
       tags:
       - Voyages
   /forgotten_password:
     post:
       consumes:
       - application/json
-      description: Sends a password reset email
+      description: Envoie un mail de reset de mot de passe
       parameters:
       - description: User data
         in: body
         name: user
         required: true
         schema:
-          $ref: '#/definitions/auth.EmailRequest'
+          $ref: '#/definitions/requests.EmailRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: Email sent
+          description: Connexion réussie
           schema:
-            $ref: '#/definitions/auth.MessageResponse'
+            $ref: '#/definitions/gin.H'
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/auth.ErrorResponse'
+            $ref: '#/definitions/gin.H'
         "404":
-          description: User not found
+          description: Bad request
           schema:
-            $ref: '#/definitions/auth.ErrorResponse'
+            $ref: '#/definitions/gin.H'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gin.H'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-      summary: Send an email to an existing user to reset their password
+            $ref: '#/definitions/gin.H'
+      summary: Envoie un mail à un user existant afin de réinitialiser son mot de
+        passe
       tags:
       - Auth
+  /join_group:
+    post:
+      consumes:
+      - application/json
+      description: Envoie un mail d'invitation afin de de rejoindre un groupen de
+        voyage
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Invitation envoyée
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Rejoindre un groupe de voyage
+      tags:
+      - Voyages
   /login:
     post:
       consumes:
       - application/json
-      description: Login to the app
+      description: login to the app
       parameters:
       - description: User data
         in: body
         name: user
         required: true
         schema:
-          $ref: '#/definitions/auth.LoginRequest'
+          $ref: '#/definitions/requests.LoginRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: Successful login
+          description: Connexion réussie
           schema:
-            $ref: '#/definitions/auth.TokenResponse'
+            $ref: '#/definitions/gin.H'
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/auth.ErrorResponse'
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gin.H'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/auth.ErrorResponse'
-      summary: Allow you to log in and get a JWT Token
+            $ref: '#/definitions/gin.H'
+      summary: Allow you to log and have an JWT Token
+      tags:
+      - Auth
+  /logout:
+    post:
+      consumes:
+      - application/json
+      description: Delete your token session
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Déconnexion réussie
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Logout
       tags:
       - Auth
   /profile:
     get:
       consumes:
       - application/json
-      description: Returns the profile information of the logged-in user
+      description: Retourne les informations du profil de l'utilisateur connecté
       parameters:
       - default: Bearer <Add access token here>
         description: Insert your access token
@@ -754,14 +835,92 @@ paths:
         "200":
           description: Success
           schema:
-            $ref: '#/definitions/auth.UserResponse'
+            $ref: '#/definitions/gin.H'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/auth.ErrorResponse'
+            $ref: '#/definitions/gin.H'
       security:
       - Bearer: []
-      summary: Get the profile of the currently logged-in user
+      summary: Récupère le profil de l'utilisateur actuellement connecté
       tags:
       - Auth
+  /reset_password:
+    put:
+      consumes:
+      - application/json
+      description: Permet à l'utilisateur de réinitialiser son mot de passe en utilisant
+        un jeton de réinitialisation valide.
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Données pour réinitialiser le mot de passe
+        in: body
+        name: requests.ResetPasswordRequest
+        required: true
+        schema:
+          $ref: '#/definitions/requests.ResetPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Mot de passe réinitialisé avec succès
+        "400":
+          description: Token invalide ou expiré
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Erreur interne du serveur
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Réinitialiser le mot de passe
+      tags:
+      - Auth
+  /send_invitation:
+    post:
+      consumes:
+      - application/json
+      description: Envoie un mail d'invitation afin de de rejoindre un groupen de
+        voyage
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Invitation envoyée
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Invitation groupe de voyage
+      tags:
+      - Voyages
 swagger: "2.0"

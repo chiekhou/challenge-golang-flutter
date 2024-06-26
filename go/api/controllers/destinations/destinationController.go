@@ -40,7 +40,7 @@ type SuccessResponse struct {
 // @Router			/api/destinations [get]
 func GetDestinations(c *gin.Context) {
 	var destinations []models.Destination
-	result := initializers.DB.Preload("Activities").Find(&destinations)
+	result := initializers.DB.Preload("Activities").Preload("Hotels").Find(&destinations)
 
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: result.Error.Error()})
@@ -74,7 +74,7 @@ func GetDestination(c *gin.Context) {
 	}
 
 	var destination models.Destination
-	result := initializers.DB.Preload("Activities").First(&destination, id)
+	result := initializers.DB.Preload("Activities").Preload("Hotels").First(&destination, id)
 
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
@@ -144,7 +144,8 @@ func UpdateDestination(c *gin.Context) {
 		Name       string            `json:"name"`
 		Image      string            `json:"image"`
 		UserID     *uint             `json:"user_id"`
-		Activities []models.Activity `json:"activities"` // List of activity IDs
+		Activities []models.Activity `json:"activities"`
+		Hotels     []models.Hotel    `json:"hotels"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -153,7 +154,7 @@ func UpdateDestination(c *gin.Context) {
 	}
 
 	var destination models.Destination
-	if err := initializers.DB.Preload("Activities").First(&destination, c.Param("id")).Error; err != nil {
+	if err := initializers.DB.Preload("Activities").Preload("Hotels").First(&destination, c.Param("id")).Error; err != nil {
 		c.JSON(http.StatusNotFound, ErrorResponse{Error: "Destination not found"})
 		return
 	}
@@ -163,9 +164,15 @@ func UpdateDestination(c *gin.Context) {
 		initializers.DB.Where("id IN ?", input.Activities).Find(&activities)
 	}
 
+	var hotels []models.Hotel
+	if len(input.Hotels) > 0 {
+		initializers.DB.Where("id IN ?", input.Hotels).Find(&hotels)
+	}
+
 	destination.Name = input.Name
 	destination.Image = input.Image
 	destination.Activities = input.Activities
+	destination.Hotels = input.Hotels
 
 	if err := initializers.DB.Save(&destination).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
@@ -207,6 +214,12 @@ func DeleteDestination(c *gin.Context) {
 
 	// Supprimer les activités associées
 	if err := initializers.DB.Model(&destination).Association("Activities").Clear(); err != nil {
+		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	// Supprimer les hôtels associées
+	if err := initializers.DB.Model(&destination).Association("Hotels").Clear(); err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
 		return
 	}

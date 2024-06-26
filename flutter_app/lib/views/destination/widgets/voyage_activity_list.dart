@@ -13,14 +13,16 @@ class VoyageActivityList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      physics: NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
       itemBuilder: (context, index) {
-        var activity = activities[index];
+        var hotel = activities[index];
         return Card(
           child: ListTile(
             leading: CircleAvatar(
-              backgroundImage: NetworkImage(activity.image),
+              backgroundImage: NetworkImage(hotel.image),
             ),
-            title: Text(activity.name),
+            title: Text(hotel.name),
             trailing: IconButton(
               icon: const Icon(
                 Icons.delete,
@@ -32,7 +34,7 @@ class VoyageActivityList extends StatelessWidget {
                   ..removeCurrentSnackBar()
                   ..showSnackBar(
                     const SnackBar(
-                      content: Text('Activitée supprimée'),
+                      content: Text('Activitée supprimé'),
                       backgroundColor: Colors.red,
                       duration: Duration(seconds: 1),
                     ),
