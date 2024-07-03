@@ -43,7 +43,8 @@ func main() {
 		&models2.Voyage{},
 		&models2.VoyageActivity{},
 		&models2.Option{},
-		&models2.GroupMember{})
+		&models2.GroupMember{},
+		&models2.ChatMessage{})
 	if err != nil {
 		return
 	}

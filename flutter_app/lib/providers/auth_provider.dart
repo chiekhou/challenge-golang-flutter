@@ -16,7 +16,9 @@ class AuthProvider extends ChangeNotifier{
       String firstname,
       String lastname,
       String password,
-      String username)async{
+      String username,
+      String photo
+      )async{
     try{
       final response = await http.post(
         Uri.parse('http://$host:8080/Signup'),

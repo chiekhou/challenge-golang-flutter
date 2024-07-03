@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_input/image_input.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_app/providers/auth_provider.dart';
 
@@ -40,6 +41,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  ProfileAvatar(
+
+                  ),
                   Text('Nom: ${profileData['last_name']}', style: TextStyle(fontSize: 18)),
                   Text('Prénom: ${profileData['first_name']}', style: TextStyle(fontSize: 18)),
                   Text('Nom: ${profileData['last_name']}', style: TextStyle(fontSize: 18)),

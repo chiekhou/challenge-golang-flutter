@@ -1540,6 +1540,29 @@ const docTemplate = `{
                 }
             }
         },
+        "models.ChatMessage": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "created": {
+                    "type": "string"
+                },
+                "group_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "user": {
+                    "$ref": "#/definitions/models.User"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.Destination": {
             "type": "object",
             "properties": {
@@ -1566,6 +1589,12 @@ const docTemplate = `{
             "properties": {
                 "budget": {
                     "type": "number"
+                },
+                "chats": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ChatMessage"
+                    }
                 },
                 "id": {
                     "type": "integer"
@@ -1716,6 +1745,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                },
+                "photo": {
                     "type": "string"
                 },
                 "username": {

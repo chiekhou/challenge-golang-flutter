@@ -6,6 +6,7 @@ type SignupRequest struct {
 	LastName  string `form:"last_name" json:"last_name" binding:"required"`
 	Address   string `form:"address" json:"address" binding:"required"`
 	Email     string `form:"email" json:"email" binding:"required"`
+	Photo     string `form:"photo" json:"photo"`
 	Username  string `json:"username" binding:"required"`
 	Password  string `json:"password" binding:"required"`
 }

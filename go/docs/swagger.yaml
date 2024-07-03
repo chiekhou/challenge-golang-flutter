@@ -34,6 +34,21 @@ definitions:
       status:
         type: integer
     type: object
+  models.ChatMessage:
+    properties:
+      content:
+        type: string
+      created:
+        type: string
+      group_id:
+        type: integer
+      id:
+        type: integer
+      user:
+        $ref: '#/definitions/models.User'
+      user_id:
+        type: integer
+    type: object
   models.Destination:
     properties:
       activities:
@@ -52,6 +67,10 @@ definitions:
     properties:
       budget:
         type: number
+      chats:
+        items:
+          $ref: '#/definitions/models.ChatMessage'
+        type: array
       id:
         type: integer
       members:
@@ -145,6 +164,8 @@ definitions:
       last_name:
         type: string
       password:
+        type: string
+      photo:
         type: string
       username:
         type: string

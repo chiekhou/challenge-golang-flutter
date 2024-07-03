@@ -20,6 +20,7 @@ class RegisterForm extends StatefulWidget{
     String _address = "";
     String _email = '';
     String _password = "";
+    String _photo = "";
 
     void _submit() async {
       if (_formKey.currentState!.validate()) {
@@ -31,7 +32,9 @@ class RegisterForm extends StatefulWidget{
             _firstname,
             _lastname,
             _password,
-            _username);
+            _username,
+            _photo
+        );
         if (success) {
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (BuildContext context) => HomeView()));
