@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/models/hotel_model.dart';
 import 'package:flutter_app/providers/voyage_provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +19,7 @@ class _GoogleMapViewState extends State<GoogleMapView> {
   final bool _isLoaded = false;
   late GoogleMapController _controller;
   late Activity _activity;
+  late Hotel _hotel;
 
   @override
   void didChangeDependencies() {

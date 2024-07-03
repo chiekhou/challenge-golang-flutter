@@ -1,6 +1,8 @@
 package voyages
 
 import (
+	"example/hello/api/controllers/requests"
+	"example/hello/bin/utils"
 	"example/hello/internal/initializers"
 	"example/hello/internal/models"
 	"fmt"
@@ -39,7 +41,7 @@ type SuccessResponse struct {
 func GetVoyages(c *gin.Context) {
 
 	var voyages []models.Voyage
-	result := initializers.DB.Preload("Activities").Find(&voyages)
+	result := initializers.DB.Preload("Activities").Preload("Hotels").Find(&voyages)
 
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: result.Error.Error()})
@@ -51,7 +53,7 @@ func GetVoyages(c *gin.Context) {
 }
 
 // ShowVoyage godoc
-// @Summary      Show a groupeVoyage
+// @Summary      Show a voyage
 // @Description  get string by ID
 // @Tags         Voyages
 // @Accept       json
@@ -72,7 +74,7 @@ func GetVoyage(c *gin.Context) {
 	}
 
 	var voyage models.Voyage
-	result := initializers.DB.Preload("Activities").First(&voyage, id)
+	result := initializers.DB.Preload("Activities").Preload("Hotels").First(&voyage, id)
 
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
@@ -87,12 +89,12 @@ func GetVoyage(c *gin.Context) {
 }
 
 // AddVoyage godoc
-// @Summary     Add a groupeVoyage
-// @Description Add by JSON groupeVoyage
+// @Summary     Add a voyage
+// @Description Add by JSON voyage
 // @Tags        Voyages
 // @Accept      json
 // @Produce     json
-// @Param       groupeVoyage body models.Voyage true "Add groupeVoyage"
+// @Param       voyage body models.Voyage true "Add voyage"
 // @Success     200 {object} models.Voyage
 // @Failure     400 {object} ErrorResponse
 // @Failure     404 {object} ErrorResponse
@@ -102,8 +104,10 @@ func CreateVoyage(c *gin.Context) {
 
 	var input struct {
 		Destination string            `json:"destination"`
-		Date        time.Time         `json:"date"`
-		Activities  []models.Activity `json:"activities"` // List of activity IDs
+		DateAller        time.Time         `json:"dateAller"`
+		DateRetour        time.Time         `json:"dateRetour"`
+		Activities  []models.Activity `json:"activities"`
+		Hotels  []models.Hotel `json:"hotels"`
 	}
 
 	// Bind JSON input to the input struct
@@ -118,15 +122,22 @@ func CreateVoyage(c *gin.Context) {
 		initializers.DB.Where("id IN ?", input.Activities).Find(&activities)
 	}
 
+	var hotels []models.Hotel
+    	if len(input.Hotels) > 0 {
+    		initializers.DB.Where("id IN ?", input.Hotels).Find(&hotels)
+    	}
+
 	voyage := models.Voyage{
 		Destination: input.Destination,
-		Date:        input.Date,
+		DateAller:        input.DateAller,
+		DateRetour:        input.DateRetour,
 		Activities:  input.Activities,
+		Hotels:  input.Hotels,
 	}
 
 	if err := initializers.DB.Create(&voyage).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		fmt.Println("Erreur de création de groupeVoyage:", err.Error())
+		fmt.Println("Erreur de création de voyage:", err.Error())
 		return
 	}
 
@@ -135,61 +146,13 @@ func CreateVoyage(c *gin.Context) {
 
 }
 
-// UpdateVoyage godoc
-// @Summary		Update a groupeVoyage
-// @Description	Update by json destination
-// @Tags		Voyages
-// @Accept		json
-// @Produce		json
-// @Param       id path int true "Voyage ID"
-// @Param       groupeVoyage body models.Voyage true "Update Voyage"
-// @Success      200  {object}  models.Voyage
-// @Failure      400  {object}  ErrorResponse
-// @Failure      404  {object}  ErrorResponse
-// @Failure      500  {object}  ErrorResponse
-// @Router			/api/voyages/update/{id} [patch]
-func UpdateVoyage(c *gin.Context) {
-	var input struct {
-		Destination string            `json:"destination"`
-		Date        time.Time         `json:"date"`
-		Activities  []models.Activity `json:"activities"`
-	}
-
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	var voyage models.Voyage
-	if err := initializers.DB.Preload("Activities").First(&voyage, c.Param("id")).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Voyage not found"})
-		return
-	}
-
-	var activities []models.Activity
-	if len(input.Activities) > 0 {
-		initializers.DB.Where("id IN ?", input.Activities).Find(&activities)
-	}
-
-	voyage.Destination = input.Destination
-	voyage.Date = input.Date
-	voyage.Activities = input.Activities
-
-	if err := initializers.DB.Save(&voyage).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"data": voyage})
-}
-
 // updateVoyage with Put godoc
 // @Summary Update a trip
 // @Description Update a trip by ID
 // @Tags Voyages
 // @Accept json
 // @Produce json
-// @Param groupeVoyage body models.Voyage true "Voyage data"
+// @Param voyage body models.Voyage true "Voyage data"
 // @Success      200  {object}  models.Voyage
 // @Failure      400  {object}  ErrorResponse
 // @Failure      404  {object}  ErrorResponse
@@ -203,14 +166,16 @@ func UpdatePutVoyage(c *gin.Context) {
 	}
 
 	var voyage models.Voyage
-	if err := initializers.DB.Preload("Activities").First(&voyage, body.ID).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Trip not found"})
+	if err := initializers.DB.Preload("Activities").Preload("Hotels").First(&voyage, body.ID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Voyage not found"})
 		return
 	}
 
 	voyage.Destination = body.Destination
-	voyage.Date = body.Date
+	voyage.DateAller = body.DateAller
+	voyage.DateRetour = body.DateRetour
 	voyage.Activities = body.Activities
+	//voyage.Hotels = body.Hotels
 
 	if err := initializers.DB.Session(&gorm.Session{FullSaveAssociations: true}).Updates(&voyage).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -220,10 +185,49 @@ func UpdatePutVoyage(c *gin.Context) {
 	c.JSON(http.StatusOK, voyage)
 }
 
+// updateVoyageHotel with Put godoc
+// @Summary Update a trip
+// @Description Update a trip by ID
+// @Tags Voyages
+// @Accept json
+// @Produce json
+// @Param voyage body models.Voyage true "Voyage data"
+// @Success      200  {object}  models.Voyage
+// @Failure      400  {object}  ErrorResponse
+// @Failure      404  {object}  ErrorResponse
+// @Failure      500  {object}  ErrorResponse
+// @Router /api/voyages/hotel [put]
+func UpdatePutVoyageHotel(c *gin.Context) {
+	var body models.Voyage
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	var voyage models.Voyage
+	if err := initializers.DB.Preload("Activities").Preload("Hotels").First(&voyage, body.ID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Voyage not found"})
+		return
+	}
+
+	voyage.Destination = body.Destination
+	voyage.DateAller = body.DateAller
+	voyage.DateRetour = body.DateRetour
+	voyage.Activities = body.Activities
+	voyage.Hotels = body.Hotels
+
+	if err := initializers.DB.Session(&gorm.Session{FullSaveAssociations: true}).Updates(&voyage).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, voyage)
+}
+
+
 // DeleteVoyage godoc
 //
-//	@Summary		Delete a groupeVoyage
-//	@Description	Delete by groupeVoyage ID
+//	@Summary		Delete a voyage
+//	@Description	Delete by voyage ID
 //	@Tags			Voyages
 //	@Accept			json
 //	@Produce		json
@@ -255,6 +259,11 @@ func DeleteVoyage(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
 		return
 	}
+
+	if err := initializers.DB.Model(&voyage).Association("Hotels").Clear(); err != nil {
+    		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+    		return
+    	}
 
 	// Supprimer la destination
 	if err := initializers.DB.Delete(&voyage).Error; err != nil {

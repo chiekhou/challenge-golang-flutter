@@ -25,7 +25,7 @@ func VoyageRoutes(r *gin.Engine) {
 	r.GET("/api/voyages/:id", voyage.GetVoyage)
 	r.POST("/api/voyages", voyage.CreateVoyage)
 	r.PUT("/api/voyages", voyage.UpdatePutVoyage)
-	r.PATCH("/api/voyages/update/:id", voyage.UpdateVoyage)
+	r.PUT("/api/voyages/hotel", voyage.UpdatePutVoyageHotel)
 	r.DELETE("/api/voyages/delete/:id", voyage.DeleteVoyage)
 }
 

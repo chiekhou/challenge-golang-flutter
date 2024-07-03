@@ -37,13 +37,13 @@ class VoyagesView extends StatelessWidget {
                       VoyageList(
                         voyages: voyageProvider.voyages
                             .where((voyage) =>
-                                DateTime.now().isBefore(voyage.date!))
+                                DateTime.now().isBefore(voyage.dateAller!))
                             .toList(),
                       ),
                       VoyageList(
                         voyages: voyageProvider.voyages
                             .where((voyage) =>
-                                DateTime.now().isAfter(voyage.date!))
+                                DateTime.now().isAfter(voyage.dateRetour!))
                             .toList(),
                       ),
                     ],

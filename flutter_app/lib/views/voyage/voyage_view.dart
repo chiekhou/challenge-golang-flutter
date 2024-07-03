@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/views/voyage/widgets/voyage_weather.dart.dart';
 import 'package:provider/provider.dart';
 import '../../providers/destination_provider.dart';
-import 'widgets/voyage_activities.dart';
+import 'widgets/voyage_activities_hotels.dart';
 import 'widgets/voyage_destination_bar.dart';
 import '../../models/destination_model.dart';
 
@@ -66,7 +66,7 @@ class VoyageView extends StatelessWidget {
               destination: destination,
             ),
             VoyageWeather(destinationName: destinationName),
-            VoyageActivities(voyageId: voyageId),
+            VoyageActivitiesHotels(voyageId: voyageId),
           ],
         ),
       ),

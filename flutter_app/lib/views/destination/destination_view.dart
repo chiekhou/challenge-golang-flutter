@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/models/hotel_model.dart';
 import 'package:flutter_app/views/activity_fom/activity_form_view.dart';
+import 'package:flutter_app/views/destination/widgets/hotel_list.dart';
+import 'package:flutter_app/views/destination/widgets/voyage_activity_hotel.dart';
+import 'package:flutter_app/views/destination/widgets/voyage_hotel_list.dart';
 import 'package:flutter_app/widgets/app_drawer.dart';
 import 'package:provider/provider.dart';
 import '../../models/destination_model.dart';
@@ -32,32 +36,65 @@ class _DestinationState extends State<DestinationView> {
     index = 0;
     myvoyage = Voyage(
       activities: [],
-      date: null,
+      hotels: [],
+      dateAller: null,
+      dateRetour: null,
       destination: '',
     );
   }
 
   double get amount {
-    return myvoyage.activities.fold(0.0, (prev, element) {
+    final activityTotal = myvoyage.activities.fold(0.0, (prev, element) {
       return prev + element.price;
     });
+    final hotelTotal = myvoyage.hotels.fold(0.0, (prev, element) {
+      return prev + element.price;
+    });
+    final totalAmount = activityTotal + hotelTotal;
+    return double.parse(totalAmount.toStringAsFixed(2));
   }
 
-  void setDate() {
+
+  void setDateAller() {
     showDatePicker(
       context: context,
-      initialDate: DateTime.now().add(const Duration(days: 1)).toUtc(),
-      firstDate: DateTime.now().toUtc(),
+      initialDate: DateTime.now().add(const Duration(days: 1)),
+      firstDate: DateTime.now(),
       lastDate: DateTime(2030),
     ).then((newDate) {
       if (newDate != null) {
         setState(() {
-          myvoyage.date = newDate.toUtc();
+          myvoyage.dateAller = newDate;
+          myvoyage.dateRetour = null; // Reset the return date if the departure date is changed
         });
       }
     });
   }
 
+  void setDateRetour() {
+    if (myvoyage.dateAller == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Veuillez d\'abord sélectionner une date aller'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    showDatePicker(
+      context: context,
+      initialDate: myvoyage.dateAller!.add(const Duration(days: 1)),
+      firstDate: myvoyage.dateAller!.add(const Duration(days: 1)),
+      lastDate: DateTime(2030),
+    ).then((newDate) {
+      if (newDate != null) {
+        setState(() {
+          myvoyage.dateRetour = newDate;
+        });
+      }
+    });
+  }
   void switchIndex(newIndex) {
     setState(() {
       index = newIndex;
@@ -75,6 +112,21 @@ class _DestinationState extends State<DestinationView> {
   void deleteVoyageActivity(Activity activity) {
     setState(() {
       myvoyage.activities.remove(activity);
+    });
+  }
+
+
+  void toggleHotel(Hotel hotel) {
+    setState(() {
+      myvoyage.hotels.contains(hotel)
+          ? myvoyage.hotels.remove(hotel)
+          : myvoyage.hotels.add(hotel);
+    });
+  }
+
+  void deleteVoyageHotel(Hotel hotel) {
+    setState(() {
+      myvoyage.hotels.remove(hotel);
     });
   }
 
@@ -118,7 +170,7 @@ class _DestinationState extends State<DestinationView> {
 
     print('Résultat de la boîte de dialogue: $result');
 
-    if (myvoyage.date == null) {
+    if (myvoyage.dateAller == null || myvoyage.dateRetour == null) {
       print('Date du voyage non définie');
       if (mounted) {
         showDialog(
@@ -148,8 +200,19 @@ class _DestinationState extends State<DestinationView> {
 
   @override
   Widget build(BuildContext context) {
-    String destinationName =
-        ModalRoute.of(context)!.settings.arguments as String;
+    final routeArgs = ModalRoute.of(context)?.settings.arguments;
+    if (routeArgs == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Erreur'),
+        ),
+        body: const Center(
+          child: Text('Aucune destination fournie.'),
+        ),
+      );
+    }
+
+    String destinationName = routeArgs as String;
     Destination destination = Provider.of<DestinationProvider>(context)
         .getDestinationByName(destinationName);
 
@@ -172,28 +235,41 @@ class _DestinationState extends State<DestinationView> {
         children: <Widget>[
           VoyageOverview(
             destinationName: destination.name,
-            voyage: myvoyage,
-            setDate: setDate,
-            amount: amount,
             destinationImage: destination.image,
+            voyage: myvoyage,
+            setDateAller: setDateAller,
+            setDateRetour: setDateRetour,
+            amount: amount,
           ),
           Expanded(
             child: index == 0
-                ? ActivityList(
-                    activities: destination.activities,
-                    selectedActivities: myvoyage.activities,
-                    toggleActivity: toggleActivity,
-                  )
-                : VoyageActivityList(
-                    activities: myvoyage.activities,
-                    deleteVoyageActivity: deleteVoyageActivity,
-                  ),
+                ? VoyageActivityHotelList(
+              activities: destination.activities,
+              selectedActivities: myvoyage.activities,
+              toggleActivity: toggleActivity,
+              hotels: destination.hotels,
+              selectedHotels: myvoyage.hotels,
+              toggleHotel: toggleHotel,
+            )
+                : index == 1
+                ? VoyageActivityList(
+              activities: myvoyage.activities,
+              deleteVoyageActivity: deleteVoyageActivity,
+
+            )
+                : index == 2
+                ? VoyageHotelList(
+              hotels: myvoyage.hotels,
+              deleteVoyageHotel: deleteVoyageHotel,
+            )
+            :
+            Container(),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.forward),
-        onPressed: () => saveVoyage(destination.name),
+        onPressed: () => saveVoyage(destinationName),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: index,
@@ -205,10 +281,20 @@ class _DestinationState extends State<DestinationView> {
           BottomNavigationBarItem(
             icon: Icon(Icons.stars),
             label: 'Mes activités',
-          )
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.hotel),
+            label: 'Mes hôtels',
+          ),
         ],
         onTap: switchIndex,
       ),
     );
   }
 }
+
+
+
+
+
+
