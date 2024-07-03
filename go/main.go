@@ -30,6 +30,7 @@ func main() {
 	routes.VoyageRoutes(server)
 	routes.DestinationRoutes(server)
 	routes.ActivityRoutes(server)
+	routes.FlippingRoutes(server)
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	err := server.Run(":8080")
 	if err != nil {

@@ -5,6 +5,7 @@ import '../../models/destination_model.dart';
 import '../../widgets/app_drawer.dart';
 import '../../widgets/app_loader.dart';
 import 'widgets/destination_card.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomeView extends StatefulWidget {
   static const String routeName = '/home';
@@ -42,7 +43,7 @@ class _HomeState extends State<HomeView> {
         destinationProvider.getFilteredDestinations(searchController.text);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('esgivoyage'),
+        title: Text(AppLocalizations.of(context)!.title_home),
       ),
       drawer: const AppDrawer(),
       body: Column(
@@ -55,9 +56,9 @@ class _HomeState extends State<HomeView> {
                 Expanded(
                   child: TextField(
                     controller: searchController,
-                    decoration: const InputDecoration(
-                      hintText: 'Rechercher une ville',
-                      prefixIcon: Icon(
+                    decoration: InputDecoration(
+                      hintText: AppLocalizations.of(context)!.recherche_ville,
+                      prefixIcon: const Icon(
                         Icons.search,
                       ),
                     ),
@@ -87,7 +88,7 @@ class _HomeState extends State<HomeView> {
                               destination: filteredDestinations[i],
                             ),
                           )
-                        : const Text('Aucun résultat'),
+                        : Text(AppLocalizations.of(context)!.resultat),
               ),
             ),
           ),

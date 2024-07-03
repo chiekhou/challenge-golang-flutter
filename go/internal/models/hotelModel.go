@@ -2,7 +2,7 @@ package models
 
 type Hotel struct {
 	//gorm.Model
-	ID        uint       `gorm:"primary_key; not null" json:"id"`
+	ID          uint       `gorm:"primary_key; not null" json:"id"`
 	Name        string  `gorm:"size:255; not null" json:"name"`
 	Destination string  `gorm:"size:64; not null" json:"destination"`
 	Price       float64 `gorm:"null" json:"price"`

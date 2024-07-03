@@ -3,6 +3,7 @@ package routes
 import (
 	"example/hello/api/controllers/activity"
 	"example/hello/api/controllers/auth"
+    flipping "example/hello/api/controllers/flipping"
 	"example/hello/api/controllers/destinations"
 	voyage "example/hello/api/controllers/voyages"
 	"example/hello/api/middlewares"
@@ -43,3 +44,10 @@ func DestinationRoutes(r *gin.Engine) {
 func ActivityRoutes(r *gin.Engine) {
 	r.POST("/api/activity/images", activity.UploadImage)
 }
+
+func FlippingRoutes(r *gin.Engine) {
+	r.GET("/api/flipping/feature", flipping.GetFeatureToggle)
+	r.PUT("/api/flipping/feature", flipping.UpdateFeatureToggle)
+
+}
+

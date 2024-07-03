@@ -6,6 +6,7 @@ import '../../../models/activity_model.dart';
 import '../../../models/voyage_model.dart';
 import '../../../providers/voyage_provider.dart';
 import '../../google_map/google_map_view.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class VoyageActivityHotelList extends StatelessWidget {
   final int voyageId;
@@ -31,13 +32,13 @@ class VoyageActivityHotelList extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (filter == ActivityStatus.done && activities.isEmpty && hotels.isEmpty)
+              if (filter == ActivityStatus.done && activities.isEmpty && filterh == HotelStatus.done && hotels.isEmpty)
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Center(
                     child: Text(
-                      'Aucun voyage n\'est encore terminé',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                      AppLocalizations.of(context)!.statut_voyage,
+                      style: const TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                   ),
                 ),
@@ -45,13 +46,13 @@ class VoyageActivityHotelList extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'Liste des Activités',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    AppLocalizations.of(context)!.title_activities,
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ),
                 ListView.builder(
                   shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: const  NeverScrollableScrollPhysics(),
                   itemCount: activities.length,
                   itemBuilder: (context, i) {
                     Activity activity = activities[i];
@@ -112,13 +113,13 @@ class VoyageActivityHotelList extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'Liste des Hôtels',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    AppLocalizations.of(context)!.title_hotels,
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ),
                 ListView.builder(
                   shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   itemCount: hotels.length,
                   itemBuilder: (context, i) {
                     Hotel hotel = hotels[i];

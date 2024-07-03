@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/hotel_model.dart';
 import 'package:flutter_app/views/destination/widgets/hotel_card.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 class HotelList extends StatelessWidget {
@@ -25,7 +26,7 @@ class HotelList extends StatelessWidget {
           padding: EdgeInsets.all(8.0),
           color: Colors.grey[300],
           child: Text(
-            'Liste des Hôtels',
+            AppLocalizations.of(context)!.title_hotels,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,

@@ -103,6 +103,15 @@ func GetVoyage(c *gin.Context) {
 // @Router      /api/voyages [post]
 func CreateVoyage(c *gin.Context) {
 
+var featureToggles = map[string]bool{
+    "active_voyage": true,
+}
+	enabled, exists := featureToggles["active_voyage"]
+	if !exists || !enabled {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Vous ne pouvez pas créer un voyage"})
+		return
+	}
+
 	var input struct {
 		Destination string            `json:"destination"`
 		DateAller        time.Time         `json:"dateAller"`
@@ -118,15 +127,6 @@ func CreateVoyage(c *gin.Context) {
 		return
 	}
 
-	var activities []models.Activity
-	if len(input.Activities) > 0 {
-		initializers.DB.Where("id IN ?", input.Activities).Find(&activities)
-	}
-
-	var hotels []models.Hotel
-    	if len(input.Hotels) > 0 {
-    		initializers.DB.Where("id IN ?", input.Hotels).Find(&hotels)
-    	}
 
 	voyage := models.Voyage{
 		Destination: input.Destination,

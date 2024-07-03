@@ -139,13 +139,13 @@ func main() {
        				{Image: "http://10.0.2.2:8080/images/activities/saint-marc.jpeg", Name: "Saint-Marc", Destination: "Venise", Price: 10.4, Address: "Venise", Longitude:41.9028 ,Latitude:12.4964},
        				{Image: "http://10.0.2.2:8080/images/activities/palais-doges-venise.jpeg", Name: "Palais Doges", Destination: "Venise", Price: 9.5, Address: "Venise",Longitude:41.9028 ,Latitude:12.4964},
        				{Image: "http://10.0.2.2:8080/images/activities/grand-canal-venise.jpeg", Name: "Grand Canal", Destination: "Venise", Price: 10.2, Address: "Venise",Longitude:41.9028 ,Latitude:12.4964},
-       				{Image: "http://10.0.2.2:8080/images/activities/excusrion-murano.jpeg", Name: "Excursion Murano", Destination: "Venise", Price: 30.2, Address: "Venise",Longitude:41.9028 ,Latitude:12.4964},
+       				{Image: "http://10.0.2.2:8080/images/activities/excursion-murano.jpeg", Name: "Excursion Murano", Destination: "Venise", Price: 30.2, Address: "Venise",Longitude:41.9028 ,Latitude:12.4964},
        			},
        			Hotels: []models2.Hotel{
                     {Image: "http://10.0.2.2:8080/images/hotels/cappellis-venise.jpeg", Name: "Cappellis", Destination: "Venise", Price: 60.4, Address: "Venise", Longitude:41.9028 ,Latitude:12.4964},
                      {Image: "http://10.0.2.2:8080/images/hotels/palazzinafortuny-venise.jpeg", Name: "Palazzina ", Destination: "Venise", Price: 69.5, Address: "Venise",Longitude:41.9028 ,Latitude:12.4964},
                      {Image: "http://10.0.2.2:8080/images/hotels/palazzocanova-venise.jpeg", Name: "Palazzo Canova", Destination: "Venise", Price: 50.2, Address: "Venise",Longitude:41.9028 ,Latitude:12.4964},
-                     {Image: "http://10.0.2.2:8080/images/hotels/salutepalace.jpeg", Name: "Salute Palace", Destination: "Venise", Price: 30.2, Address: "Venise",Longitude:41.9028 ,Latitude:12.4964},
+                     {Image: "http://10.0.2.2:8080/images/hotels/salutepalace-venise.jpeg", Name: "Salute Palace", Destination: "Venise", Price: 30.2, Address: "Venise",Longitude:41.9028 ,Latitude:12.4964},
                        			},
        		},
        		{

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../models/activity_model.dart';
 import 'activity_card.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ActivityList extends StatelessWidget {
   final List<Activity> activities;
@@ -24,7 +25,7 @@ class ActivityList extends StatelessWidget {
           padding: EdgeInsets.all(8.0),
           color: Colors.grey[300],
           child: Text(
-            'Liste des Activités',
+            AppLocalizations.of(context)!.title_activities,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,

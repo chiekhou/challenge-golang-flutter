@@ -43,10 +43,10 @@ class Hotel {
       'name': name,
       'image': image,
       'price': price,
-  'address': location?.address,
-  'longitude': location?.longitude,
-  'latitude': location?.latitude,
-  'status': status == HotelStatus.ongoing ? 0 : 1
+      'address': location?.address,
+      'longitude': location?.longitude,
+      'latitude': location?.latitude,
+      'status': status == HotelStatus.ongoing ? 0 : 1
     };
     value['id'] = id;
     return value;

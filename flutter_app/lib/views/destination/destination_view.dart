@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/hotel_model.dart';
+import 'package:flutter_app/providers/flipping_provider.dart';
 import 'package:flutter_app/views/activity_fom/activity_form_view.dart';
-import 'package:flutter_app/views/destination/widgets/hotel_list.dart';
 import 'package:flutter_app/views/destination/widgets/voyage_activity_hotel.dart';
 import 'package:flutter_app/views/destination/widgets/voyage_hotel_list.dart';
 import 'package:flutter_app/widgets/app_drawer.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../../models/destination_model.dart';
 import '../../models/activity_model.dart';
@@ -13,7 +14,6 @@ import '../../providers/destination_provider.dart';
 import '../../providers/voyage_provider.dart';
 import '../home/home_view.dart';
 import 'widgets/voyage_activity_list.dart';
-import 'widgets/activity_list.dart';
 import 'widgets/voyage_overview.dart';
 
 class DestinationView extends StatefulWidget {
@@ -28,6 +28,7 @@ class DestinationView extends StatefulWidget {
 class _DestinationState extends State<DestinationView> {
   late Voyage myvoyage;
   late int index;
+
 
   @override
   void initState() {
@@ -71,11 +72,13 @@ class _DestinationState extends State<DestinationView> {
     });
   }
 
+
+
   void setDateRetour() {
     if (myvoyage.dateAller == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Veuillez d\'abord sélectionner une date aller'),
+          content: Text(AppLocalizations.of(context)!.alert_date),
           backgroundColor: Colors.red,
         ),
       );
@@ -131,18 +134,30 @@ class _DestinationState extends State<DestinationView> {
   }
 
   void saveVoyage(String destinationName) async {
+
+    try {
+      // Fetch feature toggles from backend
+      FlippingToggle featureToggle = await fetchFeatureToggles();
+
+      // Check if the feature is enabled
+      if (!featureToggle.enabled) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.alert_function_flipping)),
+        );
+        return;
+      }
     final result = await showDialog(
       context: context,
       builder: (context) {
         return SimpleDialog(
-          title: const Text('Voulez-vous sauvegarder ?'),
+          title: Text(AppLocalizations.of(context)!.sauvegarde_voyage),
           contentPadding: const EdgeInsets.all(20),
           children: <Widget>[
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
                 ElevatedButton(
-                  child: const Text('Annuler'),
+                  child: Text(AppLocalizations.of(context)!.annulation_voyage),
                   onPressed: () {
                     Navigator.pop(context, 'cancel');
                   },
@@ -156,9 +171,9 @@ class _DestinationState extends State<DestinationView> {
                   onPressed: () {
                     Navigator.pop(context, 'save');
                   },
-                  child: const Text(
-                    'Sauvegarder',
-                    style: TextStyle(color: Colors.white),
+                  child: Text(
+                    AppLocalizations.of(context)!.sauvegarde,
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
               ],
@@ -176,8 +191,8 @@ class _DestinationState extends State<DestinationView> {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Attention !'),
-            content: const Text('Vous n\'avez pas entré de date'),
+            title: Text(AppLocalizations.of(context)!.attention),
+            content: Text(AppLocalizations.of(context)!.attention_content),
             actions: <Widget>[
               TextButton(
                 child: const Text('Ok'),
@@ -196,6 +211,12 @@ class _DestinationState extends State<DestinationView> {
         Navigator.pushNamed(context, HomeView.routeName);
       }
     }
+    } catch (e) {
+      print('Exception lors de la sauvegarde du voyage: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+         SnackBar(content: Text(AppLocalizations.of(context)!.erreur_sauvegarde)),
+      );
+    }
   }
 
   @override
@@ -204,10 +225,10 @@ class _DestinationState extends State<DestinationView> {
     if (routeArgs == null) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Erreur'),
+          title: Text(AppLocalizations.of(context)!.erreur),
         ),
-        body: const Center(
-          child: Text('Aucune destination fournie.'),
+        body: Center(
+          child: Text(AppLocalizations.of(context)!.empty_destination),
         ),
       );
     }
@@ -218,7 +239,7 @@ class _DestinationState extends State<DestinationView> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Organisation voyage'),
+        title: Text(AppLocalizations.of(context)!.organisation_titre),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.add),
@@ -273,18 +294,18 @@ class _DestinationState extends State<DestinationView> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: index,
-        items: const [
+        items:  [
           BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Découverte',
+            icon: const Icon(Icons.map),
+            label: AppLocalizations.of(context)!.label_decouverte,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.stars),
-            label: 'Mes activités',
+            icon: const Icon(Icons.stars),
+            label: AppLocalizations.of(context)!.label_activites,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.hotel),
-            label: 'Mes hôtels',
+            icon: const Icon(Icons.hotel),
+            label: AppLocalizations.of(context)!.label_hotels,
           ),
         ],
         onTap: switchIndex,

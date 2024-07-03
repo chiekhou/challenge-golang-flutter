@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/hotel_model.dart';
-import '../../../models/activity_model.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class VoyageHotelList extends StatelessWidget {
   final List<Hotel> hotels;
@@ -15,7 +15,7 @@ class VoyageHotelList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       itemBuilder: (context, index) {
         var hotel = hotels[index];
@@ -35,10 +35,10 @@ class VoyageHotelList extends StatelessWidget {
                 ScaffoldMessenger.of(context)
                   ..removeCurrentSnackBar()
                   ..showSnackBar(
-                    const SnackBar(
-                      content: Text('Hôtel supprimé'),
+                    SnackBar(
+                      content: Text(AppLocalizations.of(context)!.delete_hotel),
                       backgroundColor: Colors.red,
-                      duration: Duration(seconds: 1),
+                      duration: const Duration(seconds: 1),
                     ),
                   );
               },
