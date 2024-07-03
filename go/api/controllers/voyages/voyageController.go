@@ -1,8 +1,8 @@
 package voyages
 
 import (
-	"example/hello/api/controllers/requests"
-	"example/hello/bin/utils"
+	//"example/hello/api/controllers/requests"
+	//"example/hello/bin/utils"
 	"example/hello/internal/initializers"
 	"example/hello/internal/models"
 	"fmt"
@@ -104,10 +104,10 @@ func CreateVoyage(c *gin.Context) {
 
 	var input struct {
 		Destination string            `json:"destination"`
-		DateAller        time.Time         `json:"dateAller"`
-		DateRetour        time.Time         `json:"dateRetour"`
+		DateAller   time.Time         `json:"dateAller"`
+		DateRetour  time.Time         `json:"dateRetour"`
 		Activities  []models.Activity `json:"activities"`
-		Hotels  []models.Hotel `json:"hotels"`
+		Hotels      []models.Hotel    `json:"hotels"`
 	}
 
 	// Bind JSON input to the input struct
@@ -123,16 +123,16 @@ func CreateVoyage(c *gin.Context) {
 	}
 
 	var hotels []models.Hotel
-    	if len(input.Hotels) > 0 {
-    		initializers.DB.Where("id IN ?", input.Hotels).Find(&hotels)
-    	}
+	if len(input.Hotels) > 0 {
+		initializers.DB.Where("id IN ?", input.Hotels).Find(&hotels)
+	}
 
 	voyage := models.Voyage{
 		Destination: input.Destination,
-		DateAller:        input.DateAller,
-		DateRetour:        input.DateRetour,
+		DateAller:   input.DateAller,
+		DateRetour:  input.DateRetour,
 		Activities:  input.Activities,
-		Hotels:  input.Hotels,
+		Hotels:      input.Hotels,
 	}
 
 	if err := initializers.DB.Create(&voyage).Error; err != nil {
@@ -223,7 +223,6 @@ func UpdatePutVoyageHotel(c *gin.Context) {
 	c.JSON(http.StatusOK, voyage)
 }
 
-
 // DeleteVoyage godoc
 //
 //	@Summary		Delete a voyage
@@ -261,9 +260,9 @@ func DeleteVoyage(c *gin.Context) {
 	}
 
 	if err := initializers.DB.Model(&voyage).Association("Hotels").Clear(); err != nil {
-    		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
-    		return
-    	}
+		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		return
+	}
 
 	// Supprimer la destination
 	if err := initializers.DB.Delete(&voyage).Error; err != nil {

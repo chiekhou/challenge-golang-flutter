@@ -55,6 +55,10 @@ definitions:
         items:
           $ref: '#/definitions/models.Activity'
         type: array
+      hotels:
+        items:
+          $ref: '#/definitions/models.Hotel'
+        type: array
       id:
         description: gorm.Model
         type: integer
@@ -80,6 +84,28 @@ definitions:
       nom:
         type: string
       user_id:
+        type: integer
+    type: object
+  models.Hotel:
+    properties:
+      address:
+        type: string
+      destination:
+        type: string
+      id:
+        description: gorm.Model
+        type: integer
+      image:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      price:
+        type: number
+      status:
         type: integer
     type: object
   models.User:
@@ -114,10 +140,16 @@ definitions:
         items:
           $ref: '#/definitions/models.Activity'
         type: array
-      date:
+      dateAller:
+        type: string
+      dateRetour:
         type: string
       destination:
         type: string
+      hotels:
+        items:
+          $ref: '#/definitions/models.Hotel'
+        type: array
       id:
         description: gorm.Model
         type: integer
@@ -534,11 +566,11 @@ paths:
     post:
       consumes:
       - application/json
-      description: Add by JSON groupeVoyage
+      description: Add by JSON voyage
       parameters:
-      - description: Add groupeVoyage
+      - description: Add voyage
         in: body
-        name: groupeVoyage
+        name: voyage
         required: true
         schema:
           $ref: '#/definitions/models.Voyage'
@@ -561,7 +593,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
-      summary: Add a groupeVoyage
+      summary: Add a voyage
       tags:
       - Voyages
     put:
@@ -571,7 +603,7 @@ paths:
       parameters:
       - description: Voyage data
         in: body
-        name: groupeVoyage
+        name: voyage
         required: true
         schema:
           $ref: '#/definitions/models.Voyage'
@@ -627,14 +659,14 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
-      summary: Show a groupeVoyage
+      summary: Show a voyage
       tags:
       - Voyages
   /api/voyages/delete/{id}:
     delete:
       consumes:
       - application/json
-      description: Delete by groupeVoyage ID
+      description: Delete by voyage ID
       parameters:
       - description: Voyage ID
         format: int64
@@ -661,23 +693,18 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
-      summary: Delete a groupeVoyage
+      summary: Delete a voyage
       tags:
       - Voyages
-  /api/voyages/update/{id}:
-    patch:
+  /api/voyages/hotel:
+    put:
       consumes:
       - application/json
-      description: Update by json destination
+      description: Update a trip by ID
       parameters:
-      - description: Voyage ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Update Voyage
+      - description: Voyage data
         in: body
-        name: groupeVoyage
+        name: voyage
         required: true
         schema:
           $ref: '#/definitions/models.Voyage'
@@ -700,7 +727,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
-      summary: Update a groupeVoyage
+      summary: Update a trip
       tags:
       - Voyages
   /create_group:

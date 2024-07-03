@@ -545,7 +545,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Voyage data",
-                        "name": "groupeVoyage",
+                        "name": "voyage",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -581,7 +581,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Add by JSON groupeVoyage",
+                "description": "Add by JSON voyage",
                 "consumes": [
                     "application/json"
                 ],
@@ -591,11 +591,11 @@ const docTemplate = `{
                 "tags": [
                     "Voyages"
                 ],
-                "summary": "Add a groupeVoyage",
+                "summary": "Add a voyage",
                 "parameters": [
                     {
-                        "description": "Add groupeVoyage",
-                        "name": "groupeVoyage",
+                        "description": "Add voyage",
+                        "name": "voyage",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -633,7 +633,7 @@ const docTemplate = `{
         },
         "/api/voyages/delete/{id}": {
             "delete": {
-                "description": "Delete by groupeVoyage ID",
+                "description": "Delete by voyage ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -643,7 +643,7 @@ const docTemplate = `{
                 "tags": [
                     "Voyages"
                 ],
-                "summary": "Delete a groupeVoyage",
+                "summary": "Delete a voyage",
                 "parameters": [
                     {
                         "type": "integer",
@@ -682,9 +682,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/voyages/update/{id}": {
-            "patch": {
-                "description": "Update by json destination",
+        "/api/voyages/hotel": {
+            "put": {
+                "description": "Update a trip by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -694,18 +694,11 @@ const docTemplate = `{
                 "tags": [
                     "Voyages"
                 ],
-                "summary": "Update a groupeVoyage",
+                "summary": "Update a trip",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "Voyage ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Update Voyage",
-                        "name": "groupeVoyage",
+                        "description": "Voyage data",
+                        "name": "voyage",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -753,7 +746,7 @@ const docTemplate = `{
                 "tags": [
                     "Voyages"
                 ],
-                "summary": "Show a groupeVoyage",
+                "summary": "Show a voyage",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1572,6 +1565,12 @@ const docTemplate = `{
                         "$ref": "#/definitions/models.Activity"
                     }
                 },
+                "hotels": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Hotel"
+                    }
+                },
                 "id": {
                     "description": "gorm.Model",
                     "type": "integer"
@@ -1609,6 +1608,39 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Hotel": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "destination": {
+                    "type": "string"
+                },
+                "id": {
+                    "description": "gorm.Model",
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "status": {
                     "type": "integer"
                 }
             }
@@ -1661,11 +1693,20 @@ const docTemplate = `{
                         "$ref": "#/definitions/models.Activity"
                     }
                 },
-                "date": {
+                "dateAller": {
+                    "type": "string"
+                },
+                "dateRetour": {
                     "type": "string"
                 },
                 "destination": {
                     "type": "string"
+                },
+                "hotels": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Hotel"
+                    }
                 },
                 "id": {
                     "description": "gorm.Model",
