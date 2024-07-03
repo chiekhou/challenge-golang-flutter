@@ -67,7 +67,6 @@ class _AppVoyageState extends State<MyApp> {
           HomeView.routeName: (_) => const HomeView(),
           GoogleMapView.routeName: (_) => const GoogleMapView(),
           GoogleMapViewHotel.routeName: (_) => const GoogleMapViewHotel(),
-          ActivityFormView.routeName: (_) => const ActivityFormView()
         },
         onUnknownRoute: (_) => MaterialPageRoute(
           builder: (_) => const NotFound(),
