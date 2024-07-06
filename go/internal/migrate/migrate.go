@@ -15,49 +15,48 @@ func main() {
 	//Drop la BDD afin de faire de nouvelle migrations
 	/*	initializers2.DB.Migrator().DropTable(
 
-				&models2.Activity{},
-				&models2.Destination{},
-				&models2.Hotel{},
-				&models2.Feedback{},
-				&models2.GroupeVoyage{},
-				&models2.GroupMember{},
-				&models2.Role{},
-				&models2.User{},
-				&models2.Voyage{},
-				&models2.DestinationActivity{},
-				&models2.VoyageActivity{},
-				&models2.DestinationHotel{},
-		        &models2.VoyageHotel{},
-			)*/
+			&models2.User{},
+			&models2.Activity{},
+			&models2.Destination{},
+			&models2.DestinationActivity{},
+			&models2.Hotel{},
+			&models2.Feedback{},
+			&models2.GroupeVoyage{},
+			&models2.Voyage{},
+			&models2.VoyageActivity{},
+			&models2.GroupeMembers{},
+			&models2.ChatMessage{},
+			&models2.DestinationHotel{},
+			&models2.VoyageHotel{})
 
-	// Supprimer explicitement les tables de jointure
-	// initializers2.DB.Migrator().DropTable("destination_activity", "destination_activities","destination_hotels", "voyage_activities", "voyage_activity", "voyage_hotels","group_voyage","group_members")
-	err := initializers2.DB.AutoMigrate(
-		&models2.User{},
-		&models2.Activity{},
-		&models2.Destination{},
-		&models2.DestinationActivity{},
-		&models2.Hotel{},
-		&models2.Feedback{},
-		&models2.GroupeVoyage{},
-		&models2.Voyage{},
-		&models2.VoyageActivity{},
-		&models2.GroupMember{},
-		&models2.ChatMessage{},
-		&models2.DestinationHotel{},
-		&models2.VoyageHotel{})
-	if err != nil {
-		return
-	}
+		// Supprimer explicitement les tables de jointure
+		//initializers2.DB.Migrator().DropTable("destination_activity", "destination_activities", "destination_hotels", "voyage_activities", "voyage_activity", "voyage_hotels", "group_voyage", "groupe_members")
+		err := initializers2.DB.AutoMigrate(
+			&models2.User{},
+			&models2.Activity{},
+			&models2.Destination{},
+			&models2.DestinationActivity{},
+			&models2.Hotel{},
+			&models2.Feedback{},
+			&models2.GroupeVoyage{},
+			&models2.Voyage{},
+			&models2.VoyageActivity{},
+			&models2.GroupeMembers{},
+			&models2.ChatMessage{},
+			&models2.DestinationHotel{},
+			&models2.VoyageHotel{})
+		if err != nil {
+			return
+		}
 
-	// Convertir la chaîne de date en une valeur time.Time
-	/*dateString := "2024-07-01"
-	today, err := time.Parse("2006-01-02", dateString)
-	if err != nil {
-		// Gérer l'erreur de parsing de la date
-		// Par exemple, renvoyer une erreur ou fournir une valeur par défaut
-		return
-	}*/
+		// Convertir la chaîne de date en une valeur time.Time
+		/*dateString := "2024-07-01"
+		today, err := time.Parse("2006-01-02", dateString)
+		if err != nil {
+			// Gérer l'erreur de parsing de la date
+			// Par exemple, renvoyer une erreur ou fournir une valeur par défaut
+			return
+		}*/
 
 	// Créer des instances de destinations et d'activités
 	destinations := []models2.Destination{

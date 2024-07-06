@@ -931,6 +931,15 @@
                     }
                 ],
                 "responses": {
+                    "200": {
+                        "description": "Liste groupe de voyage",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.GroupeVoyage"
+                            }
+                        }
+                    },
                     "400": {
                         "description": "Bad request",
                         "schema": {
@@ -1312,7 +1321,7 @@
                         "Bearer": []
                     }
                 ],
-                "description": "Delete your token session",
+                "description": "Inform the client to delete the token",
                 "consumes": [
                     "application/json"
                 ],
@@ -1531,7 +1540,7 @@
                 "created": {
                     "type": "string"
                 },
-                "group_id": {
+                "groupe_voyage_id": {
                     "type": "integer"
                 },
                 "id": {

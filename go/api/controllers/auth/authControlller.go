@@ -6,13 +6,10 @@ import (
 	"example/hello/internal/initializers"
 	"example/hello/internal/models"
 	mailer2 "example/hello/pkg/mailer"
-	"log"
-
-	//jwt2 "github.com/dgrijalva/jwt-go"
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -115,7 +112,7 @@ func Login(c *gin.Context) {
 }
 
 // @Summary Logout
-// @Description Delete your token session
+// @Description Inform the client to delete the token
 // @Tags Auth
 // @Accept json
 // @Produce json
@@ -128,18 +125,7 @@ func Login(c *gin.Context) {
 // @Failure 500 {object} gin.H "Internal server error"
 // @Router /logout [post]
 func Logout(c *gin.Context) {
-	session := sessions.Default(c)
-	user := session.Get("currentUser")
-	if user == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
-
-	session.Delete("currentUser")
-	if err := session.Save(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
-		return
-	}
+	// Aucune action particulière nécessaire côté serveur pour les JWT
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Successfully logged out",
 	})

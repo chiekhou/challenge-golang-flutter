@@ -60,7 +60,7 @@ func CreateGroup(c *gin.Context) {
 // @Produce json
 // @Security Bearer
 // @Param Authorization header string true "Insert your access token" default(Bearer Add access token here)
-// @Sucess 200 {object} []models.GroupeVoyage "Liste groupe de voyage"
+// @Success 200 {object} []models.GroupeVoyage "Liste groupe de voyage"
 // @Failure 400 {object} gin.H "Bad request"
 // @Failure 404 {object} gin.H "Bad request"
 // @Failure 409 {object} gin.H "Conflict"
@@ -75,20 +75,22 @@ func GetMyGroups(c *gin.Context) {
 	currentUser := user.(models.User)
 
 	var groups []models.GroupeVoyage
-	//Obtenir les groupes par l'id du user
-	if err := initializers.DB.Where("user_id = ?", currentUser.ID).Find(&groups).Error; err != nil {
+
+	// Obtenir les groupes par l'id du user et précharger les membres
+	if err := initializers.DB.Where("user_id = ?", currentUser.ID).Preload("Members").Find(&groups).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	var members []models.GroupeVoyage
-	if err := initializers.DB.Joins("JOIN group_members ON group_members.group_id = groupe_voyages.id",
-		currentUser.ID).Find(&members).Error; err != nil {
+	// Ajouter les groupes où l'utilisateur est membre
+	var memberGroups []models.GroupeVoyage
+	subQuery := initializers.DB.Table("groupe_members").Select("groupe_voyage_id").Where("user_id = ?", currentUser.ID)
+	if err := initializers.DB.Where("id IN (?)", subQuery).Preload("Members").Find(&memberGroups).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	groups = append(groups, members...)
+	groups = append(groups, memberGroups...)
 	c.JSON(http.StatusOK, groups)
 }
 
@@ -128,8 +130,8 @@ func GetGroupById(c *gin.Context) {
 
 	// Vérifiez si l'utilisateur est le créateur ou un membre du groupe
 	if group.UserID != currentUser.ID {
-		var member models.GroupMember
-		if err := initializers.DB.Where("group_id = ? AND user_id = ?", groupID, currentUser.ID).First(&member).Error; err != nil {
+		var member models.GroupeMembers
+		if err := initializers.DB.Where("groupe_voyage_id = ? AND user_id = ?", groupID, currentUser.ID).First(&member).Error; err != nil {
 			c.JSON(http.StatusForbidden, gin.H{"error": "Accès interdit"})
 			return
 		}
@@ -283,9 +285,9 @@ func Join(c *gin.Context) {
 	}
 
 	// Ajouter l'utilisateur au groupe en utilisant le modèle GroupMember
-	groupMember := models.GroupMember{
-		GroupID: group.ID,
-		UserID:  user.ID,
+	groupMember := models.GroupeMembers{
+		GroupeVoyageID: group.ID,
+		UserID:         user.ID,
 	}
 	if err := initializers.DB.Create(&groupMember).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Impossible de rejoindre le groupe de voyage"})
