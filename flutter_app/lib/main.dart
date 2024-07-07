@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/groupId/group_id_screen.dart';
+import 'package:flutter_app/providers/group_voyage_provider.dart';
+import 'package:flutter_app/views/add_group/add_group_screen.dart';
 import 'package:flutter_app/views/google_map/google_map_hotel_view.dart';
+import 'package:flutter_app/views/group_voyage/groupeVoyage_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_app/providers/auth_provider.dart';
 import 'package:flutter_app/providers/destination_provider.dart';
@@ -38,6 +42,7 @@ class _AppVoyageState extends State<MyApp> {
   final AuthProvider authProvider = AuthProvider();
   final DestinationProvider destinationProvider = DestinationProvider();
   final VoyageProvider voyageProvider = VoyageProvider();
+  final GroupVoyageProvider groupVoyageProvider = GroupVoyageProvider();
 
   @override
   void initState() {
@@ -53,11 +58,12 @@ class _AppVoyageState extends State<MyApp> {
         ChangeNotifierProvider.value(value: voyageProvider),
         ChangeNotifierProvider.value(value: destinationProvider),
         ChangeNotifierProvider.value(value: authProvider),
+        ChangeNotifierProvider.value(value: groupVoyageProvider)
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         routes: {
-          '/': (context) => const HomeView(),
+          '/': (context) => const LoginScreen(),
           DestinationView.routeName: (_) => const DestinationView(),
           VoyageView.routeName: (_) => const VoyageView(),
           VoyagesView.routeName: (_) => const VoyagesView(),
@@ -67,6 +73,17 @@ class _AppVoyageState extends State<MyApp> {
           HomeView.routeName: (_) => const HomeView(),
           GoogleMapView.routeName: (_) => const GoogleMapView(),
           GoogleMapViewHotel.routeName: (_) => const GoogleMapViewHotel(),
+          GroupevoyageScreen.routeName: (_) => const GroupevoyageScreen(),
+          AddGroupScreen.routeName: (_) => const AddGroupScreen()
+        },
+        onGenerateRoute:(settings) {
+          if(settings.name == '/groupes'){
+            final id = settings.arguments as int;
+            return MaterialPageRoute(
+                builder: (context) => GroupIdScreen(id: id)
+            );
+          }
+          return null;
         },
         onUnknownRoute: (_) => MaterialPageRoute(
           builder: (_) => const NotFound(),

@@ -85,14 +85,14 @@ class AuthProvider extends ChangeNotifier{
   }
 
   //Appel pour se logout
-  Future<void> Logout() async {
+  Future<void> logout() async {
     try {
       String? token = await _storage.read(key: 'auth_token');
       print('Token récupéré: $token');
 
       if (token != null) {
         final response = await http.post(
-          Uri.parse('http://$host:8080/logout'),
+          Uri.parse('http://$host:8080/logout'), // Remplace <TON_HOST> par ton adresse serveur
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $token',
@@ -105,6 +105,7 @@ class AuthProvider extends ChangeNotifier{
         if (response.statusCode == 200) {
           await _storage.delete(key: 'auth_token');
           print('Déconnexion réussie');
+          notifyListeners();
         } else {
           print('Échec de la déconnexion: ${response.body}');
           throw Exception('Failed to logout');

@@ -1,7 +1,9 @@
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_app/models/groupe_model.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
@@ -10,6 +12,9 @@ class GroupVoyageProvider extends ChangeNotifier{
   final String host = "10.0.2.2";
   final FlutterSecureStorage _storage = FlutterSecureStorage();
   final String _baseUrl = "http://localhost:8080";
+  List<Groupe> _groupes = [];
+  UnmodifiableListView<Groupe> get groupes => UnmodifiableListView(_groupes);
+
 
   //Créer un groupe
   Future<bool>CreateGroup(double budget, String nom)async{
@@ -18,7 +23,7 @@ class GroupVoyageProvider extends ChangeNotifier{
       if(token != null){
 
         final response = await http.post(
-            Uri.parse('http://$host:8080/groupes/create_group'),
+            Uri.parse('http://$host:8080/create_group'),
             headers: {
               'Content-Type' : 'application/json',
               'Authorization' : 'Bearer $token'
@@ -28,7 +33,7 @@ class GroupVoyageProvider extends ChangeNotifier{
               'nom': nom
             })
         );
-        if(response.statusCode == 201){
+        if(response.statusCode == 200){
           return true;
         }else{
           return false;
@@ -72,24 +77,34 @@ class GroupVoyageProvider extends ChangeNotifier{
   }
 
   //Récupérer les groupes par user
-  Future<List<dynamic>>GetGroups()async{
+  Future<void> GetGroups() async {
     String? token = await _storage.read(key: 'auth_token');
-    if(token != null){
+    if (token != null) {
       final response = await http.get(
         Uri.parse('http://$host:8080/groupes/my_groups'),
-        headers:{
-          'Content-Type' : 'application/json',
-          'Authorization' : 'Bearer $token'
-        }
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
       );
-      if(response.statusCode == 200){
-        return jsonDecode(response.body);
-      }else{
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        if (responseData is List) {
+          _groupes = responseData.map((groupeJson) => Groupe.fromJson(groupeJson)).toList();
+        } else {
+          throw Exception('Unexpected response format');
+        }
+        notifyListeners();
+      } else {
         throw Exception('No groups found');
       }
-    }else{
+    } else {
       throw Exception('User not logged in');
     }
+  }
+
+  Groupe getGroupeById(int id) {
+    return _groupes.firstWhere((groupe) => groupe.id == id);
   }
 
   //Groupe par ID
