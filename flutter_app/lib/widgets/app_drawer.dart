@@ -193,7 +193,7 @@ class _AppDrawerState extends State<AppDrawer> {
             title: Text(AppLocalizations.of(context)!.deconnexion),
             onTap: () async {
               final authProvider = Provider.of<AuthProvider>(context, listen: false);
-              await authProvider.Logout();
+              await authProvider.logout();
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (BuildContext context) => const LoginScreen()),

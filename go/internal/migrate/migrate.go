@@ -13,50 +13,50 @@ func init() {
 
 func main() {
 	//Drop la BDD afin de faire de nouvelle migrations
-	/*	initializers2.DB.Migrator().DropTable(
+	initializers2.DB.Migrator().DropTable(
 
-			&models2.User{},
-			&models2.Activity{},
-			&models2.Destination{},
-			&models2.DestinationActivity{},
-			&models2.Hotel{},
-			&models2.Feedback{},
-			&models2.GroupeVoyage{},
-			&models2.Voyage{},
-			&models2.VoyageActivity{},
-			&models2.GroupeMembers{},
-			&models2.ChatMessage{},
-			&models2.DestinationHotel{},
-			&models2.VoyageHotel{})
+		&models2.User{},
+		&models2.Activity{},
+		&models2.Destination{},
+		&models2.DestinationActivity{},
+		&models2.Hotel{},
+		&models2.Feedback{},
+		&models2.GroupeVoyage{},
+		&models2.Voyage{},
+		&models2.VoyageActivity{},
+		&models2.GroupeMembers{},
+		&models2.ChatMessage{},
+		&models2.DestinationHotel{},
+		&models2.VoyageHotel{})
 
-		// Supprimer explicitement les tables de jointure
-		//initializers2.DB.Migrator().DropTable("destination_activity", "destination_activities", "destination_hotels", "voyage_activities", "voyage_activity", "voyage_hotels", "group_voyage", "groupe_members")
-		err := initializers2.DB.AutoMigrate(
-			&models2.User{},
-			&models2.Activity{},
-			&models2.Destination{},
-			&models2.DestinationActivity{},
-			&models2.Hotel{},
-			&models2.Feedback{},
-			&models2.GroupeVoyage{},
-			&models2.Voyage{},
-			&models2.VoyageActivity{},
-			&models2.GroupeMembers{},
-			&models2.ChatMessage{},
-			&models2.DestinationHotel{},
-			&models2.VoyageHotel{})
-		if err != nil {
-			return
-		}
+	// Supprimer explicitement les tables de jointure
+	//initializers2.DB.Migrator().DropTable("destination_activity", "destination_activities", "destination_hotels", "voyage_activities", "voyage_activity", "voyage_hotels", "group_voyage", "groupe_members")
+	err := initializers2.DB.AutoMigrate(
+		&models2.User{},
+		&models2.Activity{},
+		&models2.Destination{},
+		&models2.DestinationActivity{},
+		&models2.Hotel{},
+		&models2.Feedback{},
+		&models2.GroupeVoyage{},
+		&models2.Voyage{},
+		&models2.VoyageActivity{},
+		&models2.GroupeMembers{},
+		&models2.ChatMessage{},
+		&models2.DestinationHotel{},
+		&models2.VoyageHotel{})
+	if err != nil {
+		return
+	}
 
-		// Convertir la chaîne de date en une valeur time.Time
-		/*dateString := "2024-07-01"
-		today, err := time.Parse("2006-01-02", dateString)
-		if err != nil {
-			// Gérer l'erreur de parsing de la date
-			// Par exemple, renvoyer une erreur ou fournir une valeur par défaut
-			return
-		}*/
+	// Convertir la chaîne de date en une valeur time.Time
+	/*dateString := "2024-07-01"
+	today, err := time.Parse("2006-01-02", dateString)
+	if err != nil {
+		// Gérer l'erreur de parsing de la date
+		// Par exemple, renvoyer une erreur ou fournir une valeur par défaut
+		return
+	}*/
 
 	// Créer des instances de destinations et d'activités
 	destinations := []models2.Destination{
@@ -104,61 +104,61 @@ func main() {
 				{Image: "http://10.0.2.2:8080/images/activities/venice-beach.jpeg", Name: "Venise Beach", Destination: "Los Angeles", Price: 100.50, Address: "Los Angeles", Longitude: 41.9028, Latitude: 12.4964},
 			},
 
-        			Hotels: []models2.Hotel{
-                          {Image: "http://10.0.2.2:8080/images/hotels/conrad-losangeles.jpeg", Name: "Conrad", Destination: "Los Angeles", Price: 65.30, Address: "Los Angeles",Longitude:41.9028 ,Latitude:12.4964},
-                           {Image: "http://10.0.2.2:8080/images/hotels/figueroa-losangeles.jpeg", Name: "Figueroa Hôtel", Destination: "Los Angeles", Price: 80.40, Address: "Los Angeles",Longitude:41.9028 ,Latitude:12.4964},
-                           {Image: "http://10.0.2.2:8080/images/hotels/proper-losangeles.jpeg", Name: "Proper Hôtel", Destination: "Los Angeles", Price: 90.40, Address: "Los Angeles",Longitude:41.9028 ,Latitude:12.4964},
-                           {Image: "http://10.0.2.2:8080/images/hotels/beverlyhills-losangeles.jpeg", Name: "Venise Beach", Destination: "Los Angeles", Price: 100.50, Address: "Los Angeles",Longitude:41.9028 ,Latitude:12.4964},
-                   },
-        		},
-       {
-       			Name:  "Ibiza",
-       			Image: "http://10.0.2.2:8080/images/ibiza.jpeg",
-       			Activities: []models2.Activity{
-       				{Image: "http://10.0.2.2:8080/images/activities/montgolfiere-ibiza.jpeg", Name: "Montgolfiere", Destination: "Ibiza", Price: 12.4, Address: "Ibiza", Longitude:41.9028 ,Latitude:12.4964},
-       				{Image: "http://10.0.2.2:8080/images/activities/cala-bassa-ibiza.jpeg", Name: "Cala Bassa", Destination: "Ibiza", Price: 13.3, Address: "Ibiza", Longitude:41.9028 ,Latitude:12.4964},
-       				{Image: "http://10.0.2.2:8080/images/activities/cala-saladeta.jpeg", Name: "Cala Saladeta", Destination: "Ibiza", Price: 18.3, Address: "Ibiza",Longitude:41.9028 ,Latitude:12.4964},
-       				{Image: "http://10.0.2.2:8080/images/activities/es-vedra.jpeg", Name: "Es Vedra", Destination: "Ibiza", Price: 14.3, Address: "Ibiza", Longitude:41.9028 ,Latitude:12.4964},
-                },
-                Hotels: []models2.Hotel{
-             		{Image: "http://10.0.2.2:8080/images/hotels/beachstar-ibiza.jpeg", Name: "Beach Star", Destination: "Ibiza", Price: 92.4, Address: "Ibiza", Longitude:41.9028 ,Latitude:12.4964},
-             		{Image: "http://10.0.2.2:8080/images/hotels/blesshotel-ibiza.jpeg", Name: "Bless Hôtel", Destination: "Ibiza", Price: 73.3, Address: "Ibiza", Longitude:41.9028 ,Latitude:12.4964},
-             		{Image: "http://10.0.2.2:8080/images/hotels/grupotelibizabeach-ibiza.jpeg", Name: "Grupotel Ibiza", Destination: "Ibiza", Price: 78.3, Address: "Ibiza",Longitude:41.9028 ,Latitude:12.4964},
-             		{Image: "http://10.0.2.2:8080/images/hotels/ryanslolas-ibiza.jpeg", Name: "Ryanslolas", Destination: "Ibiza", Price: 94.3, Address: "Ibiza", Longitude:41.9028 ,Latitude:12.4964},
-                      },
-       		},
-       		{
-       			Name:  "Venise",
-       			Image: "http://10.0.2.2:8080/images/venise.jpeg",
-       			Activities: []models2.Activity{
-       				{Image: "http://10.0.2.2:8080/images/activities/saint-marc.jpeg", Name: "Saint-Marc", Destination: "Venise", Price: 10.4, Address: "Venise", Longitude:41.9028 ,Latitude:12.4964},
-       				{Image: "http://10.0.2.2:8080/images/activities/palais-doges-venise.jpeg", Name: "Palais Doges", Destination: "Venise", Price: 9.5, Address: "Venise",Longitude:41.9028 ,Latitude:12.4964},
-       				{Image: "http://10.0.2.2:8080/images/activities/grand-canal-venise.jpeg", Name: "Grand Canal", Destination: "Venise", Price: 10.2, Address: "Venise",Longitude:41.9028 ,Latitude:12.4964},
-       				{Image: "http://10.0.2.2:8080/images/activities/excursion-murano.jpeg", Name: "Excursion Murano", Destination: "Venise", Price: 30.2, Address: "Venise",Longitude:41.9028 ,Latitude:12.4964},
-       			},
-       			Hotels: []models2.Hotel{
-                    {Image: "http://10.0.2.2:8080/images/hotels/cappellis-venise.jpeg", Name: "Cappellis", Destination: "Venise", Price: 60.4, Address: "Venise", Longitude:41.9028 ,Latitude:12.4964},
-                     {Image: "http://10.0.2.2:8080/images/hotels/palazzinafortuny-venise.jpeg", Name: "Palazzina ", Destination: "Venise", Price: 69.5, Address: "Venise",Longitude:41.9028 ,Latitude:12.4964},
-                     {Image: "http://10.0.2.2:8080/images/hotels/palazzocanova-venise.jpeg", Name: "Palazzo Canova", Destination: "Venise", Price: 50.2, Address: "Venise",Longitude:41.9028 ,Latitude:12.4964},
-                     {Image: "http://10.0.2.2:8080/images/hotels/salutepalace-venise.jpeg", Name: "Salute Palace", Destination: "Venise", Price: 30.2, Address: "Venise",Longitude:41.9028 ,Latitude:12.4964},
-                       			},
-       		},
-       		{
-       			Name:  "Mykonos",
-       			Image: "http://10.0.2.2:8080/images/mykonos.jpeg",
-       			Activities: []models2.Activity{
-                    {Image: "http://10.0.2.2:8080/images/activities/petite-venise-mykonos.jpeg", Name: "Petit Venise", Destination: "Mykonos", Price: 5.30, Address: "Mykonos",Longitude:41.9028 ,Latitude:12.4964},
-                     {Image: "http://10.0.2.2:8080/images/activities/super-paradise-beach-mykonos.jpeg", Name: "Paradise Beach", Destination: "Mykonos", Price: 5.40, Address: "Mykonos",Longitude:41.9028 ,Latitude:12.4964},
-                     {Image: "http://10.0.2.2:8080/images/activities/vioma-organic-mykonos.jpeg", Name: "Vioma Organic", Destination: "Mykonos", Price: 7.50, Address: "Mykonos",Longitude:41.9028 ,Latitude:12.4964},
-                    {Image: "http://10.0.2.2:8080/images/activities/kato-mili-mykonos.jpeg", Name: "Kato Mili", Destination: "Mykonos", Price: 10.50, Address: "Mykonos",Longitude:41.9028 ,Latitude:12.4964},
-                   },
-                Hotels: []models2.Hotel{
-                    {Image: "http://10.0.2.2:8080/images/hotels/aeolos-resort-mykonos.jpeg", Name: "Aeolos Resort", Destination: "Mykonos", Price: 55.30, Address: "Mykonos",Longitude:41.9028 ,Latitude:12.4964},
-                    {Image: "http://10.0.2.2:8080/images/hotels/agrari-mykonos.jpeg", Name: "Agrari", Destination: "Mykonos", Price: 95.40, Address: "Mykonos",Longitude:41.9028 ,Latitude:12.4964},
-                    {Image: "http://10.0.2.2:8080/images/hotels/fteliablack-mykonos.jpeg", Name: "Ftelia Black", Destination: "Mykonos", Price: 97.50, Address: "Mykonos",Longitude:41.9028 ,Latitude:12.4964},
-                    {Image: "http://10.0.2.2:8080/images/hotels/millionstar-mykonos.jpeg", Name: "Million Star", Destination: "Mykonos", Price: 100.50, Address: "Mykonos",Longitude:41.9028 ,Latitude:12.4964},
-                          			},
-       		},
+			Hotels: []models2.Hotel{
+				{Image: "http://10.0.2.2:8080/images/hotels/conrad-losangeles.jpeg", Name: "Conrad", Destination: "Los Angeles", Price: 65.30, Address: "Los Angeles", Longitude: 41.9028, Latitude: 12.4964},
+				{Image: "http://10.0.2.2:8080/images/hotels/figueroa-losangeles.jpeg", Name: "Figueroa Hôtel", Destination: "Los Angeles", Price: 80.40, Address: "Los Angeles", Longitude: 41.9028, Latitude: 12.4964},
+				{Image: "http://10.0.2.2:8080/images/hotels/proper-losangeles.jpeg", Name: "Proper Hôtel", Destination: "Los Angeles", Price: 90.40, Address: "Los Angeles", Longitude: 41.9028, Latitude: 12.4964},
+				{Image: "http://10.0.2.2:8080/images/hotels/beverlyhills-losangeles.jpeg", Name: "Venise Beach", Destination: "Los Angeles", Price: 100.50, Address: "Los Angeles", Longitude: 41.9028, Latitude: 12.4964},
+			},
+		},
+		{
+			Name:  "Ibiza",
+			Image: "http://10.0.2.2:8080/images/ibiza.jpeg",
+			Activities: []models2.Activity{
+				{Image: "http://10.0.2.2:8080/images/activities/montgolfiere-ibiza.jpeg", Name: "Montgolfiere", Destination: "Ibiza", Price: 12.4, Address: "Ibiza", Longitude: 41.9028, Latitude: 12.4964},
+				{Image: "http://10.0.2.2:8080/images/activities/cala-bassa-ibiza.jpeg", Name: "Cala Bassa", Destination: "Ibiza", Price: 13.3, Address: "Ibiza", Longitude: 41.9028, Latitude: 12.4964},
+				{Image: "http://10.0.2.2:8080/images/activities/cala-saladeta.jpeg", Name: "Cala Saladeta", Destination: "Ibiza", Price: 18.3, Address: "Ibiza", Longitude: 41.9028, Latitude: 12.4964},
+				{Image: "http://10.0.2.2:8080/images/activities/es-vedra.jpeg", Name: "Es Vedra", Destination: "Ibiza", Price: 14.3, Address: "Ibiza", Longitude: 41.9028, Latitude: 12.4964},
+			},
+			Hotels: []models2.Hotel{
+				{Image: "http://10.0.2.2:8080/images/hotels/beachstar-ibiza.jpeg", Name: "Beach Star", Destination: "Ibiza", Price: 92.4, Address: "Ibiza", Longitude: 41.9028, Latitude: 12.4964},
+				{Image: "http://10.0.2.2:8080/images/hotels/blesshotel-ibiza.jpeg", Name: "Bless Hôtel", Destination: "Ibiza", Price: 73.3, Address: "Ibiza", Longitude: 41.9028, Latitude: 12.4964},
+				{Image: "http://10.0.2.2:8080/images/hotels/grupotelibizabeach-ibiza.jpeg", Name: "Grupotel Ibiza", Destination: "Ibiza", Price: 78.3, Address: "Ibiza", Longitude: 41.9028, Latitude: 12.4964},
+				{Image: "http://10.0.2.2:8080/images/hotels/ryanslolas-ibiza.jpeg", Name: "Ryanslolas", Destination: "Ibiza", Price: 94.3, Address: "Ibiza", Longitude: 41.9028, Latitude: 12.4964},
+			},
+		},
+		{
+			Name:  "Venise",
+			Image: "http://10.0.2.2:8080/images/venise.jpeg",
+			Activities: []models2.Activity{
+				{Image: "http://10.0.2.2:8080/images/activities/saint-marc.jpeg", Name: "Saint-Marc", Destination: "Venise", Price: 10.4, Address: "Venise", Longitude: 41.9028, Latitude: 12.4964},
+				{Image: "http://10.0.2.2:8080/images/activities/palais-doges-venise.jpeg", Name: "Palais Doges", Destination: "Venise", Price: 9.5, Address: "Venise", Longitude: 41.9028, Latitude: 12.4964},
+				{Image: "http://10.0.2.2:8080/images/activities/grand-canal-venise.jpeg", Name: "Grand Canal", Destination: "Venise", Price: 10.2, Address: "Venise", Longitude: 41.9028, Latitude: 12.4964},
+				{Image: "http://10.0.2.2:8080/images/activities/excursion-murano.jpeg", Name: "Excursion Murano", Destination: "Venise", Price: 30.2, Address: "Venise", Longitude: 41.9028, Latitude: 12.4964},
+			},
+			Hotels: []models2.Hotel{
+				{Image: "http://10.0.2.2:8080/images/hotels/cappellis-venise.jpeg", Name: "Cappellis", Destination: "Venise", Price: 60.4, Address: "Venise", Longitude: 41.9028, Latitude: 12.4964},
+				{Image: "http://10.0.2.2:8080/images/hotels/palazzinafortuny-venise.jpeg", Name: "Palazzina ", Destination: "Venise", Price: 69.5, Address: "Venise", Longitude: 41.9028, Latitude: 12.4964},
+				{Image: "http://10.0.2.2:8080/images/hotels/palazzocanova-venise.jpeg", Name: "Palazzo Canova", Destination: "Venise", Price: 50.2, Address: "Venise", Longitude: 41.9028, Latitude: 12.4964},
+				{Image: "http://10.0.2.2:8080/images/hotels/salutepalace-venise.jpeg", Name: "Salute Palace", Destination: "Venise", Price: 30.2, Address: "Venise", Longitude: 41.9028, Latitude: 12.4964},
+			},
+		},
+		{
+			Name:  "Mykonos",
+			Image: "http://10.0.2.2:8080/images/mykonos.jpeg",
+			Activities: []models2.Activity{
+				{Image: "http://10.0.2.2:8080/images/activities/petite-venise-mykonos.jpeg", Name: "Petit Venise", Destination: "Mykonos", Price: 5.30, Address: "Mykonos", Longitude: 41.9028, Latitude: 12.4964},
+				{Image: "http://10.0.2.2:8080/images/activities/super-paradise-beach-mykonos.jpeg", Name: "Paradise Beach", Destination: "Mykonos", Price: 5.40, Address: "Mykonos", Longitude: 41.9028, Latitude: 12.4964},
+				{Image: "http://10.0.2.2:8080/images/activities/vioma-organic-mykonos.jpeg", Name: "Vioma Organic", Destination: "Mykonos", Price: 7.50, Address: "Mykonos", Longitude: 41.9028, Latitude: 12.4964},
+				{Image: "http://10.0.2.2:8080/images/activities/kato-mili-mykonos.jpeg", Name: "Kato Mili", Destination: "Mykonos", Price: 10.50, Address: "Mykonos", Longitude: 41.9028, Latitude: 12.4964},
+			},
+			Hotels: []models2.Hotel{
+				{Image: "http://10.0.2.2:8080/images/hotels/aeolos-resort-mykonos.jpeg", Name: "Aeolos Resort", Destination: "Mykonos", Price: 55.30, Address: "Mykonos", Longitude: 41.9028, Latitude: 12.4964},
+				{Image: "http://10.0.2.2:8080/images/hotels/agrari-mykonos.jpeg", Name: "Agrari", Destination: "Mykonos", Price: 95.40, Address: "Mykonos", Longitude: 41.9028, Latitude: 12.4964},
+				{Image: "http://10.0.2.2:8080/images/hotels/fteliablack-mykonos.jpeg", Name: "Ftelia Black", Destination: "Mykonos", Price: 97.50, Address: "Mykonos", Longitude: 41.9028, Latitude: 12.4964},
+				{Image: "http://10.0.2.2:8080/images/hotels/millionstar-mykonos.jpeg", Name: "Million Star", Destination: "Mykonos", Price: 100.50, Address: "Mykonos", Longitude: 41.9028, Latitude: 12.4964},
+			},
+		},
 
 		{
 			Name:  "Paris",
