@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/groupId/group_id_screen.dart';
 import 'package:flutter_app/providers/group_voyage_provider.dart';
 import 'package:flutter_app/views/add_group/add_group_screen.dart';
 import 'package:flutter_app/views/google_map/google_map_hotel_view.dart';
@@ -75,15 +74,6 @@ class _AppVoyageState extends State<MyApp> {
           GoogleMapViewHotel.routeName: (_) => const GoogleMapViewHotel(),
           GroupevoyageScreen.routeName: (_) => const GroupevoyageScreen(),
           AddGroupScreen.routeName: (_) => const AddGroupScreen()
-        },
-        onGenerateRoute:(settings) {
-          if(settings.name == '/groupes'){
-            final id = settings.arguments as int;
-            return MaterialPageRoute(
-                builder: (context) => GroupIdScreen(id: id)
-            );
-          }
-          return null;
         },
         onUnknownRoute: (_) => MaterialPageRoute(
           builder: (_) => const NotFound(),

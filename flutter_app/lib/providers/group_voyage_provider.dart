@@ -108,7 +108,7 @@ class GroupVoyageProvider extends ChangeNotifier{
   }
 
   //Groupe par ID
-  Future<Map<String, dynamic>>GetGroupByID(Int ID)async{
+  Future<Map<String, dynamic>>GetGroupByID(int ID)async{
     String? token = await _storage.read(key: 'auth_token');
     if(token != null){
       final response = await http.get(
@@ -129,7 +129,7 @@ class GroupVoyageProvider extends ChangeNotifier{
   }
 
   //Inviter un user
-  Future<bool>SendInvitation(Int ID,String email)async{
+  Future<bool>SendInvitation(int ID,String email)async{
     try{
       String? token = await _storage.read(key: 'auth_token');
       if(token != null){
@@ -151,6 +151,29 @@ class GroupVoyageProvider extends ChangeNotifier{
       }else{
         throw Exception('User not logged in');
       }
+    }catch(e){
+      rethrow;
+    }
+  }
+
+  Future<void>JoinGroup(int _gorupId, String _token)async{
+    try{
+      final String? authToken = await _storage.read(key: 'auth_token');
+      if (authToken == null) {
+        throw Exception('Utilisateur non connecté');
+      }
+
+      final response = await http.post(
+        Uri.parse('http://$host:8080/groupes/$_gorupId/join?token=$_token'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+      if (response.statusCode != 200) {
+        throw Exception('Erreur lors de la tentative de rejoindre le groupe');
+      }
+      notifyListeners();
     }catch(e){
       rethrow;
     }

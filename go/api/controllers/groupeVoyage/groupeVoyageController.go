@@ -6,6 +6,7 @@ import (
 	"example/hello/internal/initializers"
 	"example/hello/internal/models"
 	mailer2 "example/hello/pkg/mailer"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -225,6 +226,8 @@ func SendInvitation(c *gin.Context) {
 		return
 	}
 
+	invitationURL := fmt.Sprintf("http://10.0.2.2:8080/invitation?group_id=%d&token=%s", groupID, token)
+
 	initializers.DB.Where("email=?", emailRequest.Email).First(&userFound)
 	if userFound.ID == 0 {
 		mailer2.SendGoMail(userFound.Email,
@@ -235,7 +238,7 @@ func SendInvitation(c *gin.Context) {
 		mailer2.SendGoMail(userFound.Email,
 			"Invitation dans un groupen e groupeVoyage",
 			"./pkg/mailer/templates/invite.html",
-			token)
+			map[string]interface{}{"invitationURL": invitationURL})
 	}
 
 	c.JSON(http.StatusOK, gin.H{
