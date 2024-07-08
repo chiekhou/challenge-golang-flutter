@@ -4,6 +4,7 @@ import '../../providers/voyage_provider.dart';
 import '../../widgets/app_loader.dart';
 import 'widgets/voyage_list.dart';
 import '../../widgets/app_drawer.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class VoyagesView extends StatelessWidget {
   static const String routeName = '/voyages';
@@ -17,14 +18,14 @@ class VoyagesView extends StatelessWidget {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Mes voyages'),
-          bottom: const TabBar(
+          title: Text(AppLocalizations.of(context)!.mes_voyages),
+          bottom: TabBar(
             tabs: <Widget>[
               Tab(
-                text: 'A venir',
+                text: AppLocalizations.of(context)!.voyage_futur,
               ),
               Tab(
-                text: 'Passés',
+                text: AppLocalizations.of(context)!.voyage_passed,
               ),
             ],
           ),
@@ -37,7 +38,7 @@ class VoyagesView extends StatelessWidget {
                       VoyageList(
                         voyages: voyageProvider.voyages
                             .where((voyage) =>
-                                DateTime.now().isBefore(voyage.dateAller!))
+                                DateTime.now().isBefore(voyage.dateRetour!))
                             .toList(),
                       ),
                       VoyageList(
@@ -50,7 +51,7 @@ class VoyagesView extends StatelessWidget {
                   )
                 : Container(
                     alignment: Alignment.center,
-                    child: const Text('Aucun voyage pour le moment'),
+                    child: Text(AppLocalizations.of(context)!.aucun_voyage),
                   )
             : const AppLoader(),
       ),

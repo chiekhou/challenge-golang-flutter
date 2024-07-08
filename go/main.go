@@ -31,6 +31,7 @@ func main() {
 	routes.VoyageRoutes(server)
 	routes.DestinationRoutes(server)
 	routes.ActivityRoutes(server)
+	routes.FlippingRoutes(server)
 
 	// Route pour gérer les connexions WebSocket
 	server.GET("/ws", sockets.HandleConnections) // Utiliser controllers.HandleConnections

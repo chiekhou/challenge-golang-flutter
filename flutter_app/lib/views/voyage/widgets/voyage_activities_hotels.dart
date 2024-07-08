@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/models/hotel_model.dart';
 import '../../../models/activity_model.dart';
 import 'voyage_activity_hotel_list.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class VoyageActivitiesHotels extends StatelessWidget {
   final int voyageId;
@@ -18,12 +19,12 @@ class VoyageActivitiesHotels extends StatelessWidget {
             color: Theme.of(context).primaryColorDark,
             child: TabBar(
               indicatorColor: Colors.blue[100],
-              tabs: const <Widget>[
+              tabs: <Widget>[
                 Tab(
-                  text: 'En cours',
+                  text: AppLocalizations.of(context)!.statut_in_progress,
                 ),
                 Tab(
-                  text: 'Terminées',
+                  text: AppLocalizations.of(context)!.statut_terminer,
                 )
               ],
             ),

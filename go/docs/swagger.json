@@ -479,6 +479,108 @@
                 }
             }
         },
+        "/api/flipping/feature": {
+            "get": {
+                "description": "Récupère l'état (activé ou désactivé) d'une fonctionnalité donnée.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Features"
+                ],
+                "summary": "Récupère l'état d'une fonctionnalité",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Nom de la fonctionnalité",
+                        "name": "feature",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Feature query parameter is missing",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Feature not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Permet de mettre à jour l'état (activé ou désactivé) d'une fonctionnalité spécifique.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Features"
+                ],
+                "summary": "Met à jour l'état d'une fonctionnalité",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "\"create_voyage\"",
+                        "description": "Nom de la fonctionnalité",
+                        "name": "feature",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Nouvel état de la fonctionnalité",
+                        "name": "state",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "boolean"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Feature query parameter is missing",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Feature not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/api/voyages": {
             "get": {
                 "description": "Get Voyages",

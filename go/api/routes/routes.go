@@ -3,6 +3,7 @@ package routes
 import (
 	"example/hello/api/controllers/activity"
 	"example/hello/api/controllers/auth"
+    flipping "example/hello/api/controllers/flipping"
 	"example/hello/api/controllers/destinations"
 	groupVoyage "example/hello/api/controllers/groupeVoyage"
 	voyage "example/hello/api/controllers/voyages"
@@ -49,3 +50,10 @@ func ActivityRoutes(r *gin.Engine) {
 	r.GET("/groupes/my_groups", middlewares.CheckAuth, groupVoyage.GetMyGroups)
 	r.GET("/groupes/:group_id", middlewares.CheckAuth, groupVoyage.GetGroupById)
 }
+
+func FlippingRoutes(r *gin.Engine) {
+	r.GET("/api/flipping/feature", flipping.GetFeatureToggle)
+	r.PUT("/api/flipping/feature", flipping.UpdateFeatureToggle)
+
+}
+

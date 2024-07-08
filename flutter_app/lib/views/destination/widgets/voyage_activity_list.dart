@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../models/activity_model.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class VoyageActivityList extends StatelessWidget {
   final List<Activity> activities;
@@ -33,10 +34,10 @@ class VoyageActivityList extends StatelessWidget {
                 ScaffoldMessenger.of(context)
                   ..removeCurrentSnackBar()
                   ..showSnackBar(
-                    const SnackBar(
-                      content: Text('Activitée supprimé'),
+                    SnackBar(
+                      content: Text(AppLocalizations.of(context)!.delete_activite),
                       backgroundColor: Colors.red,
-                      duration: Duration(seconds: 1),
+                      duration: const Duration(seconds: 1),
                     ),
                   );
               },

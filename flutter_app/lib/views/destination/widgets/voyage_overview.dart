@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'voyage_overview_destination.dart';
 import '../../../models/voyage_model.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class VoyageOverview extends StatelessWidget {
   final VoidCallback setDateAller;
@@ -42,13 +43,13 @@ class VoyageOverview extends StatelessWidget {
                   child: Text(
                     voyage.dateAller != null
                         ? DateFormat("d/M/y").format(voyage.dateAller!)
-                        : 'Date aller',
+                        : AppLocalizations.of(context)!.date_aller,
                     style: const TextStyle(fontSize: 15),
                   ),
                 ),
                 ElevatedButton(
                   onPressed: setDateAller,
-                  child: const Text('Sélectionner une date'),
+                  child: Text(AppLocalizations.of(context)!.selected_date),
                 ),
 
               ],
@@ -66,13 +67,13 @@ class VoyageOverview extends StatelessWidget {
                   child: Text(
                     voyage.dateRetour != null
                         ? DateFormat("d/M/y").format(voyage.dateRetour!)
-                        : 'Date retour',
+                        : AppLocalizations.of(context)!.date_retour,
                     style: const TextStyle(fontSize: 15),
                   ),
                 ),
                 ElevatedButton(
                   onPressed: setDateRetour,
-                  child: const Text('Sélectionner une date'),
+                  child: Text(AppLocalizations.of(context)!.selected_date),
                 ),
 
               ],
@@ -85,10 +86,10 @@ class VoyageOverview extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 15.0),
             child: Row(
               children: <Widget>[
-                const Expanded(
+                 Expanded(
                   child: Text(
-                    'Montant / personne',
-                    style: TextStyle(fontSize: 15),
+                    AppLocalizations.of(context)!.montant_personne,
+                    style: const TextStyle(fontSize: 15),
                   ),
                 ),
                 Text(
