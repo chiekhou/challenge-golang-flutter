@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_app/config/app_config.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class AuthProvider extends ChangeNotifier{
-  final String host = "10.0.2.2";
   final FlutterSecureStorage _storage = FlutterSecureStorage();
-  final String _baseUrl = "http://localhost:8080";
-  //final String _baseUrl = "à remplacer avec la bonne url plus tard";
+  final apiAuthority = AppConfig.getApiAuthority();
+  final isSecure = AppConfig.isSecure();
 
   //Appel Api register
   Future<bool> Register(
@@ -18,8 +18,10 @@ class AuthProvider extends ChangeNotifier{
       String password,
       String username)async{
     try{
-      final response = await http.post(
-        Uri.parse('http://$host:8080/Signup'),
+      final url = isSecure
+          ? Uri.https(apiAuthority, '/Signup')
+          : Uri.http(apiAuthority, '/Signup');
+      final response = await http.post(url,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -49,8 +51,11 @@ class AuthProvider extends ChangeNotifier{
   //Appel APi pour se loguer
   Future<bool> Login(String email, String password) async{
     try{
-      final response = await http.post(
-          Uri.parse('http://$host:8080/login'),
+      final url = isSecure
+          ? Uri.https(apiAuthority, '/login')
+          : Uri.http(apiAuthority, '/login');
+
+      final response = await http.post(url,
           headers: {
             'Content-Type': 'application/json'
           },
@@ -89,8 +94,10 @@ class AuthProvider extends ChangeNotifier{
       print('Token récupéré: $token');
 
       if (token != null) {
-        final response = await http.post(
-          Uri.parse('http://$host:8080/logout'),
+        final url = isSecure
+            ? Uri.https(apiAuthority, '/logout')
+            : Uri.http(apiAuthority, '/logout');
+        final response = await http.post(url,
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $token',
@@ -122,8 +129,10 @@ class AuthProvider extends ChangeNotifier{
   Future<Map<String, dynamic>> Profile()async{
     String? token = await _storage.read(key: 'auth_token');
     if(token != null){
-      final response = await http.get(
-        Uri.parse('http://$host:8080/profile'),
+      final url = isSecure
+          ? Uri.https(apiAuthority, '/profile')
+          : Uri.http(apiAuthority, '/profile');
+      final response = await http.get(url,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token'

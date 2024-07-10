@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_app/config/app_config.dart';
 import 'package:http/http.dart' as http;
 
 class FlippingToggle extends ChangeNotifier {
-  final String host = '10.0.2.2:8080'; // version emulateur
-  // final String host = 'localhost:8080'; // version web
+
   final bool enabled;
 
   FlippingToggle({required this.enabled});
@@ -16,8 +16,15 @@ class FlippingToggle extends ChangeNotifier {
   }
 }
 
+final apiAuthority = AppConfig.getApiAuthority();
+final isSecure = AppConfig.isSecure();
+final url = isSecure
+    ? Uri.https(apiAuthority, 'api/flipping/feature?feature=active_voyage')
+    : Uri.http(apiAuthority, 'api/flipping/feature?feature=active_voyage');
+
 Future<FlippingToggle> fetchFeatureToggles() async {
-  final response = await http.get(Uri.parse('http://10.0.2.2:8080/api/flipping/feature?feature=active_voyage'));
+
+  final response = await http.get(url);
 
   if (response.statusCode == 200) {
     try {
@@ -33,7 +40,7 @@ Future<FlippingToggle> fetchFeatureToggles() async {
 }
 
 Future<void> updateFeatureToggle( bool enabled) async {
-  final response = await http.put(Uri.parse('http://10.0.2.2:8080/api/flipping/feature?feature=active_voyage'),
+  final response = await http.put(url,
     headers: {
       'Content-Type': 'application/json',
     },

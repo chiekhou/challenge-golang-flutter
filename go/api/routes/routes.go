@@ -3,8 +3,8 @@ package routes
 import (
 	"example/hello/api/controllers/activity"
 	"example/hello/api/controllers/auth"
-    flipping "example/hello/api/controllers/flipping"
 	"example/hello/api/controllers/destinations"
+	flipping "example/hello/api/controllers/flipping"
 	voyage "example/hello/api/controllers/voyages"
 	"example/hello/api/middlewares"
 
@@ -50,4 +50,3 @@ func FlippingRoutes(r *gin.Engine) {
 	r.PUT("/api/flipping/feature", flipping.UpdateFeatureToggle)
 
 }
-

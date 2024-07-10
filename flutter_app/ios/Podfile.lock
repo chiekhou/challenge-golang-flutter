@@ -1,8 +1,10 @@
 PODS:
   - Flutter (1.0.0)
+  - flutter_secure_storage (3.3.1):
+    - Flutter
   - google_maps_flutter_ios (0.0.1):
     - Flutter
-    - GoogleMaps (< 9.0, >= 8.4)
+    - GoogleMaps (< 10.0, >= 8.4)
   - GoogleMaps (8.4.0):
     - GoogleMaps/Maps (= 8.4.0)
   - GoogleMaps/Base (8.4.0)
@@ -17,6 +19,7 @@ PODS:
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
+  - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - google_maps_flutter_ios (from `.symlinks/plugins/google_maps_flutter_ios/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - location (from `.symlinks/plugins/location/ios`)
@@ -29,6 +32,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
+  flutter_secure_storage:
+    :path: ".symlinks/plugins/flutter_secure_storage/ios"
   google_maps_flutter_ios:
     :path: ".symlinks/plugins/google_maps_flutter_ios/ios"
   image_picker_ios:
@@ -40,9 +45,10 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  google_maps_flutter_ios: c454f18e0e22df6ac0e9f2a4df340858f5a3680c
+  flutter_secure_storage: 7953c38a04c3fdbb00571bcd87d8e3b5ceb9daec
+  google_maps_flutter_ios: 5bc2be60ad012e79b182ce0fb0ef5030a50fb03e
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
-  image_picker_ios: b545a5f16c0fa88e3ecbbce3ed4de45567a8ec18
+  image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
   location: d5cf8598915965547c3f36761ae9cc4f4e87d22e
   url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
 

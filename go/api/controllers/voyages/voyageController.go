@@ -103,9 +103,9 @@ func GetVoyage(c *gin.Context) {
 // @Router      /api/voyages [post]
 func CreateVoyage(c *gin.Context) {
 
-var featureToggles = map[string]bool{
-    "active_voyage": true,
-}
+	var featureToggles = map[string]bool{
+		"active_voyage": true,
+	}
 	enabled, exists := featureToggles["active_voyage"]
 	if !exists || !enabled {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Vous ne pouvez pas créer un voyage"})
@@ -114,10 +114,10 @@ var featureToggles = map[string]bool{
 
 	var input struct {
 		Destination string            `json:"destination"`
-		DateAller        time.Time         `json:"dateAller"`
-		DateRetour        time.Time         `json:"dateRetour"`
+		DateAller   time.Time         `json:"dateAller"`
+		DateRetour  time.Time         `json:"dateRetour"`
 		Activities  []models.Activity `json:"activities"`
-		Hotels  []models.Hotel `json:"hotels"`
+		Hotels      []models.Hotel    `json:"hotels"`
 	}
 
 	// Bind JSON input to the input struct
@@ -127,13 +127,12 @@ var featureToggles = map[string]bool{
 		return
 	}
 
-
 	voyage := models.Voyage{
 		Destination: input.Destination,
-		DateAller:        input.DateAller,
-		DateRetour:        input.DateRetour,
+		DateAller:   input.DateAller,
+		DateRetour:  input.DateRetour,
 		Activities:  input.Activities,
-		Hotels:  input.Hotels,
+		Hotels:      input.Hotels,
 	}
 
 	if err := initializers.DB.Create(&voyage).Error; err != nil {
@@ -224,7 +223,6 @@ func UpdatePutVoyageHotel(c *gin.Context) {
 	c.JSON(http.StatusOK, voyage)
 }
 
-
 // DeleteVoyage godoc
 //
 //	@Summary		Delete a voyage
@@ -262,9 +260,9 @@ func DeleteVoyage(c *gin.Context) {
 	}
 
 	if err := initializers.DB.Model(&voyage).Association("Hotels").Clear(); err != nil {
-    		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
-    		return
-    	}
+		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		return
+	}
 
 	// Supprimer la destination
 	if err := initializers.DB.Delete(&voyage).Error; err != nil {
