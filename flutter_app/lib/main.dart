@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_app/views/groupe_detail/groupe_detail_screen.dart';
 import 'package:flutter_app/views/login/login_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_app/providers/group_voyage_provider.dart';
@@ -16,6 +19,7 @@ import 'package:flutter_app/views/register/register_screen.dart';
 import 'package:flutter_app/views/google_map/google_map_view.dart';
 import 'package:flutter_app/views/voyage/voyage_view.dart';
 import 'package:provider/provider.dart';
+import 'package:uni_links/uni_links.dart';
 import 'views/destination/destination_view.dart';
 import 'views/voyages/voyages_view.dart';
 import 'views/not-found/not_found.dart';
@@ -49,6 +53,8 @@ class _AppVoyageState extends State<MyApp> {
   final VoyageProvider voyageProvider = VoyageProvider();
   Locale _locale = const Locale('fr', '');
   final GroupVoyageProvider groupVoyageProvider = GroupVoyageProvider();
+  StreamSubscription? _sub;
+
 
   @override
   void initState() {
@@ -61,6 +67,45 @@ class _AppVoyageState extends State<MyApp> {
   void setLocale(Locale locale) {
     setState(() {
       _locale = locale;
+    });
+  }
+
+  @override
+  void dispose() {
+    _sub?.cancel();
+    super.dispose();
+  }
+
+  void initUniLinks() async {
+    _sub = linkStream.listen((String link) async {
+      // Gérer le lien profond ici
+      Uri uri = Uri.parse(link);
+      if (uri.pathSegments.contains('join')) {
+        // Extraire les paramètres nécessaires
+        int groupeId = int.parse(uri.pathSegments[1]);
+        String? token = uri.queryParameters['token'];
+
+        // Utiliser GroupProvider pour rejoindre le groupe
+        try {
+          await groupVoyageProvider.JoinGroup(groupeId, token);
+
+          // Rediriger vers la page de détail du groupe
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => GroupeDetailScreen(
+                groupeId: groupeId,
+               // token: token
+              ),
+            ),
+          );
+        } catch (e) {
+          // Gérer les erreurs si la tentative de rejoindre échoue
+          print('Erreur lors de la tentative de rejoindre le groupe: $e');
+        }
+      }
+        } as void Function(String? event)?, onError: (err) {
+      // Gérer les erreurs de lien profond ici
     });
   }
 

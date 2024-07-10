@@ -4,7 +4,6 @@ import 'package:flutter_app/providers/voyage_provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../models/activity_model.dart';
 
 class GoogleMapViewHotel extends StatefulWidget {
   static const String routeName = '/google-map-hotel';

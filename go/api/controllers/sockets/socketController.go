@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"log"
 )
 
 // Structure pour gérer les clients WebSocket et la diffusion des messages
@@ -32,6 +33,7 @@ var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 	CheckOrigin: func(r *http.Request) bool {
+		// Permettre toutes les origines (à restreindre en production)
 		return true
 	},
 }
@@ -40,6 +42,7 @@ var upgrader = websocket.Upgrader{
 func HandleConnections(c *gin.Context) {
 	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
+		log.Printf("Failed to upgrade to WebSocket: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upgrade to WebSocket"})
 		return
 	}
@@ -49,27 +52,35 @@ func HandleConnections(c *gin.Context) {
 	WebSocket.clients[ws] = true
 	WebSocket.mutex.Unlock()
 
+	log.Printf("New client connected")
+
 	for {
 		var msg ChatMessage
 		err := ws.ReadJSON(&msg)
 		if err != nil {
+			log.Printf("Error reading JSON: %v", err)
 			WebSocket.mutex.Lock()
 			delete(WebSocket.clients, ws)
 			WebSocket.mutex.Unlock()
 			break
 		}
+		log.Printf("Message received: %+v", msg)
 		WebSocket.broadcast <- msg
 	}
+
+	log.Printf("Client disconnected")
 }
 
 // Fonction pour gérer la diffusion des messages
 func HandleMessages() {
 	for {
 		msg := <-WebSocket.broadcast
+		log.Printf("Broadcasting message: %+v", msg)
 		WebSocket.mutex.Lock()
 		for client := range WebSocket.clients {
 			err := client.WriteJSON(msg)
 			if err != nil {
+				log.Printf("Error writing JSON: %v", err)
 				client.Close()
 				delete(WebSocket.clients, client)
 			}

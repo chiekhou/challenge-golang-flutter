@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'member_model.dart';
 
 class Groupe {

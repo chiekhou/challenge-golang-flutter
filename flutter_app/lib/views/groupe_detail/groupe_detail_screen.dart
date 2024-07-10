@@ -8,9 +8,11 @@ import '../../providers/group_voyage_provider.dart';
 
 class GroupeDetailScreen extends StatelessWidget {
   final int groupeId;
+  final String? token;
   //final int userId;
+  final TextEditingController emailController = TextEditingController();
 
-  const GroupeDetailScreen({super.key, required this.groupeId});
+  GroupeDetailScreen({super.key, required this.groupeId, this.token});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +20,7 @@ class GroupeDetailScreen extends StatelessWidget {
     Groupe groupe = groupVoyageProvider.getGroupeById(groupeId);
 
     return DefaultTabController(
-      length: 2, // Le nombre d'onglets
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           title: Text('Détail de groupe'),
@@ -26,6 +28,7 @@ class GroupeDetailScreen extends StatelessWidget {
             tabs: [
               Tab(text: groupe.nom),
               Tab(text: 'Chat'),
+              Tab(text: 'Membres'),
             ],
           ),
         ),
@@ -41,15 +44,62 @@ class GroupeDetailScreen extends StatelessWidget {
                   SizedBox(height: 8),
                   Text('Budget: ${groupe.budget?.toString() ?? 'Pas de budget'}'),
                   SizedBox(height: 16),
-                  Text('Membres:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                ],
+              ),
+            ),
+            // Onglet Chat
+            GroupChat(groupeId: groupeId),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  TextFormField(
+                    controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    cursorColor: Colors.blue,
+                    textInputAction: TextInputAction.done,
+                    decoration: InputDecoration(
+                      hintText: 'Invitez un ami en entrant son email'
+                    ),
+                  ),
+                  ElevatedButton(
+                      onPressed: ()async{
+                      bool success = await groupVoyageProvider.SendInvitation(this.groupeId, emailController.text);
+                      if(success){
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Invitation envoyée!')));
+                      }else{
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Echec de l'envoie")));
+                      }
+                      },
+                      child: Text('Envoyer une invitation')
+                  ),
+                  Text('Membres:',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold
+                      )
+                  ),
                   Expanded(
                     child: ListView.builder(
                       itemCount: groupe.members.length,
                       itemBuilder: (context, index) {
                         Member member = groupe.members[index];
-                        return ListTile(
-                          title: Text('${member.first_name} ${member.last_name}'),
-                          subtitle: Text(member.email),
+                        return Card(
+                          child: SizedBox(
+                            height: 80,
+                            child: ListTile(
+                              leading: CircleAvatar(
+                          /*      backgroundImage: member.photo != null && member.photo.isNotEmpty
+                                    ? NetworkImage(member.photo)
+                                    : AssetImage('../../assets/images/img.png'),*/
+                              ),
+                              title: Text(member.username),
+                              subtitle: Text(member.email),
+                            ),
+                          ),
+                         // title: Text('${member.username}'),
+                          //subtitle: Text(member.email),
                         );
                       },
                     ),
@@ -57,8 +107,6 @@ class GroupeDetailScreen extends StatelessWidget {
                 ],
               ),
             ),
-            // Onglet Chat
-            GroupChat(groupeId: groupeId),
           ],
         ),
       ),

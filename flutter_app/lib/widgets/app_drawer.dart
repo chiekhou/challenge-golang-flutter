@@ -188,18 +188,6 @@ class _AppDrawerState extends State<AppDrawer> {
               }
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.logout),
-            title: Text(AppLocalizations.of(context)!.deconnexion),
-            onTap: () async {
-              final authProvider = Provider.of<AuthProvider>(context, listen: false);
-              await authProvider.logout();
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (BuildContext context) => const LoginScreen()),
-              );
-            },
-          ),
           SwitchListTile(
             title: Text(AppLocalizations.of(context)!.toogle_drawer),
             value: isFeatureEnabled,

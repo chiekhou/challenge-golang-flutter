@@ -1,6 +1,5 @@
 import 'dart:collection';
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_app/models/groupe_model.dart';
@@ -156,18 +155,13 @@ class GroupVoyageProvider extends ChangeNotifier{
     }
   }
 
-  Future<void>JoinGroup(int _gorupId, String _token)async{
+  Future<void>JoinGroup(int _gorupId, String? _token)async{
     try{
-      final String? authToken = await _storage.read(key: 'auth_token');
-      if (authToken == null) {
-        throw Exception('Utilisateur non connecté');
-      }
-
-      final response = await http.post(
+      final response = await http.get(
         Uri.parse('http://$host:8080/groupes/$_gorupId/join?token=$_token'),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $authToken',
+          //'Authorization': 'Bearer $authToken',
         },
       );
       if (response.statusCode != 200) {

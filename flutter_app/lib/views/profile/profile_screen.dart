@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_input/image_input.dart';
 import 'package:provider/provider.dart';
@@ -25,7 +26,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+        title: Text('Profil'),
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _profileFuture,
@@ -38,17 +39,78 @@ class _ProfileScreenState extends State<ProfileScreen> {
             var profileData = snapshot.data!['user'];
             return Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ProfileAvatar(
-
-                  ),
-                  Text('Nom: ${profileData['last_name']}', style: TextStyle(fontSize: 18)),
-                  Text('Prénom: ${profileData['first_name']}', style: TextStyle(fontSize: 18)),
-                  Text('Nom: ${profileData['last_name']}', style: TextStyle(fontSize: 18)),
-                  Text('Email: ${profileData['email']}', style: TextStyle(fontSize: 18)),
-                ],
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: ProfileAvatar(
+                        radius: 50,
+                        allowEdit: true,
+                        addImageIcon: Container(
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primaryContainer,
+                              borderRadius: BorderRadius.circular(100)),
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Icon(Icons.add_a_photo),
+                          ),
+                        ),
+                        removeImageIcon: Container(
+                          decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primaryContainer,
+                              borderRadius: BorderRadius.circular(100)),
+                          child: const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Icon(Icons.close),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    TextFormField(
+                      initialValue: profileData['username'],
+                      decoration: InputDecoration(
+                        labelText: 'Nom d\'utilisateur',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    TextFormField(
+                      initialValue: profileData['first_name'],
+                      decoration: InputDecoration(
+                        labelText: 'Prénom',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    TextFormField(
+                      initialValue: profileData['last_name'],
+                      decoration: InputDecoration(
+                        labelText: 'Nom',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    TextFormField(
+                      initialValue: profileData['email'],
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        alignment: Alignment.center,
+                      ),
+                      onPressed: () {
+                        // Logique de mise à jour des coordonnées
+                      },
+                      child: Text('Mettre à jour mes coordonnées'),
+                    ),
+                  ],
+                ),
               ),
             );
           } else {

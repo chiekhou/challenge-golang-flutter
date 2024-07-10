@@ -23,7 +23,7 @@ class _GroupChatState extends State<GroupChat> {
   void initState() {
     super.initState();
     channel = WebSocketChannel.connect(
-      Uri.parse('http://$host:8080/ws'),
+      Uri.parse('ws://$host:8080/ws'),
     );
     channel.stream.listen((message) {
       setState(() {
@@ -36,7 +36,7 @@ class _GroupChatState extends State<GroupChat> {
     if (_controller.text.isNotEmpty) {
       final message = jsonEncode({
         'group_id': widget.groupeId,
-        'user_id': widget,
+        'user_id': 1,
         'content': _controller.text,
       });
       channel.sink.add(message);
@@ -60,6 +60,7 @@ class _GroupChatState extends State<GroupChat> {
             itemBuilder: (context, index) {
               final message = _messages[index];
               return ListTile(
+                leading: CircleAvatar(),
                 title: Text(message['content']),
                 subtitle: Text('User ID: ${message['user_id']}'),
               );

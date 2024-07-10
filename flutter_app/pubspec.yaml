@@ -55,6 +55,8 @@ dependencies:
 
   toggle_switch: ^2.3.0
   country_flags: ^3.0.0
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
 
 dev_dependencies:
   flutter_test:
