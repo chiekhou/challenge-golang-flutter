@@ -34,7 +34,7 @@ func main() {
 	routes.FlippingRoutes(server)
 
 	// Route pour gérer les connexions WebSocket
-	server.GET("/ws", sockets.HandleConnections) // Utiliser controllers.HandleConnections
+	server.GET("/ws", sockets.HandleConnections)
 
 	// Lancer la gestion des messages en arrière-plan
 	go sockets.HandleMessages()
@@ -42,6 +42,6 @@ func main() {
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	err := server.Run(":8080")
 	if err != nil {
-		return
+		panic(err)
 	}
 }

@@ -3,8 +3,8 @@ package routes
 import (
 	"example/hello/api/controllers/activity"
 	"example/hello/api/controllers/auth"
-    flipping "example/hello/api/controllers/flipping"
 	"example/hello/api/controllers/destinations"
+	flipping "example/hello/api/controllers/flipping"
 	groupVoyage "example/hello/api/controllers/groupeVoyage"
 	voyage "example/hello/api/controllers/voyages"
 	"example/hello/api/middlewares"
@@ -44,7 +44,7 @@ func DestinationRoutes(r *gin.Engine) {
 func ActivityRoutes(r *gin.Engine) {
 	r.POST("/api/activity/images", activity.UploadImage)
 	r.POST("/create_group", middlewares.CheckAuth, groupVoyage.CreateGroup)
-	r.POST("/groupes/:group_id/join", middlewares.CheckAuth, groupVoyage.Join)
+	r.GET("/groupes/:group_id/join", groupVoyage.Join)
 	r.POST("/groupes/:group_id/send_invitation", middlewares.CheckAuth, groupVoyage.SendInvitation)
 	r.PUT("/groupes/:group_id/update_budget", middlewares.CheckAuth, groupVoyage.UpdateBudget)
 	r.GET("/groupes/my_groups", middlewares.CheckAuth, groupVoyage.GetMyGroups)
@@ -56,4 +56,3 @@ func FlippingRoutes(r *gin.Engine) {
 	r.PUT("/api/flipping/feature", flipping.UpdateFeatureToggle)
 
 }
-

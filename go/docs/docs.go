@@ -1151,7 +1151,7 @@ const docTemplate = `{
             }
         },
         "/groupes/{group_id}/join": {
-            "post": {
+            "get": {
                 "security": [
                     {
                         "Bearer": []

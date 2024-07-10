@@ -226,7 +226,7 @@ func SendInvitation(c *gin.Context) {
 		return
 	}
 
-	invitationURL := fmt.Sprintf("http://10.0.2.2:8080/invitation?group_id=%d&token=%s", groupID, token)
+	invitationURL := fmt.Sprintf("http://10.0.2.2:8080/groupes/%d/join?token=%s", groupID, token)
 
 	initializers.DB.Where("email=?", emailRequest.Email).First(&userFound)
 	if userFound.ID == 0 {
@@ -261,7 +261,7 @@ func SendInvitation(c *gin.Context) {
 // @Failure 400 {object} gin.H "Bad request"
 // @Failure 404 {object} gin.H "Not found"
 // @Failure 500 {object} gin.H "Internal server error"
-// @Router /groupes/{group_id}/join [post]
+// @Router /groupes/{group_id}/join [get]
 func Join(c *gin.Context) {
 	groupID := c.Param("group_id")
 	token := c.Query("token")

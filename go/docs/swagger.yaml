@@ -931,7 +931,7 @@ paths:
       tags:
       - Groupe Voyage
   /groupes/{group_id}/join:
-    post:
+    get:
       consumes:
       - application/json
       description: Permet à un utilisateur de rejoindre un groupe de groupeVoyage
