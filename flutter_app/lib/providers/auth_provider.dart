@@ -51,6 +51,7 @@ class AuthProvider extends ChangeNotifier{
   //Appel APi pour se loguer
   Future<bool> Login(String email, String password) async{
     try{
+
       final url = isSecure
           ? Uri.https(apiAuthority, '/login')
           : Uri.http(apiAuthority, '/login');

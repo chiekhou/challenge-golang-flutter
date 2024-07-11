@@ -647,7 +647,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Voyage data",
-                        "name": "voyage",
+                        "name": "groupeVoyage",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -683,7 +683,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Add by JSON voyage",
+                "description": "Add by JSON groupeVoyage",
                 "consumes": [
                     "application/json"
                 ],
@@ -693,11 +693,11 @@ const docTemplate = `{
                 "tags": [
                     "Voyages"
                 ],
-                "summary": "Add a voyage",
+                "summary": "Add a groupeVoyage",
                 "parameters": [
                     {
-                        "description": "Add voyage",
-                        "name": "voyage",
+                        "description": "Add groupeVoyage",
+                        "name": "groupeVoyage",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -735,7 +735,7 @@ const docTemplate = `{
         },
         "/api/voyages/delete/{id}": {
             "delete": {
-                "description": "Delete by voyage ID",
+                "description": "Delete by groupeVoyage ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -745,7 +745,7 @@ const docTemplate = `{
                 "tags": [
                     "Voyages"
                 ],
-                "summary": "Delete a voyage",
+                "summary": "Delete a groupeVoyage",
                 "parameters": [
                     {
                         "type": "integer",
@@ -796,11 +796,26 @@ const docTemplate = `{
                 "tags": [
                     "Voyages"
                 ],
+<<<<<<< HEAD
                 "summary": "Update a trip",
                 "parameters": [
                     {
                         "description": "Voyage data",
                         "name": "voyage",
+=======
+                "summary": "Update a groupeVoyage",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Voyage ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update Voyage",
+                        "name": "groupeVoyage",
+>>>>>>> origin/feature/merge_voyage
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -848,7 +863,7 @@ const docTemplate = `{
                 "tags": [
                     "Voyages"
                 ],
-                "summary": "Show a voyage",
+                "summary": "Show a groupeVoyage",
                 "parameters": [
                     {
                         "type": "integer",
@@ -881,6 +896,77 @@ const docTemplate = `{
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/voyages.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/create_group": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Permet aux user de créé un groupe de groupeVoyage",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Groupe Voyage"
+                ],
+                "summary": "Créé un groupe de groupeVoyage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Mise à jour du budget",
+                        "name": "budget",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.GroupRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Groupe créé",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "404": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
                         }
                     }
                 }
@@ -944,14 +1030,23 @@ const docTemplate = `{
                 }
             }
         },
+<<<<<<< HEAD
         "/join_group": {
             "post": {
+=======
+        "/groupes/my_groups": {
+            "get": {
+>>>>>>> origin/feature/merge_voyage
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
+<<<<<<< HEAD
                 "description": "Envoie un mail d'invitation afin de de rejoindre un groupen de voyage",
+=======
+                "description": "Permet de voir le contenu du groupe de voyage pour celui qui l'a créé mais également les membres du groupe",
+>>>>>>> origin/feature/merge_voyage
                 "consumes": [
                     "application/json"
                 ],
@@ -959,9 +1054,71 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
+<<<<<<< HEAD
                     "Voyages"
                 ],
                 "summary": "Rejoindre un groupe de voyage",
+=======
+                    "Groupe Voyage"
+                ],
+                "summary": "Voir un groupe de voyage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "404": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
+        "/groupes/{group_id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Récupère un groupe de voyage par son ID si l'utilisateur est le créateur ou un membre du groupe",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Groupe Voyage"
+                ],
+                "summary": "Récupérer un groupe de voyage par ID",
+>>>>>>> origin/feature/merge_voyage
                 "parameters": [
                     {
                         "type": "string",
@@ -970,6 +1127,164 @@ const docTemplate = `{
                         "name": "Authorization",
                         "in": "header",
                         "required": true
+<<<<<<< HEAD
+=======
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID du groupe de voyage",
+                        "name": "group_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Détails du groupe de voyage",
+                        "schema": {
+                            "$ref": "#/definitions/models.GroupeVoyage"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
+        "/groupes/{group_id}/join": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Permet à un utilisateur de rejoindre un groupe de groupeVoyage en utilisant un token d'invitation",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Groupe Voyage"
+                ],
+                "summary": "Rejoindre un groupe de groupeVoyage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID du groupe de groupeVoyage",
+                        "name": "group_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Token d'invitation",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Vous avez rejoint le groupe avec succès",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
+        "/groupes/{group_id}/send_invitation": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Envoie un mail d'invitation afin de de rejoindre un groupen de groupeVoyage",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Groupe Voyage"
+                ],
+                "summary": "Invitation groupe de groupeVoyage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID du groupe de groupeVoyage",
+                        "name": "group_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Mise à jour du budget",
+                        "name": "budget",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.EmailRequest"
+                        }
+>>>>>>> origin/feature/merge_voyage
                     }
                 ],
                 "responses": {
@@ -1001,6 +1316,81 @@ const docTemplate = `{
                         "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/gin.H"
+<<<<<<< HEAD
+=======
+                        }
+                    }
+                }
+            }
+        },
+        "/groupes/{group_id}/update_budget": {
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Met à jour le budget d'un groupe de groupeVoyage spécifique en utilisant son ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Groupe Voyage"
+                ],
+                "summary": "Met à jour le budget d'un groupe de groupeVoyage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID du groupe de groupeVoyage",
+                        "name": "group_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Mise à jour du budget",
+                        "name": "budget",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/requests.UpdateBudgetRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Budget mis à jour avec succès",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "404": {
+                        "description": "Groupe de groupeVoyage non trouvé",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Impossible de mettre à jour le budget",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+>>>>>>> origin/feature/merge_voyage
                         }
                     }
                 }
@@ -1221,6 +1611,7 @@ const docTemplate = `{
                         "description": "Erreur interne du serveur",
                         "schema": {
                             "$ref": "#/definitions/gin.H"
+<<<<<<< HEAD
                         }
                     }
                 }
@@ -1283,6 +1674,8 @@ const docTemplate = `{
                         "description": "Internal server error",
                         "schema": {
                             "$ref": "#/definitions/gin.H"
+=======
+>>>>>>> origin/feature/merge_voyage
                         }
                     }
                 }
@@ -1370,7 +1763,34 @@ const docTemplate = `{
                 }
             }
         },
+<<<<<<< HEAD
         "models.Hotel": {
+=======
+        "models.GroupeVoyage": {
+            "type": "object",
+            "properties": {
+                "budget": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "members": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.User"
+                    }
+                },
+                "nom": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.User": {
+>>>>>>> origin/feature/merge_voyage
             "type": "object",
             "properties": {
                 "address": {
@@ -1379,6 +1799,18 @@ const docTemplate = `{
                 "destination": {
                     "type": "string"
                 },
+<<<<<<< HEAD
+=======
+                "first_name": {
+                    "type": "string"
+                },
+                "groupe_voyage": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.GroupeVoyage"
+                    }
+                },
+>>>>>>> origin/feature/merge_voyage
                 "id": {
                     "description": "gorm.Model",
                     "type": "integer"
@@ -1395,10 +1827,17 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+<<<<<<< HEAD
                 "price": {
                     "type": "number"
                 },
                 "status": {
+=======
+                "photo": {
+                    "type": "string"
+                },
+                "role_id": {
+>>>>>>> origin/feature/merge_voyage
                     "type": "integer"
                 }
             }
@@ -1444,6 +1883,20 @@ const docTemplate = `{
                 }
             }
         },
+<<<<<<< HEAD
+=======
+        "requests.GroupRequest": {
+            "type": "object",
+            "properties": {
+                "budget": {
+                    "type": "number"
+                },
+                "nom": {
+                    "type": "string"
+                }
+            }
+        },
+>>>>>>> origin/feature/merge_voyage
         "requests.LoginRequest": {
             "type": "object",
             "required": [
@@ -1462,6 +1915,7 @@ const docTemplate = `{
         "requests.ResetPasswordRequest": {
             "type": "object",
             "required": [
+<<<<<<< HEAD
                 "new_password",
                 "token"
             ],
@@ -1470,6 +1924,12 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "token": {
+=======
+                "password"
+            ],
+            "properties": {
+                "password": {
+>>>>>>> origin/feature/merge_voyage
                     "type": "string"
                 }
             }
@@ -1505,6 +1965,17 @@ const docTemplate = `{
                 }
             }
         },
+<<<<<<< HEAD
+=======
+        "requests.UpdateBudgetRequest": {
+            "type": "object",
+            "properties": {
+                "budget": {
+                    "type": "number"
+                }
+            }
+        },
+>>>>>>> origin/feature/merge_voyage
         "voyages.ErrorResponse": {
             "type": "object",
             "properties": {

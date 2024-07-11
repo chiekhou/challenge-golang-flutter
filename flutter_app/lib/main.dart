@@ -8,6 +8,7 @@ import 'package:flutter_app/providers/destination_provider.dart';
 import 'package:flutter_app/providers/voyage_provider.dart';
 import 'package:flutter_app/views/activity_fom/activity_form_view.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_app/views/login/login_screen.dart';
 import 'package:flutter_app/views/profile/profile_screen.dart';
 import 'package:flutter_app/views/register/register_screen.dart';
 import 'package:flutter_app/views/google_map/google_map_view.dart';
@@ -87,7 +88,7 @@ class _AppVoyageState extends State<MyApp> {
 
         debugShowCheckedModeBanner: false,
         routes: {
-          '/': (context) => const HomeView(),
+          '/': (context) => const LoginScreen(),
           DestinationView.routeName: (_) => const DestinationView(),
           VoyageView.routeName: (_) => const VoyageView(),
           VoyagesView.routeName: (_) => const VoyagesView(),

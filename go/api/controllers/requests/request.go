@@ -21,11 +21,27 @@ type EmailRequest struct {
 }
 
 type ResetPasswordRequest struct {
+<<<<<<< HEAD
 	Token       string `json:"token" binding:"required"`
 	NewPassword string `json:"new_password" binding:"required"`
+=======
+	Password string `json:"password" binding:"required"`
+>>>>>>> origin/feature/merge_voyage
 }
 
 type InvitationGroupRequest struct {
 	Email   string `form:"email" json:"email" binding:"required"`
 	GroupID uint64 `form:"group_id" json:"group_id" binding:"required"`
 }
+<<<<<<< HEAD
+=======
+
+type GroupRequest struct {
+	Budget float32 `json:"budget"`
+	Nom    string  `json:"nom"`
+}
+
+type UpdateBudgetRequest struct {
+	Budget float32 `json:"budget"`
+}
+>>>>>>> origin/feature/merge_voyage
