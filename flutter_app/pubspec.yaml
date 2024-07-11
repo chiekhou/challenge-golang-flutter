@@ -47,10 +47,20 @@ dependencies:
   google_maps_flutter: ^2.5.3
   url_launcher: ^6.2.4
   google_maps_flutter_ios: ^2.6.1
+  im_stepper: ^1.0.1+1
+  image_input: ^0.0.5
   flutter_dotenv: ^5.1.0
+  uni_links: ^0.5.1
+  web_socket_channel: ^3.0.0
+
   toggle_switch: ^2.3.0
   country_flags: ^3.0.0
+<<<<<<< HEAD
   analyzer: ^6.4.1
+=======
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+>>>>>>> origin/feature/merge_voyage
 
 dev_dependencies:
   flutter_test:

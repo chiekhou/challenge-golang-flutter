@@ -2,22 +2,30 @@ package utils
 
 import (
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+	"encoding/base64"
+	"fmt"
+>>>>>>> origin/feature/merge_voyage
 	"github.com/dgrijalva/jwt-go"
+	"os"
 	"time"
 )
 
-func GenerateToken(email string, groupID ...uint) (string, error) {
+func GenerateToken(email string, ID uint) (string, error) {
+	now := time.Now()
 	claims := jwt.MapClaims{
 		"email": email,
-		"exp":   time.Now().Add(time.Hour * 72).Unix(),
+		"ID":    ID,
+		"exp":   now.Add(time.Hour * 72).Unix(),
+		"iat":   now.Unix(),
 	}
 
-	if len(groupID) > 0 && groupID[0] != 0 {
-		claims["groupID"] = groupID[0]
-	}
+	secret := []byte(os.Getenv("SECRET"))
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
+<<<<<<< HEAD
 	tokenString, err := token.SignedString([]byte("SECRET"))
 =======
 	"encoding/base64"
@@ -42,6 +50,9 @@ func GenerateToken(email string, ID uint) (string, error) {
 
 	tokenString, err := token.SignedString(secret)
 >>>>>>> origin/feature/merge_voyage
+=======
+	tokenString, err := token.SignedString(secret)
+>>>>>>> origin/feature/merge_voyage
 	if err != nil {
 		return "", err
 	}
@@ -49,7 +60,10 @@ func GenerateToken(email string, ID uint) (string, error) {
 	return tokenString, nil
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> origin/feature/merge_voyage
 
 var jwtKey = []byte(os.Getenv("SECRET"))
 
@@ -82,4 +96,7 @@ func ValidateInvitationToken(token string) (uint, error) {
 
 	return userID, nil
 }
+<<<<<<< HEAD
+>>>>>>> origin/feature/merge_voyage
+=======
 >>>>>>> origin/feature/merge_voyage

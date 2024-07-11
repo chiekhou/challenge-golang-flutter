@@ -6,6 +6,7 @@ type SignupRequest struct {
 	LastName  string `form:"last_name" json:"last_name" binding:"required"`
 	Address   string `form:"address" json:"address" binding:"required"`
 	Email     string `form:"email" json:"email" binding:"required"`
+	Photo     string `form:"photo" json:"photo"swag init —parseDependency —parseInteral —parseDepth 1`
 	Username  string `json:"username" binding:"required"`
 	Password  string `json:"password" binding:"required"`
 }
@@ -22,8 +23,12 @@ type EmailRequest struct {
 
 type ResetPasswordRequest struct {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	Token       string `json:"token" binding:"required"`
 	NewPassword string `json:"new_password" binding:"required"`
+=======
+	Password string `json:"password" binding:"required"`
+>>>>>>> origin/feature/merge_voyage
 =======
 	Password string `json:"password" binding:"required"`
 >>>>>>> origin/feature/merge_voyage
@@ -34,7 +39,10 @@ type InvitationGroupRequest struct {
 	GroupID uint64 `form:"group_id" json:"group_id" binding:"required"`
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> origin/feature/merge_voyage
 
 type GroupRequest struct {
 	Budget float32 `json:"budget"`
@@ -44,4 +52,7 @@ type GroupRequest struct {
 type UpdateBudgetRequest struct {
 	Budget float32 `json:"budget"`
 }
+<<<<<<< HEAD
+>>>>>>> origin/feature/merge_voyage
+=======
 >>>>>>> origin/feature/merge_voyage

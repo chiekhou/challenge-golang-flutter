@@ -6,6 +6,10 @@ import (
 	"example/hello/internal/initializers"
 	"example/hello/internal/models"
 	mailer2 "example/hello/pkg/mailer"
+<<<<<<< HEAD
+=======
+	"fmt"
+>>>>>>> origin/feature/merge_voyage
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
@@ -60,7 +64,11 @@ func CreateGroup(c *gin.Context) {
 // @Produce json
 // @Security Bearer
 // @Param Authorization header string true "Insert your access token" default(Bearer Add access token here)
+<<<<<<< HEAD
 // @Sucess 200 {object} []models.GroupeVoyage "Liste groupe de voyage"
+=======
+// @Success 200 {object} []models.GroupeVoyage "Liste groupe de voyage"
+>>>>>>> origin/feature/merge_voyage
 // @Failure 400 {object} gin.H "Bad request"
 // @Failure 404 {object} gin.H "Bad request"
 // @Failure 409 {object} gin.H "Conflict"
@@ -75,20 +83,37 @@ func GetMyGroups(c *gin.Context) {
 	currentUser := user.(models.User)
 
 	var groups []models.GroupeVoyage
+<<<<<<< HEAD
 	//Obtenir les groupes par l'id du user
 	if err := initializers.DB.Where("user_id = ?", currentUser.ID).Find(&groups).Error; err != nil {
+=======
+
+	// Obtenir les groupes par l'id du user et précharger les membres
+	if err := initializers.DB.Where("user_id = ?", currentUser.ID).Preload("Members").Find(&groups).Error; err != nil {
+>>>>>>> origin/feature/merge_voyage
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+<<<<<<< HEAD
 	var members []models.GroupeVoyage
 	if err := initializers.DB.Joins("JOIN group_members ON group_members.group_id = groupe_voyages.id",
 		currentUser.ID).Find(&members).Error; err != nil {
+=======
+	// Ajouter les groupes où l'utilisateur est membre
+	var memberGroups []models.GroupeVoyage
+	subQuery := initializers.DB.Table("groupe_members").Select("groupe_voyage_id").Where("user_id = ?", currentUser.ID)
+	if err := initializers.DB.Where("id IN (?)", subQuery).Preload("Members").Find(&memberGroups).Error; err != nil {
+>>>>>>> origin/feature/merge_voyage
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+<<<<<<< HEAD
 	groups = append(groups, members...)
+=======
+	groups = append(groups, memberGroups...)
+>>>>>>> origin/feature/merge_voyage
 	c.JSON(http.StatusOK, groups)
 }
 
@@ -128,8 +153,13 @@ func GetGroupById(c *gin.Context) {
 
 	// Vérifiez si l'utilisateur est le créateur ou un membre du groupe
 	if group.UserID != currentUser.ID {
+<<<<<<< HEAD
 		var member models.GroupMember
 		if err := initializers.DB.Where("group_id = ? AND user_id = ?", groupID, currentUser.ID).First(&member).Error; err != nil {
+=======
+		var member models.GroupeMembers
+		if err := initializers.DB.Where("groupe_voyage_id = ? AND user_id = ?", groupID, currentUser.ID).First(&member).Error; err != nil {
+>>>>>>> origin/feature/merge_voyage
 			c.JSON(http.StatusForbidden, gin.H{"error": "Accès interdit"})
 			return
 		}
@@ -223,6 +253,11 @@ func SendInvitation(c *gin.Context) {
 		return
 	}
 
+<<<<<<< HEAD
+=======
+	invitationURL := fmt.Sprintf("http://10.0.2.2:8080/groupes/%d/join?token=%s", groupID, token)
+
+>>>>>>> origin/feature/merge_voyage
 	initializers.DB.Where("email=?", emailRequest.Email).First(&userFound)
 	if userFound.ID == 0 {
 		mailer2.SendGoMail(userFound.Email,
@@ -233,7 +268,11 @@ func SendInvitation(c *gin.Context) {
 		mailer2.SendGoMail(userFound.Email,
 			"Invitation dans un groupen e groupeVoyage",
 			"./pkg/mailer/templates/invite.html",
+<<<<<<< HEAD
 			token)
+=======
+			map[string]interface{}{"invitationURL": invitationURL})
+>>>>>>> origin/feature/merge_voyage
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -256,7 +295,11 @@ func SendInvitation(c *gin.Context) {
 // @Failure 400 {object} gin.H "Bad request"
 // @Failure 404 {object} gin.H "Not found"
 // @Failure 500 {object} gin.H "Internal server error"
+<<<<<<< HEAD
 // @Router /groupes/{group_id}/join [post]
+=======
+// @Router /groupes/{group_id}/join [get]
+>>>>>>> origin/feature/merge_voyage
 func Join(c *gin.Context) {
 	groupID := c.Param("group_id")
 	token := c.Query("token")
@@ -283,9 +326,15 @@ func Join(c *gin.Context) {
 	}
 
 	// Ajouter l'utilisateur au groupe en utilisant le modèle GroupMember
+<<<<<<< HEAD
 	groupMember := models.GroupMember{
 		GroupID: group.ID,
 		UserID:  user.ID,
+=======
+	groupMember := models.GroupeMembers{
+		GroupeVoyageID: group.ID,
+		UserID:         user.ID,
+>>>>>>> origin/feature/merge_voyage
 	}
 	if err := initializers.DB.Create(&groupMember).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Impossible de rejoindre le groupe de voyage"})

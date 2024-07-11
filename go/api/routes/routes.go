@@ -5,8 +5,13 @@ import (
 	"example/hello/api/controllers/auth"
 	"example/hello/api/controllers/destinations"
 <<<<<<< HEAD
+<<<<<<< HEAD
 	flipping "example/hello/api/controllers/flipping"
 =======
+	groupVoyage "example/hello/api/controllers/groupeVoyage"
+>>>>>>> origin/feature/merge_voyage
+=======
+	flipping "example/hello/api/controllers/flipping"
 	groupVoyage "example/hello/api/controllers/groupeVoyage"
 >>>>>>> origin/feature/merge_voyage
 	voyage "example/hello/api/controllers/voyages"
@@ -18,12 +23,16 @@ import (
 func RegisterRoutes(r *gin.Engine) {
 	r.POST("/Signup", auth.Signup)
 	r.POST("/login", auth.Login)
-	r.POST("/logout", auth.Logout)
+	r.POST("/logout", middlewares.CheckAuth, auth.Logout)
 	r.GET("/profile", middlewares.CheckAuth, auth.UserProfile)
 	r.POST("/forgotten_password", auth.MailRecovery)
 <<<<<<< HEAD
+<<<<<<< HEAD
 	r.PUT("/reset_password", auth.ResetPassword)
 	r.POST("/join_group", middlewares.CheckAuth, voyage.JoinGroup)
+=======
+	r.PUT("/reset_password", middlewares.CheckAuth, auth.ResetPassword)
+>>>>>>> origin/feature/merge_voyage
 =======
 	r.PUT("/reset_password", middlewares.CheckAuth, auth.ResetPassword)
 >>>>>>> origin/feature/merge_voyage
@@ -52,7 +61,11 @@ func DestinationRoutes(r *gin.Engine) {
 func ActivityRoutes(r *gin.Engine) {
 	r.POST("/api/activity/images", activity.UploadImage)
 	r.POST("/create_group", middlewares.CheckAuth, groupVoyage.CreateGroup)
+<<<<<<< HEAD
 	r.POST("/groupes/:group_id/join", middlewares.CheckAuth, groupVoyage.Join)
+=======
+	r.GET("/groupes/:group_id/join", groupVoyage.Join)
+>>>>>>> origin/feature/merge_voyage
 	r.POST("/groupes/:group_id/send_invitation", middlewares.CheckAuth, groupVoyage.SendInvitation)
 	r.PUT("/groupes/:group_id/update_budget", middlewares.CheckAuth, groupVoyage.UpdateBudget)
 	r.GET("/groupes/my_groups", middlewares.CheckAuth, groupVoyage.GetMyGroups)

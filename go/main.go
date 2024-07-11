@@ -1,6 +1,7 @@
 package main
 
 import (
+	"example/hello/api/controllers/sockets"
 	"example/hello/api/routes"
 	_ "example/hello/docs"
 	"example/hello/config"
@@ -62,9 +63,16 @@ func main() {
 	routes.DestinationRoutes(server)
 	routes.ActivityRoutes(server)
 	routes.FlippingRoutes(server)
+
+	// Route pour gérer les connexions WebSocket
+	server.GET("/ws", sockets.HandleConnections)
+
+	// Lancer la gestion des messages en arrière-plan
+	go sockets.HandleMessages()
+
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	err := server.Run(":8080")
 	if err != nil {
-		return
+		panic(err)
 	}
 }

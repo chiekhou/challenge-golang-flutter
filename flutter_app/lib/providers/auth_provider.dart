@@ -16,7 +16,9 @@ class AuthProvider extends ChangeNotifier{
       String firstname,
       String lastname,
       String password,
-      String username)async{
+      String username,
+      String photo
+      )async{
     try{
       final url = isSecure
           ? Uri.https(apiAuthority, '/Signup')
@@ -89,7 +91,7 @@ class AuthProvider extends ChangeNotifier{
   }
 
   //Appel pour se logout
-  Future<void> Logout() async {
+  Future<void> logout() async {
     try {
       String? token = await _storage.read(key: 'auth_token');
       print('Token récupéré: $token');
@@ -111,6 +113,7 @@ class AuthProvider extends ChangeNotifier{
         if (response.statusCode == 200) {
           await _storage.delete(key: 'auth_token');
           print('Déconnexion réussie');
+          notifyListeners();
         } else {
           print('Échec de la déconnexion: ${response.body}');
           throw Exception('Failed to logout');

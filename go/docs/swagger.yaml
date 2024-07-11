@@ -34,6 +34,21 @@ definitions:
       status:
         type: integer
     type: object
+  models.ChatMessage:
+    properties:
+      content:
+        type: string
+      created:
+        type: string
+      groupe_voyage_id:
+        type: integer
+      id:
+        type: integer
+      user:
+        $ref: '#/definitions/models.User'
+      user_id:
+        type: integer
+    type: object
   models.Destination:
     properties:
       activities:
@@ -53,6 +68,28 @@ definitions:
         type: string
     type: object
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+  models.GroupeVoyage:
+    properties:
+      budget:
+        type: number
+      chats:
+        items:
+          $ref: '#/definitions/models.ChatMessage'
+        type: array
+      id:
+        type: integer
+      members:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+      nom:
+        type: string
+      user_id:
+        type: integer
+    type: object
+>>>>>>> origin/feature/merge_voyage
   models.Hotel:
 =======
   models.GroupeVoyage:
@@ -108,6 +145,32 @@ definitions:
 >>>>>>> origin/feature/merge_voyage
         type: integer
     type: object
+  models.User:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      groupe_voyage:
+        items:
+          $ref: '#/definitions/models.GroupeVoyage'
+        type: array
+      id:
+        description: gorm.Model
+        type: integer
+      last_name:
+        type: string
+      password:
+        type: string
+      photo:
+        type: string
+      role_id:
+        type: integer
+      username:
+        type: string
+    type: object
   models.Voyage:
     properties:
       activities:
@@ -136,7 +199,10 @@ definitions:
     - email
     type: object
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> origin/feature/merge_voyage
   requests.GroupRequest:
     properties:
       budget:
@@ -144,6 +210,9 @@ definitions:
       nom:
         type: string
     type: object
+<<<<<<< HEAD
+>>>>>>> origin/feature/merge_voyage
+=======
 >>>>>>> origin/feature/merge_voyage
   requests.LoginRequest:
     properties:
@@ -158,6 +227,7 @@ definitions:
   requests.ResetPasswordRequest:
     properties:
 <<<<<<< HEAD
+<<<<<<< HEAD
       new_password:
         type: string
       token:
@@ -165,6 +235,12 @@ definitions:
     required:
     - new_password
     - token
+=======
+      password:
+        type: string
+    required:
+    - password
+>>>>>>> origin/feature/merge_voyage
 =======
       password:
         type: string
@@ -184,6 +260,8 @@ definitions:
         type: string
       password:
         type: string
+      photo:
+        type: string
       username:
         type: string
     required:
@@ -195,12 +273,18 @@ definitions:
     - username
     type: object
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> origin/feature/merge_voyage
   requests.UpdateBudgetRequest:
     properties:
       budget:
         type: number
     type: object
+<<<<<<< HEAD
+>>>>>>> origin/feature/merge_voyage
+=======
 >>>>>>> origin/feature/merge_voyage
   voyages.ErrorResponse:
     properties:
@@ -877,12 +961,21 @@ paths:
       tags:
       - Auth
 <<<<<<< HEAD
+<<<<<<< HEAD
   /join_group:
     post:
       consumes:
       - application/json
       description: Envoie un mail d'invitation afin de de rejoindre un groupen de
         voyage
+=======
+  /groupes/{group_id}:
+    get:
+      consumes:
+      - application/json
+      description: Récupère un groupe de voyage par son ID si l'utilisateur est le
+        créateur ou un membre du groupe
+>>>>>>> origin/feature/merge_voyage
 =======
   /groupes/{group_id}:
     get:
@@ -899,7 +992,10 @@ paths:
         required: true
         type: string
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> origin/feature/merge_voyage
       - description: ID du groupe de voyage
         in: path
         name: group_id
@@ -934,7 +1030,11 @@ paths:
       tags:
       - Groupe Voyage
   /groupes/{group_id}/join:
+<<<<<<< HEAD
     post:
+=======
+    get:
+>>>>>>> origin/feature/merge_voyage
       consumes:
       - application/json
       description: Permet à un utilisateur de rejoindre un groupe de groupeVoyage
@@ -1004,6 +1104,9 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/requests.EmailRequest'
+<<<<<<< HEAD
+>>>>>>> origin/feature/merge_voyage
+=======
 >>>>>>> origin/feature/merge_voyage
       produces:
       - application/json
@@ -1031,12 +1134,17 @@ paths:
       security:
       - Bearer: []
 <<<<<<< HEAD
+<<<<<<< HEAD
       summary: Rejoindre un groupe de voyage
       tags:
       - Voyages
 =======
       summary: Invitation groupe de groupeVoyage
       tags:
+=======
+      summary: Invitation groupe de groupeVoyage
+      tags:
+>>>>>>> origin/feature/merge_voyage
       - Groupe Voyage
   /groupes/{group_id}/update_budget:
     put:
@@ -1102,6 +1210,15 @@ paths:
       produces:
       - application/json
       responses:
+<<<<<<< HEAD
+=======
+        "200":
+          description: Liste groupe de voyage
+          schema:
+            items:
+              $ref: '#/definitions/models.GroupeVoyage'
+            type: array
+>>>>>>> origin/feature/merge_voyage
         "400":
           description: Bad request
           schema:
@@ -1123,6 +1240,9 @@ paths:
       summary: Voir un groupe de voyage
       tags:
       - Groupe Voyage
+<<<<<<< HEAD
+>>>>>>> origin/feature/merge_voyage
+=======
 >>>>>>> origin/feature/merge_voyage
   /login:
     post:
@@ -1166,7 +1286,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Delete your token session
+      description: Inform the client to delete the token
       parameters:
       - default: Bearer <Add access token here>
         description: Insert your access token
@@ -1307,45 +1427,4 @@ paths:
       summary: Réinitialiser le mot de passe
       tags:
       - Auth
-  /send_invitation:
-    post:
-      consumes:
-      - application/json
-      description: Envoie un mail d'invitation afin de de rejoindre un groupen de
-        voyage
-      parameters:
-      - default: Bearer <Add access token here>
-        description: Insert your access token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Invitation envoyée
-          schema:
-            $ref: '#/definitions/gin.H'
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/gin.H'
-        "404":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/gin.H'
-        "409":
-          description: Conflict
-          schema:
-            $ref: '#/definitions/gin.H'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/gin.H'
-      security:
-      - Bearer: []
-      summary: Invitation groupe de voyage
-      tags:
-      - Voyages
 swagger: "2.0"
