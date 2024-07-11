@@ -5,27 +5,24 @@ import 'dart:convert';
 
 class GroupChat extends StatefulWidget {
   final int groupeId;
+  final WebSocketChannel channel;
 
-  GroupChat({required this.groupeId});
+  GroupChat({required this.groupeId, required this.channel});
 
   @override
   _GroupChatState createState() => _GroupChatState();
 }
 
 class _GroupChatState extends State<GroupChat> {
-  late WebSocketChannel channel;
   final TextEditingController _controller = TextEditingController();
   final List<Map<String, dynamic>> _messages = [];
-  final String host = "10.0.2.2";
-
 
   @override
   void initState() {
     super.initState();
-    channel = WebSocketChannel.connect(
-      Uri.parse('ws://$host:8080/ws'),
-    );
-    channel.stream.listen((message) {
+
+    // Écoute des messages WebSocket
+    widget.channel.stream.listen((message) {
       setState(() {
         _messages.add(jsonDecode(message));
       });
@@ -35,18 +32,18 @@ class _GroupChatState extends State<GroupChat> {
   void _sendMessage() {
     if (_controller.text.isNotEmpty) {
       final message = jsonEncode({
-        'group_id': widget.groupeId,
+        'groupe_voyage_id': widget.groupeId,
         'user_id': 1,
         'content': _controller.text,
       });
-      channel.sink.add(message);
+      widget.channel.sink.add(message);
       _controller.clear();
     }
   }
 
   @override
   void dispose() {
-    channel.sink.close(status.goingAway);
+    widget.channel.sink.close(status.goingAway);
     super.dispose();
   }
 
