@@ -1,0 +1,1272 @@
+definitions:
+  activity.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  destinations.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  gin.H:
+    additionalProperties: {}
+    type: object
+  models.Activity:
+    properties:
+      address:
+        type: string
+      destination:
+        type: string
+      id:
+        description: gorm.Model
+        type: integer
+      image:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      price:
+        type: number
+      status:
+        type: integer
+    type: object
+  models.ChatMessage:
+    properties:
+      content:
+        type: string
+      created:
+        type: string
+      groupe_voyage_id:
+        type: integer
+      id:
+        type: integer
+      user:
+        $ref: '#/definitions/models.User'
+      user_id:
+        type: integer
+    type: object
+  models.Destination:
+    properties:
+      activities:
+        items:
+          $ref: '#/definitions/models.Activity'
+        type: array
+      hotels:
+        items:
+          $ref: '#/definitions/models.Hotel'
+        type: array
+      id:
+        description: gorm.Model
+        type: integer
+      image:
+        type: string
+      name:
+        type: string
+    type: object
+  models.GroupeVoyage:
+    properties:
+      budget:
+        type: number
+      chats:
+        items:
+          $ref: '#/definitions/models.ChatMessage'
+        type: array
+      id:
+        type: integer
+      members:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+      nom:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  models.Hotel:
+    properties:
+      address:
+        type: string
+      destination:
+        type: string
+      id:
+        description: gorm.Model
+        type: integer
+      image:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      price:
+        type: number
+      status:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      groupe_voyage:
+        items:
+          $ref: '#/definitions/models.GroupeVoyage'
+        type: array
+      id:
+        description: gorm.Model
+        type: integer
+      last_name:
+        type: string
+      password:
+        type: string
+      photo:
+        type: string
+      role_id:
+        type: integer
+      username:
+        type: string
+    type: object
+  models.Voyage:
+    properties:
+      activities:
+        items:
+          $ref: '#/definitions/models.Activity'
+        type: array
+      dateAller:
+        type: string
+      dateRetour:
+        type: string
+      destination:
+        type: string
+      hotels:
+        items:
+          $ref: '#/definitions/models.Hotel'
+        type: array
+      id:
+        description: gorm.Model
+        type: integer
+    type: object
+  requests.EmailRequest:
+    properties:
+      email:
+        type: string
+    required:
+    - email
+    type: object
+  requests.GroupRequest:
+    properties:
+      budget:
+        type: number
+      nom:
+        type: string
+    type: object
+  requests.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  requests.ResetPasswordRequest:
+    properties:
+      new_password:
+        type: string
+      password:
+        type: string
+      token:
+        type: string
+    required:
+    - new_password
+    - password
+    - token
+    type: object
+  requests.SignupRequest:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      photo:
+        type: string
+      username:
+        type: string
+    required:
+    - address
+    - email
+    - first_name
+    - last_name
+    - password
+    - username
+    type: object
+  requests.UpdateBudgetRequest:
+    properties:
+      budget:
+        type: number
+    type: object
+  voyages.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /Signup:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user with the provided information
+      parameters:
+      - description: User data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/requests.SignupRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created
+          schema:
+            $ref: '#/definitions/requests.SignupRequest'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Allow you to register as a new User
+      tags:
+      - Auth
+  /api/activity/images:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload file
+      parameters:
+      - description: account image
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Activity'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/activity.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/activity.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/activity.ErrorResponse'
+      summary: Upload image
+      tags:
+      - Activity
+  /api/destination/{id}/activities/verify/{name}:
+    get:
+      consumes:
+      - application/json
+      description: verify by json activity name
+      parameters:
+      - description: Destination ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Activity Name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Destination'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+      summary: Verify an activity Name
+      tags:
+      - Destinations
+  /api/destinations:
+    get:
+      consumes:
+      - application/json
+      description: Get Destinations
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Destination'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+      summary: List Destinations
+      tags:
+      - Destinations
+    post:
+      consumes:
+      - application/json
+      description: Add by JSON destination
+      parameters:
+      - description: Add destination
+        in: body
+        name: destination
+        required: true
+        schema:
+          $ref: '#/definitions/models.Destination'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Destination'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+      summary: Add a destination
+      tags:
+      - Destinations
+  /api/destinations/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get string by ID
+      parameters:
+      - description: Destination ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Destination'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+      summary: Show a destination
+      tags:
+      - Destinations
+  /api/destinations/{id}/activity:
+    post:
+      consumes:
+      - application/json
+      description: add by json activity destination
+      parameters:
+      - description: Destination ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Activity to add
+        in: body
+        name: activity
+        required: true
+        schema:
+          $ref: '#/definitions/models.Activity'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Destination'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+      summary: Add a activity to destination
+      tags:
+      - Destinations
+  /api/destinations/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete by destination ID
+      parameters:
+      - description: Destination ID
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Destination'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+      summary: Delete a destination
+      tags:
+      - Destinations
+  /api/destinations/update/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Update by json destination
+      parameters:
+      - description: Destination ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Destination
+        in: body
+        name: destination
+        required: true
+        schema:
+          $ref: '#/definitions/models.Destination'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Destination'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/destinations.ErrorResponse'
+      summary: Update a destination
+      tags:
+      - Destinations
+  /api/flipping/feature:
+    get:
+      description: Récupère l'état (activé ou désactivé) d'une fonctionnalité donnée.
+      parameters:
+      - description: Nom de la fonctionnalité
+        in: query
+        name: feature
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: boolean
+            type: object
+        "400":
+          description: Feature query parameter is missing
+          schema:
+            type: string
+        "404":
+          description: Feature not found
+          schema:
+            type: string
+      summary: Récupère l'état d'une fonctionnalité
+      tags:
+      - Features
+    put:
+      consumes:
+      - application/json
+      description: Permet de mettre à jour l'état (activé ou désactivé) d'une fonctionnalité
+        spécifique.
+      parameters:
+      - description: Nom de la fonctionnalité
+        example: '"create_voyage"'
+        in: query
+        name: feature
+        required: true
+        type: string
+      - description: Nouvel état de la fonctionnalité
+        in: body
+        name: state
+        required: true
+        schema:
+          additionalProperties:
+            type: boolean
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: boolean
+            type: object
+        "400":
+          description: Feature query parameter is missing
+          schema:
+            type: string
+        "404":
+          description: Feature not found
+          schema:
+            type: string
+      summary: Met à jour l'état d'une fonctionnalité
+      tags:
+      - Features
+  /api/voyages:
+    get:
+      consumes:
+      - application/json
+      description: Get Voyages
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Voyage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+      summary: List Voyages
+      tags:
+      - Voyages
+    post:
+      consumes:
+      - application/json
+      description: Add by JSON groupeVoyage
+      parameters:
+      - description: Add groupeVoyage
+        in: body
+        name: groupeVoyage
+        required: true
+        schema:
+          $ref: '#/definitions/models.Voyage'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Voyage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+      summary: Add a groupeVoyage
+      tags:
+      - Voyages
+    put:
+      consumes:
+      - application/json
+      description: Update a trip by ID
+      parameters:
+      - description: Voyage data
+        in: body
+        name: groupeVoyage
+        required: true
+        schema:
+          $ref: '#/definitions/models.Voyage'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Voyage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+      summary: Update a trip
+      tags:
+      - Voyages
+  /api/voyages/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get string by ID
+      parameters:
+      - description: Voyages ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Voyage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+      summary: Show a groupeVoyage
+      tags:
+      - Voyages
+  /api/voyages/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete by groupeVoyage ID
+      parameters:
+      - description: Voyage ID
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Voyage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+      summary: Delete a groupeVoyage
+      tags:
+      - Voyages
+  /api/voyages/hotel:
+    put:
+      consumes:
+      - application/json
+      description: Update a trip by ID
+      parameters:
+      - description: Voyage data
+        in: body
+        name: voyage
+        required: true
+        schema:
+          $ref: '#/definitions/models.Voyage'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Voyage'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/voyages.ErrorResponse'
+      summary: Update a trip
+      tags:
+      - Voyages
+  /create_group:
+    post:
+      consumes:
+      - application/json
+      description: Permet aux user de créé un groupe de groupeVoyage
+      parameters:
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Mise à jour du budget
+        in: body
+        name: budget
+        required: true
+        schema:
+          $ref: '#/definitions/requests.GroupRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Groupe créé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Créé un groupe de groupeVoyage
+      tags:
+      - Groupe Voyage
+  /forgotten_password:
+    post:
+      consumes:
+      - application/json
+      description: Envoie un mail de reset de mot de passe
+      parameters:
+      - description: User data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/requests.EmailRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Connexion réussie
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Envoie un mail à un user existant afin de réinitialiser son mot de
+        passe
+      tags:
+      - Auth
+  /groupes/{group_id}:
+    get:
+      consumes:
+      - application/json
+      description: Récupère un groupe de voyage par son ID si l'utilisateur est le
+        créateur ou un membre du groupe
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ID du groupe de voyage
+        in: path
+        name: group_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Détails du groupe de voyage
+          schema:
+            $ref: '#/definitions/models.GroupeVoyage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/gin.H'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Récupérer un groupe de voyage par ID
+      tags:
+      - Groupe Voyage
+  /groupes/{group_id}/join:
+    get:
+      consumes:
+      - application/json
+      description: Permet à un utilisateur de rejoindre un groupe de groupeVoyage
+        en utilisant un token d'invitation
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ID du groupe de groupeVoyage
+        in: path
+        name: group_id
+        required: true
+        type: string
+      - description: Token d'invitation
+        in: query
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Vous avez rejoint le groupe avec succès
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Rejoindre un groupe de groupeVoyage
+      tags:
+      - Groupe Voyage
+  /groupes/{group_id}/send_invitation:
+    post:
+      consumes:
+      - application/json
+      description: Envoie un mail d'invitation afin de de rejoindre un groupen de
+        groupeVoyage
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ID du groupe de groupeVoyage
+        in: path
+        name: group_id
+        required: true
+        type: string
+      - description: Mise à jour du budget
+        in: body
+        name: budget
+        required: true
+        schema:
+          $ref: '#/definitions/requests.EmailRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Invitation envoyée
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Invitation groupe de groupeVoyage
+      tags:
+      - Groupe Voyage
+  /groupes/{group_id}/update_budget:
+    put:
+      consumes:
+      - application/json
+      description: Met à jour le budget d'un groupe de groupeVoyage spécifique en
+        utilisant son ID
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ID du groupe de groupeVoyage
+        in: path
+        name: group_id
+        required: true
+        type: string
+      - description: Mise à jour du budget
+        in: body
+        name: budget
+        required: true
+        schema:
+          $ref: '#/definitions/requests.UpdateBudgetRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Budget mis à jour avec succès
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Groupe de groupeVoyage non trouvé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Impossible de mettre à jour le budget
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Met à jour le budget d'un groupe de groupeVoyage
+      tags:
+      - Groupe Voyage
+  /groupes/my_groups:
+    get:
+      consumes:
+      - application/json
+      description: Permet de voir le contenu du groupe de voyage pour celui qui l'a
+        créé mais également les membres du groupe
+      parameters:
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Liste groupe de voyage
+          schema:
+            items:
+              $ref: '#/definitions/models.GroupeVoyage'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Voir un groupe de voyage
+      tags:
+      - Groupe Voyage
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: login to the app
+      parameters:
+      - description: User data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/requests.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Connexion réussie
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Allow you to log and have an JWT Token
+      tags:
+      - Auth
+  /logout:
+    post:
+      consumes:
+      - application/json
+      description: Inform the client to delete the token
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Déconnexion réussie
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Logout
+      tags:
+      - Auth
+  /profile:
+    get:
+      consumes:
+      - application/json
+      description: Retourne les informations du profil de l'utilisateur connecté
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: '#/definitions/gin.H'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Récupère le profil de l'utilisateur actuellement connecté
+      tags:
+      - Auth
+  /reset_password:
+    put:
+      consumes:
+      - application/json
+      description: Permet à l'utilisateur de réinitialiser son mot de passe en utilisant
+        un jeton de réinitialisation valide.
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Données pour réinitialiser le mot de passe
+        in: body
+        name: requests.ResetPasswordRequest
+        required: true
+        schema:
+          $ref: '#/definitions/requests.ResetPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Mot de passe réinitialisé avec succès
+        "400":
+          description: Token invalide ou expiré
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Erreur interne du serveur
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Réinitialiser le mot de passe
+      tags:
+      - Auth
+swagger: "2.0"
