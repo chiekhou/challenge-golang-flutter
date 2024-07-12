@@ -2,8 +2,8 @@ package main
 
 import (
 	"example/hello/api/routes"
-	_ "example/hello/docs"
 	"example/hello/config"
+	_ "example/hello/docs"
 	initializers2 "example/hello/internal/initializers"
 	"log"
 	"net/http"
@@ -18,7 +18,7 @@ import (
 )
 
 func init() {
-    config.LoadConfig()
+	config.LoadConfig()
 	initializers2.LoadEnvVariables()
 	initializers2.ConnectToDatabase()
 }
@@ -45,13 +45,13 @@ func main() {
 		log.Fatalf("Erreur lors de la configuration des proxys de confiance : %v", err)
 	}
 
-    allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
-    origins := strings.Split(allowedOrigins, ",")
+	allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
+	origins := strings.Split(allowedOrigins, ",")
 	// Configure CORS
 	config := cors.Config{
 		AllowOrigins:     origins,
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept","Authorization"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
 		AllowCredentials: true,
 	}
 
@@ -66,8 +66,14 @@ func main() {
 	routes.ActivityRoutes(server)
 	routes.FlippingRoutes(server)
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	err := server.Run(":8080")
-	if err != nil {
-		return
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	log.Printf("Listening on port %s", port)
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		log.Fatal(err)
 	}
 }
