@@ -16,7 +16,6 @@ class VoyageProvider extends ChangeNotifier {
   final apiAuthority = AppConfig.getApiAuthority();
   final isSecure = AppConfig.isSecure();
 
-
   UnmodifiableListView<Voyage> get voyages => UnmodifiableListView(_voyages);
   Future<void> fetchData() async {
 

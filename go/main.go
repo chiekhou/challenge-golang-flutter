@@ -1,7 +1,6 @@
 package main
 
 import (
-	"example/hello/api/controllers/sockets"
 	"example/hello/api/routes"
 	_ "example/hello/docs"
 	"example/hello/config"
@@ -26,7 +25,6 @@ func init() {
 
 func main() {
 
-
 	// Servir des fichiers statiques depuis le dossier assets
 	fs := http.FileServer(http.Dir("assets"))
 	http.Handle("/assets/", http.StripPrefix("/assets/", fs))
@@ -47,13 +45,17 @@ func main() {
 		log.Fatalf("Erreur lors de la configuration des proxys de confiance : %v", err)
 	}
 
+    allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
+    origins := strings.Split(allowedOrigins, ",")
 	// Configure CORS
-	server.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"},
+	config := cors.Config{
+		AllowOrigins:     origins,
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept","Authorization"},
 		AllowCredentials: true,
-	}))
+	}
+
+	server.Use(cors.New(config))
 
 	// Configurer le chemin pour servir les fichiers statiques
 	server.Static("/images", "./assets/images")
@@ -63,16 +65,9 @@ func main() {
 	routes.DestinationRoutes(server)
 	routes.ActivityRoutes(server)
 	routes.FlippingRoutes(server)
-
-	// Route pour gérer les connexions WebSocket
-	server.GET("/ws", sockets.HandleConnections)
-
-	// Lancer la gestion des messages en arrière-plan
-	go sockets.HandleMessages()
-
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	err := server.Run(":8080")
 	if err != nil {
-		panic(err)
+		return
 	}
 }

@@ -55,17 +55,14 @@ dependencies:
 
   toggle_switch: ^2.3.0
   country_flags: ^3.0.0
-<<<<<<< HEAD
   analyzer: ^6.4.1
-=======
   hive: ^2.2.3
   hive_flutter: ^1.1.0
->>>>>>> origin/feature/merge_voyage
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_secure_storage: ^5.0.2
+  flutter_secure_storage: ^9.2.2
   intl_utils: ^2.8.7
   build_runner: ^2.0.6
   build_web_compilers: ^4.0.10

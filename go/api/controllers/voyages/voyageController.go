@@ -53,11 +53,7 @@ func GetVoyages(c *gin.Context) {
 }
 
 // ShowVoyage godoc
-<<<<<<< HEAD
-// @Summary      Show a voyage
-=======
 // @Summary      Show a groupeVoyage
->>>>>>> origin/feature/merge_voyage
 // @Description  get string by ID
 // @Tags         Voyages
 // @Accept       json
@@ -149,57 +145,6 @@ func CreateVoyage(c *gin.Context) {
 
 }
 
-<<<<<<< HEAD
-=======
-// UpdateVoyage godoc
-// @Summary		Update a groupeVoyage
-// @Description	Update by json destination
-// @Tags		Voyages
-// @Accept		json
-// @Produce		json
-// @Param       id path int true "Voyage ID"
-// @Param       groupeVoyage body models.Voyage true "Update Voyage"
-// @Success      200  {object}  models.Voyage
-// @Failure      400  {object}  ErrorResponse
-// @Failure      404  {object}  ErrorResponse
-// @Failure      500  {object}  ErrorResponse
-// @Router			/api/voyages/update/{id} [patch]
-func UpdateVoyage(c *gin.Context) {
-	var input struct {
-		Destination string            `json:"destination"`
-		Date        time.Time         `json:"date"`
-		Activities  []models.Activity `json:"activities"`
-	}
-
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	var voyage models.Voyage
-	if err := initializers.DB.Preload("Activities").First(&voyage, c.Param("id")).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Voyage not found"})
-		return
-	}
-
-	var activities []models.Activity
-	if len(input.Activities) > 0 {
-		initializers.DB.Where("id IN ?", input.Activities).Find(&activities)
-	}
-
-	voyage.Destination = input.Destination
-	voyage.Date = input.Date
-	voyage.Activities = input.Activities
-
-	if err := initializers.DB.Save(&voyage).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"data": voyage})
-}
-
->>>>>>> origin/feature/merge_voyage
 // updateVoyage with Put godoc
 // @Summary Update a trip
 // @Description Update a trip by ID

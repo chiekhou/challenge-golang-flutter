@@ -2,15 +2,16 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_app/config/app_config.dart';
 import 'package:flutter_app/models/groupe_model.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 
 class GroupVoyageProvider extends ChangeNotifier{
-  final String host = "10.0.2.2";
-  final FlutterSecureStorage _storage = FlutterSecureStorage();
-  final String _baseUrl = "http://localhost:8080";
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final apiAuthority = AppConfig.getApiAuthority();
+  final isSecure = AppConfig.isSecure();
   List<Groupe> _groupes = [];
   UnmodifiableListView<Groupe> get groupes => UnmodifiableListView(_groupes);
 
@@ -18,11 +19,14 @@ class GroupVoyageProvider extends ChangeNotifier{
   //Créer un groupe
   Future<bool>CreateGroup(double budget, String nom)async{
     try{
+
+      final url = isSecure
+          ? Uri.https(apiAuthority, '/create_group')
+          : Uri.http(apiAuthority, '/create_group');
       String? token = await _storage.read(key: 'auth_token');
       if(token != null){
 
-        final response = await http.post(
-            Uri.parse('http://$host:8080/create_group'),
+        final response = await http.post(url,
             headers: {
               'Content-Type' : 'application/json',
               'Authorization' : 'Bearer $token'
@@ -48,11 +52,15 @@ class GroupVoyageProvider extends ChangeNotifier{
   //Update le budget
   Future<bool>UpdateBudget(int ID, double budget)async{
     try{
+
+      final url = isSecure
+          ? Uri.https(apiAuthority, '/groupes/$ID/update_budget')
+          : Uri.http(apiAuthority, '/groupes/$ID/update_budget');
+
       String? token = await _storage.read(key: 'auth_token');
 
       if(token != null){
-        final response = await http.put(
-          Uri.parse('http://$host:8080/groupes/$ID/update_budget'),
+        final response = await http.put(url,
           headers:{
             'Content-Type' : 'application/json',
             'Authorization' : 'Bearer $token'
@@ -77,15 +85,21 @@ class GroupVoyageProvider extends ChangeNotifier{
 
   //Récupérer les groupes par user
   Future<void> GetGroups() async {
+
+    final url = isSecure
+        ? Uri.https(apiAuthority, '/groupes/my_groups')
+        : Uri.http(apiAuthority, '/groupes/my_groups');
     String? token = await _storage.read(key: 'auth_token');
     if (token != null) {
-      final response = await http.get(
-        Uri.parse('http://$host:8080/groupes/my_groups'),
+      final response = await http.get(url,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token'
         },
       );
+
+      print(url);
+
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         if (responseData is List) {
@@ -108,10 +122,12 @@ class GroupVoyageProvider extends ChangeNotifier{
 
   //Groupe par ID
   Future<Map<String, dynamic>>GetGroupByID(int ID)async{
+    final url = isSecure
+        ? Uri.https(apiAuthority, '/groupes/$ID')
+        : Uri.http(apiAuthority, '/groupes/$ID');
     String? token = await _storage.read(key: 'auth_token');
     if(token != null){
-      final response = await http.get(
-        Uri.parse('http://$host:8080/groupes/$ID'),
+      final response = await http.get(url,
         headers: {
           'Content-Type' : 'application/json',
           'Authorization' : 'Bearer $token'
@@ -131,9 +147,13 @@ class GroupVoyageProvider extends ChangeNotifier{
   Future<bool>SendInvitation(int ID,String email)async{
     try{
       String? token = await _storage.read(key: 'auth_token');
+
+      final url = isSecure
+          ? Uri.https(apiAuthority, '/groupes/$ID/send_invitation')
+          : Uri.http(apiAuthority, '/groupes/$ID/send_invitation');
+
       if(token != null){
-        final response = await http.post(
-            Uri.parse('http://$host:8080/groupes/$ID/send_invitation'),
+        final response = await http.post(url,
             headers: {
               'Content-Type' : 'application/json',
               'Autorization' : 'Bearer $token'
@@ -157,8 +177,11 @@ class GroupVoyageProvider extends ChangeNotifier{
 
   Future<void>JoinGroup(int _gorupId, String? _token)async{
     try{
-      final response = await http.get(
-        Uri.parse('http://$host:8080/groupes/$_gorupId/join?token=$_token'),
+      final url = isSecure
+          ? Uri.https(apiAuthority, '/groupes/$_gorupId/join?token=$_token')
+          : Uri.http(apiAuthority, '/groupes/$_gorupId/join?token=$_token');
+
+      final response = await http.get(url,
         headers: {
           'Content-Type': 'application/json',
           //'Authorization': 'Bearer $authToken',

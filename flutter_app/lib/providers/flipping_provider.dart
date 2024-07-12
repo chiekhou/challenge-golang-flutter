@@ -16,16 +16,17 @@ class FlippingToggle extends ChangeNotifier {
   }
 }
 
+final queryParams = {'feature': 'activate_voyage'};
 final apiAuthority = AppConfig.getApiAuthority();
 final isSecure = AppConfig.isSecure();
 final url = isSecure
-    ? Uri.https(apiAuthority, 'api/flipping/feature?feature=active_voyage')
-    : Uri.http(apiAuthority, 'api/flipping/feature?feature=active_voyage');
+    ? Uri.https(apiAuthority, '/api/flipping/feature', queryParams)
+    : Uri.http(apiAuthority, '/api/flipping/feature', queryParams);
 
 Future<FlippingToggle> fetchFeatureToggles() async {
 
   final response = await http.get(url);
-
+  print('Fetching data from $url');
   if (response.statusCode == 200) {
     try {
       return FlippingToggle.fromJson(jsonDecode(response.body));

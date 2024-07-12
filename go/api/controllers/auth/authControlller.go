@@ -6,24 +6,8 @@ import (
 	"example/hello/internal/initializers"
 	"example/hello/internal/models"
 	mailer2 "example/hello/pkg/mailer"
-<<<<<<< HEAD
-<<<<<<< HEAD
-	jwt2 "github.com/dgrijalva/jwt-go"
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
-=======
-	"log"
-
-	//jwt2 "github.com/dgrijalva/jwt-go"
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
->>>>>>> origin/feature/merge_voyage
-=======
-	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v4"
->>>>>>> origin/feature/merge_voyage
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
@@ -188,26 +172,6 @@ func MailRecovery(c *gin.Context) {
 	}
 
 	var userFound models.User
-<<<<<<< HEAD
-<<<<<<< HEAD
-	initializers.DB.Where("email=?", EmailReq.Email).Find(&userFound)
-=======
-	initializers.DB.Where("email = ?", EmailReq.Email).Find(&userFound)
->>>>>>> origin/feature/merge_voyage
-
-	if userFound.ID == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Utilisateur non trouvé"})
-		return
-	}
-
-	// Générer le token en utilisant l'email et l'ID de l'utilisateur
-	token, err := utils.GenerateToken(userFound.Email, userFound.ID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur de génération de token"})
-		return
-	}
-
-=======
 	initializers.DB.Where("email = ?", EmailReq.Email).Find(&userFound)
 
 	if userFound.ID == 0 {
@@ -222,7 +186,6 @@ func MailRecovery(c *gin.Context) {
 		return
 	}
 
->>>>>>> origin/feature/merge_voyage
 	var emailData EmailData
 	emailData.urlToken = token
 
@@ -251,13 +214,6 @@ func MailRecovery(c *gin.Context) {
 // @Router /reset_password [put]
 func ResetPassword(c *gin.Context) {
 	var resetPassReq requests.ResetPasswordRequest
-<<<<<<< HEAD
-<<<<<<< HEAD
-	var jwtKey = []byte("SECRET")
-=======
->>>>>>> origin/feature/merge_voyage
-=======
->>>>>>> origin/feature/merge_voyage
 
 	if err := c.ShouldBindJSON(&resetPassReq); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -278,21 +234,6 @@ func ResetPassword(c *gin.Context) {
 	}
 
 	tokenString := authHeader[7:]
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-	log.Println("Received Token:", tokenString)
->>>>>>> origin/feature/merge_voyage
-
-	claims := &jwt.MapClaims{}
-	secret := []byte(os.Getenv("SECRET"))
-
-	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-		return secret, nil
-	})
-	if err != nil || !token.Valid {
-<<<<<<< HEAD
-=======
 	log.Println("Received Token:", tokenString)
 
 	claims := &jwt.MapClaims{}
@@ -303,19 +244,10 @@ func ResetPassword(c *gin.Context) {
 	})
 	if err != nil || !token.Valid {
 		log.Println("Token Parsing Error:", err)
->>>>>>> origin/feature/merge_voyage
-=======
-		log.Println("Token Parsing Error:", err)
->>>>>>> origin/feature/merge_voyage
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Token invalide ou expiré"})
 		return
 	}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-	var user models.User
-	initializers.DB.Where("email = ?", claims.Subject).First(&user)
-=======
 	log.Println("Token Claims:", claims)
 
 	email := (*claims)["email"].(string)
@@ -323,27 +255,11 @@ func ResetPassword(c *gin.Context) {
 
 	var user models.User
 	initializers.DB.Where("id = ? AND email = ?", userID, email).First(&user)
->>>>>>> origin/feature/merge_voyage
-=======
-	log.Println("Token Claims:", claims)
-
-	email := (*claims)["email"].(string)
-	userID := uint((*claims)["userID"].(float64))
-
-	var user models.User
-	initializers.DB.Where("id = ? AND email = ?", userID, email).First(&user)
->>>>>>> origin/feature/merge_voyage
 	if user.ID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Utilisateur non trouvé"})
 		return
 	}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-	passwordHash, err := bcrypt.GenerateFromPassword([]byte(resetPassReq.NewPassword), bcrypt.DefaultCost)
-=======
-=======
->>>>>>> origin/feature/merge_voyage
 	// Vérifier si le nouveau mot de passe est différent de l'ancien
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(resetPassReq.Password))
 	if err == nil {
@@ -352,10 +268,6 @@ func ResetPassword(c *gin.Context) {
 	}
 
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(resetPassReq.Password), bcrypt.DefaultCost)
-<<<<<<< HEAD
->>>>>>> origin/feature/merge_voyage
-=======
->>>>>>> origin/feature/merge_voyage
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur de génération de hash de mot de passe"})
 		return
