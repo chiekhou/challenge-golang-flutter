@@ -128,15 +128,15 @@ class GroupVoyageProvider extends ChangeNotifier{
   }
 
   //Inviter un user
-  Future<bool>SendInvitation(int ID,String email)async{
+  Future<bool>SendInvitation(int _group_id,String email)async{
     try{
       String? token = await _storage.read(key: 'auth_token');
       if(token != null){
         final response = await http.post(
-            Uri.parse('http://$host:8080/groupes/$ID/send_invitation'),
+            Uri.parse('http://$host:8080/groupes/$_group_id/send_invitation'),
             headers: {
               'Content-Type' : 'application/json',
-              'Autorization' : 'Bearer $token'
+              'Authorization' : 'Bearer $token'
             },
             body: jsonEncode({
               "email" : email

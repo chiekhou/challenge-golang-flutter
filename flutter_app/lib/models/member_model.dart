@@ -1,5 +1,5 @@
 class Member{
-  int? id;
+  int id;
   String first_name;
   String last_name;
   String username;
@@ -8,7 +8,7 @@ class Member{
   String? password;
   String address;
   Member({
-    this.id,
+    required this.id,
     this.photo,
     required this.first_name,
     required this.last_name,
@@ -20,20 +20,20 @@ class Member{
 
   @override
   String toString(){
-    return 'Groupe{id: $id, first_name: $first_name, last_name: $last_name, '
-        'username: $username, email: $email, password: $password, photo: $photo'
+    return 'User{id: $id, first_name: $first_name, last_name: $last_name, '
+        'username: $username, email: $email, password: $password, photo: $photo,'
         'address: $address}';
   }
 
   Member.fromJson(Map<String, dynamic> json) :
-        id = json['id'],
-        first_name = json['first_name'],
-        last_name = json['last_name'],
-        username = json['username'],
-        password = json['password'],
-        photo = json['photo'],
-        email = json['email'],
-        address = json['address'];
+        id = json['id'] ?? 0,
+        first_name = json['first_name'] ?? '',
+        last_name = json['last_name'] ?? '',
+        username = json['username'] ?? '',
+        password = json['password'] ?? '',
+        photo = json['photo'] ?? '',
+        email = json['email'] ?? '',
+        address = json['address'] ?? '';
 
   Map<String, dynamic> toJson(){
     Map<String, dynamic> value = {

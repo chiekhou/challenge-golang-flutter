@@ -163,7 +163,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     final authProvider = Provider.of<AuthProvider>(context, listen: false);
                     await authProvider.logout();
                     const storage = FlutterSecureStorage();
-                    await storage.delete(key: 'auth_token'); // Supprimer le token
+                    await storage.delete(key: 'auth_token');
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(

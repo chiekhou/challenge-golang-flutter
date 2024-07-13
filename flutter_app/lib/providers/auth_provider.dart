@@ -3,11 +3,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
+import '../models/member_model.dart';
+
 class AuthProvider extends ChangeNotifier{
   final String host = "10.0.2.2";
   final FlutterSecureStorage _storage = FlutterSecureStorage();
   final String _baseUrl = "http://localhost:8080";
   //final String _baseUrl = "à remplacer avec la bonne url plus tard";
+
 
   //Appel Api register
   Future<bool> Register(
@@ -122,7 +125,7 @@ class AuthProvider extends ChangeNotifier{
 
 
   //Profil du user
-  Future<Map<String, dynamic>> Profile()async{
+  Future<Member> Profile()async{
     String? token = await _storage.read(key: 'auth_token');
     if(token != null){
       final response = await http.get(
@@ -133,8 +136,11 @@ class AuthProvider extends ChangeNotifier{
         },
       );
       if(response.statusCode == 200){
+        Map<String, dynamic> data = jsonDecode(response.body);
+        Map<String, dynamic> userData = data['user'];
         print(response.body);
-        return jsonDecode(response.body);
+        print(Member.fromJson(userData));
+        return Member.fromJson(userData);
       }else{
         throw Exception('No profile found');
       }

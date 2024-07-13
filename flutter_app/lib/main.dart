@@ -118,7 +118,7 @@ class _AppVoyageState extends State<MyApp> {
         ChangeNotifierProvider.value(value: voyageProvider),
         ChangeNotifierProvider.value(value: destinationProvider),
         ChangeNotifierProvider.value(value: authProvider),
-        ChangeNotifierProvider.value(value: groupVoyageProvider)
+        ChangeNotifierProvider.value(value: groupVoyageProvider),
       ],
 
       child: MaterialApp(

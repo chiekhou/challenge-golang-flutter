@@ -6,6 +6,7 @@ import (
 	"example/hello/api/controllers/destinations"
 	flipping "example/hello/api/controllers/flipping"
 	groupVoyage "example/hello/api/controllers/groupeVoyage"
+	"example/hello/api/controllers/sockets"
 	voyage "example/hello/api/controllers/voyages"
 	"example/hello/api/middlewares"
 
@@ -55,4 +56,8 @@ func FlippingRoutes(r *gin.Engine) {
 	r.GET("/api/flipping/feature", flipping.GetFeatureToggle)
 	r.PUT("/api/flipping/feature", flipping.UpdateFeatureToggle)
 
+}
+
+func SocketRoutes(r *gin.Engine) {
+	r.GET("/api/messages/:groupe_voyage_id", sockets.GetPreviousMessages)
 }
