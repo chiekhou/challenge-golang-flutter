@@ -1,2 +1,2 @@
-web: sh -c "cd go && go run main.go"
+web: cd go && go run main.go
 
