@@ -6,6 +6,7 @@ import '../../widgets/app_drawer.dart';
 import '../../widgets/app_loader.dart';
 import 'widgets/destination_card.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../providers/auth_provider.dart';
 
 class HomeView extends StatefulWidget {
   static const String routeName = '/home';
@@ -39,11 +40,22 @@ class _HomeState extends State<HomeView> {
   Widget build(BuildContext context) {
     DestinationProvider destinationProvider =
         Provider.of<DestinationProvider>(context);
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+
     List<Destination> filteredDestinations =
         destinationProvider.getFilteredDestinations(searchController.text);
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.title_home),
+        actions: <Widget>[
+          if (authProvider.isAdmin)
+            IconButton(
+              icon: const Icon(Icons.admin_panel_settings),
+              onPressed: () {
+                Navigator.pushNamed(context, '/admin_dashboard');
+              },
+            ),
+        ],
       ),
       drawer: const AppDrawer(),
       body: Column(
