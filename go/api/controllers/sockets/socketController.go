@@ -50,10 +50,13 @@ func HandleConnections(c *gin.Context) {
 
 	// Récupérer les messages pour ce groupe spécifique
 	groupeVoyageID := extractGroupeVoyageIDFromRequest(c)
+	if groupeVoyageID == 0 {
+		return
+	}
 	messages, err := GetChatMessagesByGroupID(groupeVoyageID)
 	if err != nil {
 		log.Printf("Error retrieving chat messages: %v", err)
-		// Gérer l'erreur selon votre besoin
+		return
 	} else {
 		// Envoyer les messages au client WebSocket connecté
 		for _, msg := range messages {
@@ -138,8 +141,7 @@ func extractGroupeVoyageIDFromRequest(c *gin.Context) uint {
 	groupeVoyageIDStr := c.Param("groupe_voyage_id")
 	groupeVoyageID, err := strconv.ParseUint(groupeVoyageIDStr, 10, 64)
 	if err != nil {
-		// Gérer l'erreur de conversion ici, par exemple renvoyer une erreur HTTP 400
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid groupe voyage ID"})
+		log.Printf("Invalid groupe voyage ID: %v", err)
 		return 0
 	}
 	return uint(groupeVoyageID)

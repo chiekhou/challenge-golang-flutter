@@ -1150,6 +1150,78 @@ const docTemplate = `{
                 }
             }
         },
+        "/groupes/{group_id}/delete_group": {
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Permet de supprimer un groupe de voyage",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Groupe Voyage"
+                ],
+                "summary": "Suppression d'un groupe de voyage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID du groupe de voyage",
+                        "name": "group_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Groupe de voyage supprimé avec succès",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "204": {
+                        "description": "Groupe de voyage supprimé avec succès, aucune réponse"
+                    },
+                    "400": {
+                        "description": "Requête incorrecte",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "404": {
+                        "description": "Groupe de voyage non trouvé",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflit lors de la suppression du groupe de voyage",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur interne du serveur",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
         "/groupes/{group_id}/join": {
             "get": {
                 "security": [
@@ -1213,6 +1285,88 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
+        "/groupes/{group_id}/member/{member_id}/delete_member": {
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Permet de supprimer un membre d'un groupe de voyage",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Groupe Voyage"
+                ],
+                "summary": "Suppression d'un membre d'un groupe de voyage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID du groupe de voyage",
+                        "name": "group_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID du membre à supprimer",
+                        "name": "member_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Membre supprimé du groupe avec succès",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "400": {
+                        "description": "Requête incorrecte",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "401": {
+                        "description": "Non autorisé",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "404": {
+                        "description": "Groupe de voyage ou membre non trouvé",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflit lors de la suppression du membre",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Erreur interne du serveur",
                         "schema": {
                             "$ref": "#/definitions/gin.H"
                         }

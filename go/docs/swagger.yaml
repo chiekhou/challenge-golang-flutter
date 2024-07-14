@@ -930,6 +930,53 @@ paths:
       summary: Récupérer un groupe de voyage par ID
       tags:
       - Groupe Voyage
+  /groupes/{group_id}/delete_group:
+    delete:
+      consumes:
+      - application/json
+      description: Permet de supprimer un groupe de voyage
+      parameters:
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ID du groupe de voyage
+        in: path
+        name: group_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Groupe de voyage supprimé avec succès
+          schema:
+            $ref: '#/definitions/gin.H'
+        "204":
+          description: Groupe de voyage supprimé avec succès, aucune réponse
+        "400":
+          description: Requête incorrecte
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Groupe de voyage non trouvé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "409":
+          description: Conflit lors de la suppression du groupe de voyage
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Erreur interne du serveur
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Suppression d'un groupe de voyage
+      tags:
+      - Groupe Voyage
   /groupes/{group_id}/join:
     get:
       consumes:
@@ -975,6 +1022,60 @@ paths:
       security:
       - Bearer: []
       summary: Rejoindre un groupe de groupeVoyage
+      tags:
+      - Groupe Voyage
+  /groupes/{group_id}/member/{member_id}/delete_member:
+    delete:
+      consumes:
+      - application/json
+      description: Permet de supprimer un membre d'un groupe de voyage
+      parameters:
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ID du groupe de voyage
+        in: path
+        name: group_id
+        required: true
+        type: integer
+      - description: ID du membre à supprimer
+        in: path
+        name: member_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Membre supprimé du groupe avec succès
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Requête incorrecte
+          schema:
+            $ref: '#/definitions/gin.H'
+        "401":
+          description: Non autorisé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Groupe de voyage ou membre non trouvé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "409":
+          description: Conflit lors de la suppression du membre
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Erreur interne du serveur
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Suppression d'un membre d'un groupe de voyage
       tags:
       - Groupe Voyage
   /groupes/{group_id}/send_invitation:
