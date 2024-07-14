@@ -8,8 +8,9 @@ import '../models/member_model.dart';
 class AuthProvider extends ChangeNotifier{
   final String host = "10.0.2.2";
   final FlutterSecureStorage _storage = FlutterSecureStorage();
-  final String _baseUrl = "http://localhost:8080";
-  //final String _baseUrl = "à remplacer avec la bonne url plus tard";
+  final String _baseUrl = "http://localhost:8080"; // URL de votre backend
+
+  bool get isAuthenticated => _storage.read(key: 'auth_token') != null;
 
 
   //Appel Api register
@@ -23,6 +24,18 @@ class AuthProvider extends ChangeNotifier{
       String photo
       )async{
     try{
+  bool get isAdmin => false; // Implémentation à adapter selon votre logique
+
+  Future<bool> Register({
+    required String address,
+    required String email,
+    required String firstname,
+    required String lastname,
+    required String password,
+    required String username,
+    required String photo,
+  }) async {
+    try {
       final response = await http.post(
         Uri.parse('http://$host:8080/Signup'),
         headers: {
@@ -34,8 +47,9 @@ class AuthProvider extends ChangeNotifier{
           'first_name': firstname,
           'last_name': lastname,
           'password': password,
-          'username': username
-        })
+          'username': username,
+          'photo': photo,
+        }),
       );
 
       print(response.body);

@@ -20,7 +20,7 @@ class _LoginFormState extends State<LoginForm> {
     if(_formkey.currentState!.validate()){
       _formkey.currentState!.save();
       final authservice = Provider.of<AuthProvider>(context, listen: false);
-      bool success = await authservice.Login(_email, _password);
+      bool success = await authservice.login(_email, _password);
       if(success){
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (BuildContext context) => HomeView()));
