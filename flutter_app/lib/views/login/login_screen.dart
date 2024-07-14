@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/views/login/components/login_form.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 
@@ -29,7 +30,7 @@ class LoginScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: size.height * 0.03),
-            Padding(
+/*            Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
@@ -44,8 +45,11 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ],
               ),
-            ),
+            ),*/
             SizedBox(height: size.height * 0.03),
+            LoginForm(),
+
+/*
             ElevatedButton(
               onPressed: () {
                 authProvider.login(
@@ -67,6 +71,7 @@ class LoginScreen extends StatelessWidget {
               },
               child: Text('Login'),
             ),
+*/
             Spacer(flex: 3),
           ],
         ),

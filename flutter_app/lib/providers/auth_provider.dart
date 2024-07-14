@@ -11,21 +11,10 @@ class AuthProvider extends ChangeNotifier{
   final String _baseUrl = "http://localhost:8080"; // URL de votre backend
 
   bool get isAuthenticated => _storage.read(key: 'auth_token') != null;
+  bool get isAdmin => true;
 
 
   //Appel Api register
-  Future<bool> Register(
-      String address,
-      String email,
-      String firstname,
-      String lastname,
-      String password,
-      String username,
-      String photo
-      )async{
-    try{
-  bool get isAdmin => false; // Implémentation à adapter selon votre logique
-
   Future<bool> Register({
     required String address,
     required String email,
@@ -66,7 +55,7 @@ class AuthProvider extends ChangeNotifier{
   }
 
   //Appel APi pour se loguer
-  Future<bool> Login(String email, String password) async{
+  Future<bool> login(String email, String password) async{
     try{
       final response = await http.post(
           Uri.parse('http://$host:8080/login'),
@@ -109,7 +98,7 @@ class AuthProvider extends ChangeNotifier{
 
       if (token != null) {
         final response = await http.post(
-          Uri.parse('http://$host:8080/logout'), // Remplace <TON_HOST> par ton adresse serveur
+          Uri.parse('http://$host:8080/logout'),
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $token',
