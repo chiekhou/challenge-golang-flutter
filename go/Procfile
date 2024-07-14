@@ -1,1 +1,2 @@
-web: ./bin/go/main.go
+web: ./myapp
+
