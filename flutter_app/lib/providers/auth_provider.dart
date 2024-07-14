@@ -3,25 +3,27 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
-class AuthProvider extends ChangeNotifier{
-  final String host = "10.0.2.2";
+class AuthProvider with ChangeNotifier {
+  final String host = "10.0.2.2"; // Utilisé pour émulateur Android
   final FlutterSecureStorage _storage = FlutterSecureStorage();
-  final String _baseUrl = "http://localhost:8080";
-  //final String _baseUrl = "à remplacer avec la bonne url plus tard";
+  final String _baseUrl = "http://localhost:8080"; // URL de votre backend
 
-  //Appel Api register
-  Future<bool> Register(
-      String address,
-      String email,
-      String firstname,
-      String lastname,
-      String password,
-      String username,
-      String photo
-      )async{
-    try{
+  bool get isAuthenticated => _storage.read(key: 'auth_token') != null;
+
+  bool get isAdmin => false; // Implémentation à adapter selon votre logique
+
+  Future<bool> Register({
+    required String address,
+    required String email,
+    required String firstname,
+    required String lastname,
+    required String password,
+    required String username,
+    required String photo,
+  }) async {
+    try {
       final response = await http.post(
-        Uri.parse('http://$host:8080/Signup'),
+        Uri.parse('$_baseUrl/signup'),
         headers: {
           'Content-Type': 'application/json',
         },
@@ -31,115 +33,110 @@ class AuthProvider extends ChangeNotifier{
           'first_name': firstname,
           'last_name': lastname,
           'password': password,
-          'username': username
-        })
+          'username': username,
+          'photo': photo,
+        }),
       );
 
-      print(response.body);
-      if(response.statusCode == 201){
+      if (response.statusCode == 201) {
         print(response.body);
         return true;
-      }else{
+      } else {
+        print(response.body);
         return false;
       }
-    }catch(e){
+    } catch (e) {
+      print('Erreur lors de l\'inscription: $e');
       rethrow;
     }
-
   }
 
-  //Appel APi pour se loguer
-  Future<bool> Login(String email, String password) async{
-    try{
+  Future<bool> login(String email, String password) async {
+    try {
       final response = await http.post(
-          Uri.parse('http://$host:8080/login'),
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: jsonEncode({
-            'email': email,
-            'password': password
-          })
+        Uri.parse('$_baseUrl/login'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'email': email,
+          'password': password,
+        }),
       );
 
-      print(response.body);
-
-      if(response.statusCode == 200) {
-        final responseData = jsonDecode(response.body.toString());
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
         final token = responseData["token"];
 
         await _storage.write(key: 'auth_token', value: token);
+        notifyListeners();
         return true;
-      }else{
+      } else {
+        print(response.body);
         return false;
       }
-    }
-    catch(e){
+    } catch (e) {
+      print('Erreur lors de la connexion: $e');
       rethrow;
     }
   }
 
-  Future<bool> isLoggedIn() async {
-    String? token = await _storage.read(key: 'auth_token');
-    return token != null;
-  }
-
-  //Appel pour se logout
-  Future<void> logout() async {
+  Future<bool> logout() async {
     try {
-      String? token = await _storage.read(key: 'auth_token');
-      print('Token récupéré: $token');
+      final token = await _storage.read(key: 'auth_token');
 
       if (token != null) {
         final response = await http.post(
-          Uri.parse('http://$host:8080/logout'), // Remplace <TON_HOST> par ton adresse serveur
+          Uri.parse('$_baseUrl/logout'),
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $token',
           },
         );
 
-        print('Réponse du serveur: ${response.statusCode}');
-        print('Corps de la réponse: ${response.body}');
-
         if (response.statusCode == 200) {
           await _storage.delete(key: 'auth_token');
-          print('Déconnexion réussie');
           notifyListeners();
+          return true;
         } else {
           print('Échec de la déconnexion: ${response.body}');
-          throw Exception('Failed to logout');
+          return false;
         }
       } else {
         print('Aucun token trouvé');
-        throw Exception('No token found');
+        return false;
       }
     } catch (e) {
-      print('Erreur de déconnexion: $e');
+      print('Erreur lors de la déconnexion: $e');
       rethrow;
     }
   }
 
+  Future<Map<String, dynamic>> Profile() async {
+    try {
+      final token = await _storage.read(key: 'auth_token');
 
-  //Profil du user
-  Future<Map<String, dynamic>> Profile()async{
-    String? token = await _storage.read(key: 'auth_token');
-    if(token != null){
-      final response = await http.get(
-        Uri.parse('http://$host:8080/profile'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        },
-      );
-      if(response.statusCode == 200){
-        print(response.body);
-        return jsonDecode(response.body);
-      }else{
-        throw Exception('No profile found');
+      if (token != null) {
+        final response = await http.get(
+          Uri.parse('$_baseUrl/profile'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        );
+
+        if (response.statusCode == 200) {
+          final profileData = jsonDecode(response.body);
+          return profileData;
+        } else {
+          throw Exception('Failed to load profile');
+        }
+      } else {
+        throw Exception('User not logged in');
       }
-    }else{
-      throw Exception('User not logged in');
+    } catch (e) {
+      print('Erreur lors de la récupération du profil: $e');
+      rethrow;
     }
   }
 }
