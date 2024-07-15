@@ -8,51 +8,90 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GetGroupsByUser - Récupère tous les groupes de voyage pour un utilisateur spécifique
-// @Summary Récupère tous les groupes de voyage pour un utilisateur spécifique
-// @Description Récupère la liste de tous les groupes de voyage auxquels un utilisateur est associé
-// @Tags Utilisateurs
+// GetUsers - Récupère tous les utilisateurs
+// @Summary Récupère tous les utilisateurs
+// @Description Récupère la liste de tous les utilisateurs
+// @Tags User
 // @Produce json
-// @Param userID path string true "ID de l'utilisateur"
-// @Success 200 {object} gin.H "Liste des groupes de voyage"
-// @Failure 404 {object} gin.H "Utilisateur non trouvé"
+// @Success 200 {object} []models.User
 // @Failure 500 {object} gin.H "Erreur serveur interne"
-// @Router /user/{userID}/groups [get]
-func GetGroupsByUser(c *gin.Context) {
-	userID := c.Param("userID")
-	var groups []models.GroupeVoyage
+// @Security Bearer
+// @Param Authorization header string true "Insert your access token" default(Bearer Add access token here)
+// @Router /api/users [get]
+func GetUsers(c *gin.Context) {
+	var users []models.User
+	if err := initializers.DB.Find(&users).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur serveur interne"})
+		return
+	}
+	c.JSON(http.StatusOK, users)
+}
 
-	if err := initializers.DB.Where("user_id = ?", userID).Find(&groups).Error; err != nil {
+// CreateUser - Crée un nouvel utilisateur
+// @Summary Crée un nouvel utilisateur
+// @Description Crée un nouvel utilisateur avec les informations fournies
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param user body models.User true "Utilisateur à créer"
+// @Success 200 {object} models.User
+// @Failure 500 {object} gin.H "Erreur serveur interne"
+// @Security Bearer
+// @Param Authorization header string true "Insert your access token" default(Bearer Add access token here)
+// @Router /api/users  [post]
+func CreateUser(c *gin.Context) {
+	var user models.User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := initializers.DB.Create(&user).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur serveur interne"})
 		return
 	}
 
-	if len(groups) == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Aucun groupe de voyage trouvé pour cet utilisateur"})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"data": groups})
+	c.JSON(http.StatusOK, user)
 }
 
-// UpdateUserFields - Met à jour les champs d'un utilisateur
-// @Summary Met à jour les champs d'un utilisateur
-// @Description Met à jour les informations d'un utilisateur existant
-// @Tags Utilisateurs
-// @Accept json
+// GetUser - Récupère un utilisateur par ID
+// @Summary Récupère un utilisateur par ID
+// @Description Récupère les informations d'un utilisateur spécifique
+// @Tags User
 // @Produce json
-// @Param userID path string true "ID de l'utilisateur"
-// @Param user body models.User true "Détails de l'utilisateur"
-// @Success 200 {object} gin.H "Utilisateur mis à jour avec succès"
-// @Failure 400 {object} gin.H "Requête invalide"
+// @Param id path int true "ID de l'utilisateur"
+// @Success 200 {object} models.User
 // @Failure 404 {object} gin.H "Utilisateur non trouvé"
 // @Failure 500 {object} gin.H "Erreur serveur interne"
-// @Router /user/{userID} [put]
-func UpdateUserFields(c *gin.Context) {
-	userID := c.Param("userID")
+// @Security Bearer
+// @Param Authorization header string true "Insert your access token" default(Bearer Add access token here)
+// @Router /api/users/{id} [get]
+func GetUser(c *gin.Context) {
 	var user models.User
+	if err := initializers.DB.First(&user, c.Param("id")).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Utilisateur non trouvé"})
+		return
+	}
+	c.JSON(http.StatusOK, user)
+}
 
-	if err := initializers.DB.First(&user, userID).Error; err != nil {
+// UpdateUser - Met à jour un utilisateur par ID
+// @Summary Met à jour un utilisateur par ID
+// @Description Met à jour les informations d'un utilisateur spécifique
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param id path int true "ID de l'utilisateur"
+// @Param user body models.User true "Utilisateur à mettre à jour"
+// @Success 200 {object} models.User
+// @Failure 404 {object} gin.H "Utilisateur non trouvé"
+// @Failure 500 {object} gin.H "Erreur serveur interne"
+// @Security Bearer
+// @Param Authorization header string true "Insert your access token" default(Bearer Add access token here)
+// @Router /api/users/{id} [put]
+func UpdateUser(c *gin.Context) {
+	var user models.User
+	if err := initializers.DB.First(&user, c.Param("id")).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Utilisateur non trouvé"})
 		return
 	}
@@ -62,10 +101,47 @@ func UpdateUserFields(c *gin.Context) {
 		return
 	}
 
-	if err := initializers.DB.Save(&user).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Impossible de mettre à jour l'utilisateur"})
+	initializers.DB.Save(&user)
+	c.JSON(http.StatusOK, user)
+}
+
+// DeleteUser - Supprime un utilisateur par ID
+// @Summary Supprime un utilisateur par ID
+// @Description Supprime un utilisateur spécifique
+// @Tags User
+// @Produce json
+// @Param id path int true "ID de l'utilisateur"
+// @Success 204 {object} nil
+// @Failure 404 {object} gin.H "Utilisateur non trouvé"
+// @Failure 500 {object} gin.H "Erreur serveur interne"
+// @Security Bearer
+// @Param Authorization header string true "Insert your access token" default(Bearer Add access token here)
+// @Router /api/users/{id} [delete]
+func DeleteUser(c *gin.Context) {
+	id := c.Param("id")
+
+	// Commencer une transaction
+	tx := initializers.DB.Begin()
+
+	// Mettre à jour les groupes de voyages pour qu'ils ne référencent plus cet utilisateur
+	if err := tx.Model(&models.GroupeVoyage{}).Where("user_id = ?", id).Update("user_id", nil).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur lors de la mise à jour des groupes de voyages"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Utilisateur mis à jour avec succès", "data": user})
+	// Supprimer l'utilisateur
+	if err := tx.Where("id = ?", id).Delete(&models.User{}).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur lors de la suppression de l'utilisateur"})
+		return
+	}
+
+	// Valider la transaction
+	if err := tx.Commit().Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur lors de la validation de la transaction"})
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
 }

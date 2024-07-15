@@ -1,21 +1,20 @@
 import 'member_model.dart';
 
 class Groupe {
-  int? id;
+  int id;
   String nom;
   double? budget;
   int userId;
   String? cover;
   List<Member> members;
 
-  Groupe({
-    this.id,
-    required this.nom,
-    required this.userId,
-    this.cover,
-    this.budget,
-    required this.members
-  });
+  Groupe(
+      {required this.id,
+      required this.nom,
+      required this.userId,
+      this.cover,
+      this.budget,
+      required this.members});
 
   @override
   String toString() {
@@ -24,7 +23,9 @@ class Groupe {
 
   factory Groupe.fromJson(Map<String, dynamic> json) {
     var membersFromJson = json['members'] as List;
-    List<Member> memberList = membersFromJson.map((memberJson) => Member.fromJson(memberJson)).toList();
+    List<Member> memberList = membersFromJson
+        .map((memberJson) => Member.fromJson(memberJson))
+        .toList();
     return Groupe(
       id: json['id'],
       nom: json['nom'] ?? '',

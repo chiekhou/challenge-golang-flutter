@@ -5,14 +5,13 @@ import 'package:http/http.dart' as http;
 
 import '../models/member_model.dart';
 
-class AuthProvider extends ChangeNotifier{
-  final String host = "10.0.2.2";
+class AuthProvider extends ChangeNotifier {
+  final String host = "localhost";
   final FlutterSecureStorage _storage = FlutterSecureStorage();
   final String _baseUrl = "http://localhost:8080"; // URL de votre backend
 
   bool get isAuthenticated => _storage.read(key: 'auth_token') != null;
   bool get isAdmin => true;
-
 
   //Appel Api register
   Future<bool> Register({
@@ -42,45 +41,36 @@ class AuthProvider extends ChangeNotifier{
       );
 
       print(response.body);
-      if(response.statusCode == 201){
+      if (response.statusCode == 201) {
         print(response.body);
         return true;
-      }else{
+      } else {
         return false;
       }
-    }catch(e){
+    } catch (e) {
       rethrow;
     }
-
   }
 
   //Appel APi pour se loguer
-  Future<bool> login(String email, String password) async{
-    try{
-      final response = await http.post(
-          Uri.parse('http://$host:8080/login'),
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: jsonEncode({
-            'email': email,
-            'password': password
-          })
-      );
+  Future<bool> login(String email, String password) async {
+    try {
+      final response = await http.post(Uri.parse('http://$host:8080/login'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'email': email, 'password': password}));
 
       print(response.body);
 
-      if(response.statusCode == 200) {
+      if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body.toString());
         final token = responseData["token"];
 
         await _storage.write(key: 'auth_token', value: token);
         return true;
-      }else{
+      } else {
         return false;
       }
-    }
-    catch(e){
+    } catch (e) {
       rethrow;
     }
   }
@@ -126,11 +116,10 @@ class AuthProvider extends ChangeNotifier{
     }
   }
 
-
   //Profil du user
-  Future<Member> Profile()async{
+  Future<Member> Profile() async {
     String? token = await _storage.read(key: 'auth_token');
-    if(token != null){
+    if (token != null) {
       final response = await http.get(
         Uri.parse('http://$host:8080/profile'),
         headers: {
@@ -138,16 +127,16 @@ class AuthProvider extends ChangeNotifier{
           'Authorization': 'Bearer $token'
         },
       );
-      if(response.statusCode == 200){
+      if (response.statusCode == 200) {
         Map<String, dynamic> data = jsonDecode(response.body);
         Map<String, dynamic> userData = data['user'];
         print(response.body);
         print(Member.fromJson(userData));
         return Member.fromJson(userData);
-      }else{
+      } else {
         throw Exception('No profile found');
       }
-    }else{
+    } else {
       throw Exception('User not logged in');
     }
   }

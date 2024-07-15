@@ -8,11 +8,31 @@ import (
 	"example/hello/internal/models"
 	mailer2 "example/hello/pkg/mailer"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
+
+// GetAllGroups - Récupère tous les groupes de voyage
+// @Summary Récupère tous les groupes de voyage
+// @Description Récupère la liste de tous les groupes de voyage
+// @Tags Groupe Voyage
+// @Produce json
+// @Security Bearer
+// @Param Authorization header string true "Insert your access token" default(Bearer Add access token here)
+// @Success 200 {object} gin.H "Liste des groupes de voyage"
+// @Failure 500 {object} gin.H "Erreur serveur interne"
+// @Router /groupes [get]
+func GetAllGroups(c *gin.Context) {
+	var groups []models.GroupeVoyage
+	if err := initializers.DB.Preload("Members").Preload("Chats").Find(&groups).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Impossible de récupérer les groupes de voyage"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": groups})
+}
 
 // @Summary Créé un groupe de groupeVoyage
 // @Description Permet aux user de créé un groupe de groupeVoyage

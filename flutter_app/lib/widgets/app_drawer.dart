@@ -2,6 +2,9 @@ import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/main.dart';
 import 'package:flutter_app/providers/auth_provider.dart';
+import 'package:flutter_app/views/admin/dashboard_admin.dart';
+import 'package:flutter_app/views/admin/group_management_screen.dart';
+import 'package:flutter_app/views/admin/user_management_screen.dart';
 import 'package:flutter_app/views/group_voyage/groupeVoyage_screen.dart';
 import 'package:flutter_app/providers/flipping_provider.dart';
 import 'package:flutter_app/views/login/login_screen.dart';
@@ -13,7 +16,6 @@ import '../views/home/home_view.dart';
 import '../views/voyages/voyages_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
 class AppDrawer extends StatefulWidget {
   const AppDrawer({Key? key}) : super(key: key);
 
@@ -22,7 +24,6 @@ class AppDrawer extends StatefulWidget {
 }
 
 class _AppDrawerState extends State<AppDrawer> {
-
   Locale _locale = const Locale('fr', '');
   bool isFeatureEnabled = true;
 
@@ -93,7 +94,7 @@ class _AppDrawerState extends State<AppDrawer> {
 
   Future<String?> getToken() async {
     const storage = FlutterSecureStorage();
-    return await storage.read(key:'auth_token');
+    return await storage.read(key: 'auth_token');
   }
 
   @override
@@ -112,7 +113,8 @@ class _AppDrawerState extends State<AppDrawer> {
                 end: Alignment.bottomRight,
               ),
             ),
-            child: Text(AppLocalizations.of(context)!.title_drawer,
+            child: Text(
+              AppLocalizations.of(context)!.title_drawer,
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 30,
@@ -131,6 +133,34 @@ class _AppDrawerState extends State<AppDrawer> {
             title: const Text('Profile'),
             onTap: () {
               Navigator.pushNamed(context, ProfileScreen.routeName);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.groups),
+            title: const Text('Liste Groupes'),
+            onTap: () {
+              Navigator.pushNamed(context, GroupManagementScreen.routeName);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.flight),
+            title: const Text('Liste Voyage'),
+            onTap: () {
+              Navigator.pushNamed(context, GroupevoyageScreen.routeName);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.people),
+            title: const Text('Liste Utilisateur'),
+            onTap: () {
+              Navigator.pushNamed(context, UserManagementScreen.routeName);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.dashboard),
+            title: const Text('Dashboard'),
+            onTap: () {
+              Navigator.pushNamed(context, DashboardScreen.routeName);
             },
           ),
           ListTile(
@@ -160,16 +190,16 @@ class _AppDrawerState extends State<AppDrawer> {
                   leading: const Icon(Icons.logout),
                   title: const Text('Déconnexion'),
                   onTap: () async {
-                    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                    final authProvider =
+                        Provider.of<AuthProvider>(context, listen: false);
                     await authProvider.logout();
                     const storage = FlutterSecureStorage();
                     await storage.delete(key: 'auth_token');
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (BuildContext context) => const LoginScreen()
-                        )
-                    );
+                            builder: (BuildContext context) =>
+                                const LoginScreen()));
                   },
                 );
               } else {
@@ -180,9 +210,8 @@ class _AppDrawerState extends State<AppDrawer> {
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (BuildContext context) => const LoginScreen()
-                        )
-                    );
+                            builder: (BuildContext context) =>
+                                const LoginScreen()));
                   },
                 );
               }
@@ -205,9 +234,7 @@ class _AppDrawerState extends State<AppDrawer> {
                   value: const Locale('fr', ''),
                   child: Row(
                     children: [
-                      CountryFlag.fromLanguageCode('fr',
-                          width: 20,
-                          height: 20),
+                      CountryFlag.fromLanguageCode('fr', width: 20, height: 20),
                       const SizedBox(width: 8),
                       const Text('Français'),
                     ],
@@ -217,9 +244,7 @@ class _AppDrawerState extends State<AppDrawer> {
                   value: const Locale('en', ''),
                   child: Row(
                     children: [
-                      CountryFlag.fromLanguageCode('en',
-                          width: 20,
-                          height: 20),
+                      CountryFlag.fromLanguageCode('en', width: 20, height: 20),
                       const SizedBox(width: 8),
                       const Text('English'),
                     ],

@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/views/admin/dashboard_admin.dart';
+import 'package:flutter_app/views/admin/group_management_screen.dart';
+import 'package:flutter_app/views/admin/user_management_screen.dart';
 import 'package:flutter_app/views/groupe_detail/groupe_detail_screen.dart';
 import 'package:flutter_app/views/login/login_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -24,8 +27,6 @@ import 'views/destination/destination_view.dart';
 import 'views/voyages/voyages_view.dart';
 import 'views/not-found/not_found.dart';
 import './views/home/home_view.dart';
-
-
 
 Future main() async {
   // To load the .env file contents into dotenv.
@@ -55,14 +56,12 @@ class _AppVoyageState extends State<MyApp> {
   final GroupVoyageProvider groupVoyageProvider = GroupVoyageProvider();
   StreamSubscription? _sub;
 
-
   @override
   void initState() {
     voyageProvider.fetchData();
     destinationProvider.fetchData();
     super.initState();
   }
-
 
   void setLocale(Locale locale) {
     setState(() {
@@ -77,33 +76,34 @@ class _AppVoyageState extends State<MyApp> {
   }
 
   void initUniLinks() async {
-    _sub = linkStream.listen((String link) async {
-      // Gérer le lien profond ici
-      Uri uri = Uri.parse(link);
-      if (uri.pathSegments.contains('join')) {
-        // Extraire les paramètres nécessaires
-        int groupeId = int.parse(uri.pathSegments[1]);
-        String? token = uri.queryParameters['token'];
+    _sub = linkStream.listen(
+        (String link) async {
+          // Gérer le lien profond ici
+          Uri uri = Uri.parse(link);
+          if (uri.pathSegments.contains('join')) {
+            // Extraire les paramètres nécessaires
+            int groupeId = int.parse(uri.pathSegments[1]);
+            String? token = uri.queryParameters['token'];
 
-        // Utiliser GroupProvider pour rejoindre le groupe
-        try {
-          await groupVoyageProvider.JoinGroup(groupeId, token);
+            // Utiliser GroupProvider pour rejoindre le groupe
+            try {
+              await groupVoyageProvider.JoinGroup(groupeId, token);
 
-          // Rediriger vers la page de détail du groupe
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => GroupeDetailScreen(
-                groupeId: groupeId,
-               // token: token
-              ),
-            ),
-          );
-        } catch (e) {
-          // Gérer les erreurs si la tentative de rejoindre échoue
-          print('Erreur lors de la tentative de rejoindre le groupe: $e');
-        }
-      }
+              // Rediriger vers la page de détail du groupe
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => GroupeDetailScreen(
+                    groupeId: groupeId,
+                    // token: token
+                  ),
+                ),
+              );
+            } catch (e) {
+              // Gérer les erreurs si la tentative de rejoindre échoue
+              print('Erreur lors de la tentative de rejoindre le groupe: $e');
+            }
+          }
         } as void Function(String? event)?, onError: (err) {
       // Gérer les erreurs de lien profond ici
     });
@@ -112,15 +112,12 @@ class _AppVoyageState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-
-
       providers: [
         ChangeNotifierProvider.value(value: voyageProvider),
         ChangeNotifierProvider.value(value: destinationProvider),
         ChangeNotifierProvider.value(value: authProvider),
         ChangeNotifierProvider.value(value: groupVoyageProvider),
       ],
-
       child: MaterialApp(
         locale: _locale,
         localizationsDelegates: const [
@@ -134,7 +131,6 @@ class _AppVoyageState extends State<MyApp> {
           Locale('en'),
           Locale('es'),
         ],
-
         debugShowCheckedModeBanner: false,
         routes: {
           '/': (context) => const LoginScreen(),
@@ -142,13 +138,16 @@ class _AppVoyageState extends State<MyApp> {
           VoyageView.routeName: (_) => const VoyageView(),
           VoyagesView.routeName: (_) => const VoyagesView(),
           ActivityFormView.routeName: (_) => const ActivityFormView(),
-          ProfileScreen.routeName: (_)=> const ProfileScreen(),
+          ProfileScreen.routeName: (_) => const ProfileScreen(),
           RegisterScreen.routeName: (_) => const RegisterScreen(),
           HomeView.routeName: (_) => const HomeView(),
           GoogleMapView.routeName: (_) => const GoogleMapView(),
           GoogleMapViewHotel.routeName: (_) => const GoogleMapViewHotel(),
           GroupevoyageScreen.routeName: (_) => const GroupevoyageScreen(),
-          AddGroupScreen.routeName: (_) => const AddGroupScreen()
+          AddGroupScreen.routeName: (_) => const AddGroupScreen(),
+          UserManagementScreen.routeName: (_) => const UserManagementScreen(),
+          GroupManagementScreen.routeName: (_) => const GroupManagementScreen(),
+          DashboardScreen.routeName: (_) => const DashboardScreen()
         },
         onUnknownRoute: (_) => MaterialPageRoute(
           builder: (_) => const NotFound(),

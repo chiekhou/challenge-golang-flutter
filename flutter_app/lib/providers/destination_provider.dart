@@ -9,7 +9,7 @@ import 'package:path/path.dart';
 import 'dart:io';
 
 class DestinationProvider extends ChangeNotifier {
-  final String host = '10.0.2.2:8080'; // version emulateur
+  final String host = 'localhost:8080'; // version emulateur
   // final String host = 'localhost:8080'; // version web
   List<Destination> _destinations = [];
   bool isLoading = false;

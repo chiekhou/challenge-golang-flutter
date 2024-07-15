@@ -52,7 +52,7 @@ class _HomeState extends State<HomeView> {
             IconButton(
               icon: const Icon(Icons.admin_panel_settings),
               onPressed: () {
-                Navigator.pushNamed(context, '/admin_dashboard');
+                Navigator.pushNamed(context, '/admin/dashboard');
               },
             ),
         ],

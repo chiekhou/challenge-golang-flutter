@@ -34,6 +34,21 @@ definitions:
       status:
         type: integer
     type: object
+  models.ChatMessage:
+    properties:
+      content:
+        type: string
+      created:
+        type: string
+      groupe_voyage_id:
+        type: integer
+      id:
+        type: integer
+      user:
+        $ref: '#/definitions/models.User'
+      user_id:
+        type: integer
+    type: object
   models.Destination:
     properties:
       activities:
@@ -51,6 +66,25 @@ definitions:
         type: string
       name:
         type: string
+    type: object
+  models.GroupeVoyage:
+    properties:
+      budget:
+        type: number
+      chats:
+        items:
+          $ref: '#/definitions/models.ChatMessage'
+        type: array
+      id:
+        type: integer
+      members:
+        items:
+          $ref: '#/definitions/models.User'
+        type: array
+      nom:
+        type: string
+      user_id:
+        type: integer
     type: object
   models.Hotel:
     properties:
@@ -73,6 +107,32 @@ definitions:
         type: number
       status:
         type: integer
+    type: object
+  models.User:
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      groupe_voyage:
+        items:
+          $ref: '#/definitions/models.GroupeVoyage'
+        type: array
+      id:
+        description: gorm.Model
+        type: integer
+      last_name:
+        type: string
+      password:
+        type: string
+      photo:
+        type: string
+      role_id:
+        type: integer
+      username:
+        type: string
     type: object
   models.Voyage:
     properties:
@@ -101,6 +161,13 @@ definitions:
     required:
     - email
     type: object
+  requests.GroupRequest:
+    properties:
+      budget:
+        type: number
+      nom:
+        type: string
+    type: object
   requests.LoginRequest:
     properties:
       email:
@@ -113,13 +180,10 @@ definitions:
     type: object
   requests.ResetPasswordRequest:
     properties:
-      new_password:
-        type: string
-      token:
+      password:
         type: string
     required:
-    - new_password
-    - token
+    - password
     type: object
   requests.SignupRequest:
     properties:
@@ -133,6 +197,8 @@ definitions:
         type: string
       password:
         type: string
+      photo:
+        type: string
       username:
         type: string
     required:
@@ -142,6 +208,11 @@ definitions:
     - last_name
     - password
     - username
+    type: object
+  requests.UpdateBudgetRequest:
+    properties:
+      budget:
+        type: number
     type: object
   voyages.ErrorResponse:
     properties:
@@ -189,6 +260,205 @@ paths:
       summary: Allow you to register as a new User
       tags:
       - Auth
+  /admin/groups:
+    get:
+      description: Récupère la liste de tous les groupes de voyage
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Liste des groupes de voyage
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Erreur serveur interne
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Récupère tous les groupes de voyage
+      tags:
+      - Groupes
+    post:
+      consumes:
+      - application/json
+      description: Ajoute un nouveau groupe de voyage à la base de données
+      parameters:
+      - description: Détails du groupe de voyage
+        in: body
+        name: group
+        required: true
+        schema:
+          $ref: '#/definitions/models.GroupeVoyage'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Groupe de voyage créé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Requête invalide
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Erreur serveur interne
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Crée un nouveau groupe de voyage
+      tags:
+      - Groupes
+  /admin/groups/{id}:
+    delete:
+      description: Supprime un groupe de voyage de la base de données
+      parameters:
+      - description: ID du groupe de voyage
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Groupe de voyage supprimé avec succès
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Erreur serveur interne
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Supprime un groupe de voyage
+      tags:
+      - Groupes
+    get:
+      description: Récupère les détails d'un groupe de voyage spécifique
+      parameters:
+      - description: ID du groupe de voyage
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Détails du groupe de voyage
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Groupe de voyage non trouvé
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Récupère un groupe de voyage par ID
+      tags:
+      - Groupes
+    put:
+      consumes:
+      - application/json
+      description: Met à jour les détails d'un groupe de voyage existant
+      parameters:
+      - description: ID du groupe de voyage
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Détails du groupe de voyage
+        in: body
+        name: group
+        required: true
+        schema:
+          $ref: '#/definitions/models.GroupeVoyage'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Groupe de voyage mis à jour
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Requête invalide
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Groupe de voyage non trouvé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Erreur serveur interne
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Met à jour un groupe de voyage
+      tags:
+      - Groupes
+  /admin/users:
+    get:
+      description: Récupère la liste de tous les utilisateurs
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Liste des utilisateurs
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Récupère tous les utilisateurs
+      tags:
+      - Utilisateurs
+  /admin/users/{id}:
+    delete:
+      description: Supprime un utilisateur de la base de données
+      parameters:
+      - description: ID de l'utilisateur
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Utilisateur supprimé avec succès
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Échec de la suppression de l'utilisateur
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Supprime un utilisateur
+      tags:
+      - Utilisateurs
+    put:
+      consumes:
+      - application/json
+      description: Met à jour les informations d'un utilisateur existant
+      parameters:
+      - description: ID de l'utilisateur
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Détails de l'utilisateur
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Utilisateur mis à jour avec succès
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Requête invalide
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Utilisateur non trouvé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Erreur serveur interne
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Met à jour un utilisateur
+      tags:
+      - Utilisateurs
   /api/activity/images:
     post:
       consumes:
@@ -534,6 +804,146 @@ paths:
       summary: Met à jour l'état d'une fonctionnalité
       tags:
       - Features
+  /api/users:
+    get:
+      description: Récupère la liste de tous les utilisateurs
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "500":
+          description: Erreur serveur interne
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - ApiKeyAuth: []
+      summary: Récupère tous les utilisateurs
+      tags:
+      - Utilisateurs
+    post:
+      consumes:
+      - application/json
+      description: Crée un nouvel utilisateur avec les informations fournies
+      parameters:
+      - description: Utilisateur à créer
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "500":
+          description: Erreur serveur interne
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - ApiKeyAuth: []
+      summary: Crée un nouvel utilisateur
+      tags:
+      - Users
+  /api/users/{id}:
+    get:
+      description: Récupère les informations d'un utilisateur spécifique
+      parameters:
+      - description: ID de l'utilisateur
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "404":
+          description: Utilisateur non trouvé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Erreur serveur interne
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - ApiKeyAuth: []
+      summary: Récupère un utilisateur par ID
+      tags:
+      - Users
+  /api/users{id}:
+    delete:
+      description: Supprime un utilisateur spécifique
+      parameters:
+      - description: ID de l'utilisateur
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Utilisateur non trouvé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Erreur serveur interne
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - ApiKeyAuth: []
+      summary: Supprime un utilisateur par ID
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: Met à jour les informations d'un utilisateur spécifique
+      parameters:
+      - description: ID de l'utilisateur
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Utilisateur à mettre à jour
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "404":
+          description: Utilisateur non trouvé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Erreur serveur interne
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - ApiKeyAuth: []
+      summary: Met à jour un utilisateur par ID
+      tags:
+      - Users
   /api/voyages:
     get:
       consumes:
@@ -728,6 +1138,52 @@ paths:
       summary: Update a trip
       tags:
       - Voyages
+  /create_group:
+    post:
+      consumes:
+      - application/json
+      description: Permet aux user de créé un groupe de groupeVoyage
+      parameters:
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Mise à jour du budget
+        in: body
+        name: budget
+        required: true
+        schema:
+          $ref: '#/definitions/requests.GroupRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Groupe créé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Créé un groupe de groupeVoyage
+      tags:
+      - Groupe Voyage
   /forgotten_password:
     post:
       consumes:
@@ -767,12 +1223,12 @@ paths:
         passe
       tags:
       - Auth
-  /join_group:
-    post:
+  /groupes/{group_id}:
+    get:
       consumes:
       - application/json
-      description: Envoie un mail d'invitation afin de de rejoindre un groupen de
-        voyage
+      description: Récupère un groupe de voyage par son ID si l'utilisateur est le
+        créateur ou un membre du groupe
       parameters:
       - default: Bearer <Add access token here>
         description: Insert your access token
@@ -780,6 +1236,211 @@ paths:
         name: Authorization
         required: true
         type: string
+      - description: ID du groupe de voyage
+        in: path
+        name: group_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Détails du groupe de voyage
+          schema:
+            $ref: '#/definitions/models.GroupeVoyage'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/gin.H'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Récupérer un groupe de voyage par ID
+      tags:
+      - Groupe Voyage
+  /groupes/{group_id}/delete_group:
+    delete:
+      consumes:
+      - application/json
+      description: Permet de supprimer un groupe de voyage
+      parameters:
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ID du groupe de voyage
+        in: path
+        name: group_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Groupe de voyage supprimé avec succès
+          schema:
+            $ref: '#/definitions/gin.H'
+        "204":
+          description: Groupe de voyage supprimé avec succès, aucune réponse
+        "400":
+          description: Requête incorrecte
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Groupe de voyage non trouvé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "409":
+          description: Conflit lors de la suppression du groupe de voyage
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Erreur interne du serveur
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Suppression d'un groupe de voyage
+      tags:
+      - Groupe Voyage
+  /groupes/{group_id}/join:
+    get:
+      consumes:
+      - application/json
+      description: Permet à un utilisateur de rejoindre un groupe de groupeVoyage
+        en utilisant un token d'invitation
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ID du groupe de groupeVoyage
+        in: path
+        name: group_id
+        required: true
+        type: string
+      - description: Token d'invitation
+        in: query
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Vous avez rejoint le groupe avec succès
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Rejoindre un groupe de groupeVoyage
+      tags:
+      - Groupe Voyage
+  /groupes/{group_id}/member/{member_id}/delete_member:
+    delete:
+      consumes:
+      - application/json
+      description: Permet de supprimer un membre d'un groupe de voyage
+      parameters:
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ID du groupe de voyage
+        in: path
+        name: group_id
+        required: true
+        type: integer
+      - description: ID du membre à supprimer
+        in: path
+        name: member_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Membre supprimé du groupe avec succès
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Requête incorrecte
+          schema:
+            $ref: '#/definitions/gin.H'
+        "401":
+          description: Non autorisé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Groupe de voyage ou membre non trouvé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "409":
+          description: Conflit lors de la suppression du membre
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Erreur interne du serveur
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Suppression d'un membre d'un groupe de voyage
+      tags:
+      - Groupe Voyage
+  /groupes/{group_id}/send_invitation:
+    post:
+      consumes:
+      - application/json
+      description: Envoie un mail d'invitation afin de de rejoindre un groupen de
+        groupeVoyage
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ID du groupe de groupeVoyage
+        in: path
+        name: group_id
+        required: true
+        type: string
+      - description: Mise à jour du budget
+        in: body
+        name: budget
+        required: true
+        schema:
+          $ref: '#/definitions/requests.EmailRequest'
       produces:
       - application/json
       responses:
@@ -805,9 +1466,100 @@ paths:
             $ref: '#/definitions/gin.H'
       security:
       - Bearer: []
-      summary: Rejoindre un groupe de voyage
+      summary: Invitation groupe de groupeVoyage
       tags:
-      - Voyages
+      - Groupe Voyage
+  /groupes/{group_id}/update_budget:
+    put:
+      consumes:
+      - application/json
+      description: Met à jour le budget d'un groupe de groupeVoyage spécifique en
+        utilisant son ID
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: ID du groupe de groupeVoyage
+        in: path
+        name: group_id
+        required: true
+        type: string
+      - description: Mise à jour du budget
+        in: body
+        name: budget
+        required: true
+        schema:
+          $ref: '#/definitions/requests.UpdateBudgetRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Budget mis à jour avec succès
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Groupe de groupeVoyage non trouvé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Impossible de mettre à jour le budget
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Met à jour le budget d'un groupe de groupeVoyage
+      tags:
+      - Groupe Voyage
+  /groupes/my_groups:
+    get:
+      consumes:
+      - application/json
+      description: Permet de voir le contenu du groupe de voyage pour celui qui l'a
+        créé mais également les membres du groupe
+      parameters:
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Liste groupe de voyage
+          schema:
+            items:
+              $ref: '#/definitions/models.GroupeVoyage'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/gin.H'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Voir un groupe de voyage
+      tags:
+      - Groupe Voyage
   /login:
     post:
       consumes:
@@ -850,7 +1602,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Delete your token session
+      description: Inform the client to delete the token
       parameters:
       - default: Bearer <Add access token here>
         description: Insert your access token
@@ -886,6 +1638,34 @@ paths:
       summary: Logout
       tags:
       - Auth
+  /middleware/checkadmin:
+    get:
+      description: Vérifie le rôle de l'utilisateur pour s'assurer qu'il est administrateur
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insérez votre jeton d'accès
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Autorisé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "401":
+          description: Non autorisé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "403":
+          description: Interdit
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Vérifie si l'utilisateur est un administrateur
+      tags:
+      - Middleware
   /profile:
     get:
       consumes:
@@ -951,45 +1731,4 @@ paths:
       summary: Réinitialiser le mot de passe
       tags:
       - Auth
-  /send_invitation:
-    post:
-      consumes:
-      - application/json
-      description: Envoie un mail d'invitation afin de de rejoindre un groupen de
-        voyage
-      parameters:
-      - default: Bearer <Add access token here>
-        description: Insert your access token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Invitation envoyée
-          schema:
-            $ref: '#/definitions/gin.H'
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/gin.H'
-        "404":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/gin.H'
-        "409":
-          description: Conflict
-          schema:
-            $ref: '#/definitions/gin.H'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/gin.H'
-      security:
-      - Bearer: []
-      summary: Invitation groupe de voyage
-      tags:
-      - Voyages
 swagger: "2.0"
