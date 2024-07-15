@@ -1,6 +1,10 @@
 import 'dart:async';
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/notifications_controller.dart';
+import 'package:flutter_app/service/context_utility.dart';
+import 'package:flutter_app/service/uni_service.dart';
 import 'package:flutter_app/views/groupe_detail/groupe_detail_screen.dart';
 import 'package:flutter_app/views/login/login_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -32,6 +36,32 @@ Future main() async {
   // NOTE: fileName defaults to .env and can be omitted in this case.
   // Ensure that the filename corresponds to the path in step 1 and 2.
   await dotenv.load(fileName: ".env");
+  WidgetsFlutterBinding.ensureInitialized();
+  await UniService.init();
+  //Initialisation des notifications
+  await AwesomeNotifications().initialize(
+    null,
+    [
+      NotificationChannel(
+        channelGroupKey: 'basic_channel_group',
+          channelKey: 'basic_channel',
+          channelName: 'Basic Notifications',
+          channelDescription: 'Basic notifications channel'
+      )
+    ],
+    channelGroups: [
+      NotificationChannelGroup(
+          channelGroupKey: 'basic_channel_group',
+          channelGroupName: 'Basic Group'
+      )
+    ]
+  );
+  bool isAllowedToSendNotifs =
+  await AwesomeNotifications().isNotificationAllowed();
+  if(!isAllowedToSendNotifs){
+    AwesomeNotifications().requestPermissionToSendNotifications();
+  }
+
   runApp(const MyApp());
 }
 
@@ -60,6 +90,14 @@ class _AppVoyageState extends State<MyApp> {
   void initState() {
     voyageProvider.fetchData();
     destinationProvider.fetchData();
+
+    AwesomeNotifications().setListeners(
+        onActionReceivedMethod: NotificationsController.onActionReceivedMethod,
+        onDismissActionReceivedMethod: NotificationsController.onActionReceivedMethod,
+        onNotificationCreatedMethod: NotificationsController.onNotificationCreatedMethod,
+        onNotificationDisplayedMethod: NotificationsController.onNotificationDisplayedMethod
+    );
+
     super.initState();
   }
 
@@ -76,39 +114,6 @@ class _AppVoyageState extends State<MyApp> {
     super.dispose();
   }
 
-  void initUniLinks() async {
-    _sub = linkStream.listen((String link) async {
-      // Gérer le lien profond ici
-      Uri uri = Uri.parse(link);
-      if (uri.pathSegments.contains('join')) {
-        // Extraire les paramètres nécessaires
-        int groupeId = int.parse(uri.pathSegments[1]);
-        String? token = uri.queryParameters['token'];
-
-        // Utiliser GroupProvider pour rejoindre le groupe
-        try {
-          await groupVoyageProvider.JoinGroup(groupeId, token);
-
-          // Rediriger vers la page de détail du groupe
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => GroupeDetailScreen(
-                groupeId: groupeId,
-               // token: token
-              ),
-            ),
-          );
-        } catch (e) {
-          // Gérer les erreurs si la tentative de rejoindre échoue
-          print('Erreur lors de la tentative de rejoindre le groupe: $e');
-        }
-      }
-        } as void Function(String? event)?, onError: (err) {
-      // Gérer les erreurs de lien profond ici
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -122,6 +127,7 @@ class _AppVoyageState extends State<MyApp> {
       ],
 
       child: MaterialApp(
+        navigatorKey: ContextUtility.navigatorKey,
         locale: _locale,
         localizationsDelegates: const [
           AppLocalizations.delegate,

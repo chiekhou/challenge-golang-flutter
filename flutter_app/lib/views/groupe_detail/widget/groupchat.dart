@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
@@ -41,6 +42,17 @@ class _GroupChatState extends State<GroupChat> {
         'content': _controller.text,
       });
       widget.channel.sink.add(message);
+
+      AwesomeNotifications().createNotification(
+          content: NotificationContent(
+              id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
+              channelKey: 'basic_channel',
+              title: widget.groupeId.toString(),
+              body: _controller.text,
+              notificationLayout: NotificationLayout.Default,
+          )
+      );
+
       _controller.clear();
       _scrollToBottom();
     }
