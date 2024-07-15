@@ -53,7 +53,7 @@ func GetVoyages(c *gin.Context) {
 }
 
 // ShowVoyage godoc
-// @Summary      Show a voyage
+// @Summary      Show a groupeVoyage
 // @Description  get string by ID
 // @Tags         Voyages
 // @Accept       json
@@ -89,12 +89,12 @@ func GetVoyage(c *gin.Context) {
 }
 
 // AddVoyage godoc
-// @Summary     Add a voyage
-// @Description Add by JSON voyage
+// @Summary     Add a groupeVoyage
+// @Description Add by JSON groupeVoyage
 // @Tags        Voyages
 // @Accept      json
 // @Produce     json
-// @Param       voyage body models.Voyage true "Add voyage"
+// @Param       groupeVoyage body models.Voyage true "Add groupeVoyage"
 // @Success     200 {object} models.Voyage
 // @Failure     400 {object} ErrorResponse
 // @Failure     404 {object} ErrorResponse
@@ -102,9 +102,9 @@ func GetVoyage(c *gin.Context) {
 // @Router      /api/voyages [post]
 func CreateVoyage(c *gin.Context) {
 
-var featureToggles = map[string]bool{
-    "active_voyage": true,
-}
+	var featureToggles = map[string]bool{
+		"active_voyage": true,
+	}
 	enabled, exists := featureToggles["active_voyage"]
 	if !exists || !enabled {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Vous ne pouvez pas créer un voyage"})
@@ -126,7 +126,6 @@ var featureToggles = map[string]bool{
 		return
 	}
 
-
 	voyage := models.Voyage{
 		Destination: input.Destination,
 		DateAller:   input.DateAller,
@@ -137,7 +136,7 @@ var featureToggles = map[string]bool{
 
 	if err := initializers.DB.Create(&voyage).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		fmt.Println("Erreur de création de voyage:", err.Error())
+		fmt.Println("Erreur de création de groupeVoyage:", err.Error())
 		return
 	}
 
@@ -152,7 +151,7 @@ var featureToggles = map[string]bool{
 // @Tags Voyages
 // @Accept json
 // @Produce json
-// @Param voyage body models.Voyage true "Voyage data"
+// @Param groupeVoyage body models.Voyage true "Voyage data"
 // @Success      200  {object}  models.Voyage
 // @Failure      400  {object}  ErrorResponse
 // @Failure      404  {object}  ErrorResponse
@@ -225,8 +224,8 @@ func UpdatePutVoyageHotel(c *gin.Context) {
 
 // DeleteVoyage godoc
 //
-//	@Summary		Delete a voyage
-//	@Description	Delete by voyage ID
+//	@Summary		Delete a groupeVoyage
+//	@Description	Delete by groupeVoyage ID
 //	@Tags			Voyages
 //	@Accept			json
 //	@Produce		json

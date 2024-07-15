@@ -1,21 +1,18 @@
 package flipping
 
 import (
-    "net/http"
-    "github.com/gin-gonic/gin"
-    "fmt"
-
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type FeatureToggle struct {
-    ActiveVoyage bool `json:"active_voyage"`
+	ActiveVoyage bool `json:"active_voyage"`
 }
-
 
 var featureToggles = map[string]bool{
-    "active_voyage": false,
+	"active_voyage": false,
 }
-
 
 // getFeatureToggle godoc
 // @Summary Récupère l'état d'une fonctionnalité
@@ -28,26 +25,25 @@ var featureToggles = map[string]bool{
 // @Failure 404 {string} string "Feature not found"
 // @Router /api/flipping/feature [get]
 func GetFeatureToggle(c *gin.Context) {
-    feature := c.Query("feature")
-    fmt.Println("Feature requested:", feature)
+	feature := c.Query("feature")
+	fmt.Println("Feature requested:", feature)
 
-    if feature == "" {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Feature query parameter is missing"})
-        return
-    }
+	if feature == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Feature query parameter is missing"})
+		return
+	}
 
-    enabled, exists :=featureToggles[feature]
-    if !exists {
-        c.JSON(http.StatusNotFound, gin.H{"error": "Feature not found"})
-        return
-    }
+	enabled, exists := featureToggles[feature]
+	if !exists {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Feature not found"})
+		return
+	}
 
-    response := map[string]bool{
-        "enabled": enabled,
-    }
-    c.JSON(http.StatusOK, response)
+	response := map[string]bool{
+		"enabled": enabled,
+	}
+	c.JSON(http.StatusOK, response)
 }
-
 
 // UpdateFeatureToggle godoc
 // @Summary Met à jour l'état d'une fonctionnalité
@@ -62,30 +58,30 @@ func GetFeatureToggle(c *gin.Context) {
 // @Failure 404 {string} string "Feature not found"
 // @Router /api/flipping/feature [put]
 func UpdateFeatureToggle(c *gin.Context) {
-    feature := c.Query("feature")
-    if feature == "" {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Feature query parameter is missing"})
-        return
-    }
+	feature := c.Query("feature")
+	if feature == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Feature query parameter is missing"})
+		return
+	}
 
-    var state map[string]bool
-    if err := c.ShouldBindJSON(&state); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
-        return
-    }
+	var state map[string]bool
+	if err := c.ShouldBindJSON(&state); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
 
-   /* enabled, exists := featureToggles[feature]
-    if !exists {
-        c.JSON(http.StatusNotFound, gin.H{"error": "Feature not found"})
-        return
-    }*/
+	/* enabled, exists := featureToggles[feature]
+	   if !exists {
+	       c.JSON(http.StatusNotFound, gin.H{"error": "Feature not found"})
+	       return
+	   }*/
 
-    newState, ok := state["enabled"]
-    if !ok {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "State parameter 'enabled' is missing"})
-        return
-    }
+	newState, ok := state["enabled"]
+	if !ok {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "State parameter 'enabled' is missing"})
+		return
+	}
 
-    featureToggles[feature] = newState
-    c.JSON(http.StatusOK, gin.H{"enabled": newState})
+	featureToggles[feature] = newState
+	c.JSON(http.StatusOK, gin.H{"enabled": newState})
 }

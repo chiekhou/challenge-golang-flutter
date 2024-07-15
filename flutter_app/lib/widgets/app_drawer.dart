@@ -1,5 +1,6 @@
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
+
 import 'package:flutter_app/main.dart';
 import 'package:flutter_app/providers/auth_provider.dart';
 import 'package:flutter_app/views/admin/dashboard_admin.dart';
@@ -11,7 +12,6 @@ import 'package:flutter_app/views/login/login_screen.dart';
 import 'package:flutter_app/views/profile/profile_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
 import '../views/home/home_view.dart';
 import '../views/voyages/voyages_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -115,7 +115,7 @@ class _AppDrawerState extends State<AppDrawer> {
             ),
             child: Text(
               AppLocalizations.of(context)!.title_drawer,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 30,
               ),

@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_app/config/app_config.dart';
 import 'package:http_parser/http_parser.dart';
 import '../models/activity_model.dart';
 import '../models/destination_model.dart';
@@ -9,10 +10,10 @@ import 'package:path/path.dart';
 import 'dart:io';
 
 class DestinationProvider extends ChangeNotifier {
-  final String host = 'localhost:8080'; // version emulateur
-  // final String host = 'localhost:8080'; // version web
   List<Destination> _destinations = [];
   bool isLoading = false;
+  final apiAuthority = AppConfig.getApiAuthority();
+  final isSecure = AppConfig.isSecure();
 
   UnmodifiableListView<Destination> get destinations =>
       UnmodifiableListView(_destinations);
@@ -36,7 +37,9 @@ class DestinationProvider extends ChangeNotifier {
       isLoading = true;
       notifyListeners();
 
-      final url = Uri.http(host, '/api/destinations');
+      final url = isSecure
+          ? Uri.https(apiAuthority, '/api/destinations')
+          : Uri.http(apiAuthority, '/api/destinations');
       final response = await http.get(url);
       print('Fetching data from $url');
       print('Response body: ${response.body}');
@@ -58,7 +61,7 @@ class DestinationProvider extends ChangeNotifier {
         throw Exception('Failed to load destinations');
       }
     } catch (e) {
-      print('Error: $e');
+      print('Error: $e ');
     } finally {
       isLoading = false;
       notifyListeners();
@@ -68,8 +71,11 @@ class DestinationProvider extends ChangeNotifier {
   Future<void> addActivityToDestination(Activity newActivity) async {
     try {
       int destinationId = getDestinationByName(newActivity.destination).id;
+      final url = isSecure
+          ? Uri.https(apiAuthority, '/api/destination/$destinationId/activity')
+          : Uri.http(apiAuthority, '/api/destination/$destinationId/activity');
       http.Response response = await http.post(
-        Uri.http(host, '/api/destination/$destinationId/activity'),
+        url,
         headers: {'Content-type': 'application/json'},
         body: json.encode(
           newActivity.toJson(),
@@ -92,8 +98,12 @@ class DestinationProvider extends ChangeNotifier {
       String destinationName, String activityName) async {
     try {
       Destination destination = getDestinationByName(destinationName);
-      http.Response response = await http.get(Uri.http(host,
-          '/api/destination/${destination.id}/activities/verify/$activityName'));
+      final url = isSecure
+          ? Uri.https(apiAuthority,
+              '/api/destination/${destination.id}/activities/verify/$activityName')
+          : Uri.http(apiAuthority,
+              '/api/destination/${destination.id}/activities/verify/$activityName');
+      http.Response response = await http.get(url);
       if (response.statusCode != 200) {
         return json.decode(response.body);
       } else {
@@ -106,8 +116,10 @@ class DestinationProvider extends ChangeNotifier {
 
   Future<String> uploadImage(File pickedImage) async {
     try {
-      var request =
-          http.MultipartRequest("POST", Uri.http(host, '/api/activity/image'));
+      final url = isSecure
+          ? Uri.https(apiAuthority, '/api/activity/image')
+          : Uri.http(apiAuthority, '/api/activity/image');
+      var request = http.MultipartRequest("POST", url);
       request.files.add(
         http.MultipartFile.fromBytes(
           'activity',

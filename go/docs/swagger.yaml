@@ -180,10 +180,16 @@ definitions:
     type: object
   requests.ResetPasswordRequest:
     properties:
+      new_password:
+        type: string
       password:
         type: string
+      token:
+        type: string
     required:
+    - new_password
     - password
+    - token
     type: object
   requests.SignupRequest:
     properties:
@@ -805,11 +811,11 @@ paths:
     post:
       consumes:
       - application/json
-      description: Add by JSON voyage
+      description: Add by JSON groupeVoyage
       parameters:
-      - description: Add voyage
+      - description: Add groupeVoyage
         in: body
-        name: voyage
+        name: groupeVoyage
         required: true
         schema:
           $ref: '#/definitions/models.Voyage'
@@ -832,7 +838,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
-      summary: Add a voyage
+      summary: Add a groupeVoyage
       tags:
       - Voyages
     put:
@@ -842,7 +848,7 @@ paths:
       parameters:
       - description: Voyage data
         in: body
-        name: voyage
+        name: groupeVoyage
         required: true
         schema:
           $ref: '#/definitions/models.Voyage'
@@ -898,14 +904,14 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
-      summary: Show a voyage
+      summary: Show a groupeVoyage
       tags:
       - Voyages
   /api/voyages/delete/{id}:
     delete:
       consumes:
       - application/json
-      description: Delete by voyage ID
+      description: Delete by groupeVoyage ID
       parameters:
       - description: Voyage ID
         format: int64
@@ -932,7 +938,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
-      summary: Delete a voyage
+      summary: Delete a groupeVoyage
       tags:
       - Voyages
   /api/voyages/hotel:

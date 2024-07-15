@@ -3,27 +3,33 @@ import 'dart:convert';
 
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_app/config/app_config.dart';
 import 'package:flutter_app/models/hotel_model.dart';
 import '../models/activity_model.dart';
 import '../models/voyage_model.dart';
 import 'package:http/http.dart' as http;
 
 class VoyageProvider extends ChangeNotifier {
-  final String host = '10.0.2.2:8080'; // version emulateur
-  //final String host = 'localhost:8080'; // version web
+
   List<Voyage> _voyages = [];
   bool isLoading = false;
+  final apiAuthority = AppConfig.getApiAuthority();
+  final isSecure = AppConfig.isSecure();
 
   UnmodifiableListView<Voyage> get voyages => UnmodifiableListView(_voyages);
   Future<void> fetchData() async {
+
     try {
       isLoading = true;
       notifyListeners();
 
-      final url = Uri.http(host, '/api/voyages');
+      final url = isSecure
+          ? Uri.https(apiAuthority, '/api/voyages')
+          : Uri.http(apiAuthority, '/api/voyages');
+
       final response = await http.get(url);
-      // print('Fetching data from $url');
-      // print('Response body: ${response.body}');
+       print('Fetching data from $url');
+      print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
@@ -42,7 +48,7 @@ class VoyageProvider extends ChangeNotifier {
         throw Exception('Failed to load voyages');
       }
     } catch (e) {
-      // print('Error: $e');
+      print('Error: $e');
     } finally {
       isLoading = false;
       notifyListeners();
@@ -54,18 +60,20 @@ class VoyageProvider extends ChangeNotifier {
       final jsonData = json.encode(voyage.toJson());
       print('Données envoyées : $jsonData');
 
-      final response = await http.post(
-        Uri.http(host, '/api/voyages'),
+      final url = isSecure
+          ? Uri.https(apiAuthority, '/api/voyages')
+          : Uri.http(apiAuthority, '/api/voyages');
+      final response = await http.post(url,
         headers: {'Content-Type': 'application/json'},
         body: jsonData,
       );
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
-        // print('Réponse reçue : $responseData');
+        ('Réponse reçue : $responseData');
 
         final Voyage newVoyage = Voyage.fromJson(responseData['data']);
-        // print('Nouveau voyage créé : ${newVoyage.id}');
+        print('Nouveau voyage créé : ${newVoyage.id}');
 
         _voyages.add(newVoyage);
         notifyListeners();
@@ -84,8 +92,10 @@ class VoyageProvider extends ChangeNotifier {
       Activity activity =
           voyage.activities.firstWhere((activity) => activity.id == activityId);
       activity.status = ActivityStatus.done;
-      http.Response response = await http.put(
-        Uri.http(host, '/api/voyages'),
+      final url = isSecure
+          ? Uri.https(apiAuthority, '/api/voyages')
+          : Uri.http(apiAuthority, '/api/voyages');
+      http.Response response = await http.put(url,
         body: json.encode(
           voyage.toJson(),
         ),
@@ -107,8 +117,10 @@ class VoyageProvider extends ChangeNotifier {
       Hotel hotel =
       voyage.hotels.firstWhere((hotel) => hotel.id == hotelId);
       hotel.status = HotelStatus.done;
-      http.Response response = await http.put(
-        Uri.http(host, '/api/voyages'),
+      final url = isSecure
+          ? Uri.https(apiAuthority, '/api/voyages/hotel')
+          : Uri.http(apiAuthority, '/api/voyages/hotel');
+      http.Response response = await http.put(url,
         body: json.encode(
           voyage.toJson(),
         ),

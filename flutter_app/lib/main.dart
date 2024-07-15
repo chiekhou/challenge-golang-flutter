@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/views/admin/dashboard_admin.dart';
 import 'package:flutter_app/views/admin/group_management_screen.dart';
 import 'package:flutter_app/views/admin/user_management_screen.dart';
+import 'package:flutter_app/config/app_config.dart';
 import 'package:flutter_app/views/groupe_detail/groupe_detail_screen.dart';
 import 'package:flutter_app/views/login/login_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -29,11 +30,10 @@ import 'views/not-found/not_found.dart';
 import './views/home/home_view.dart';
 
 Future main() async {
-  // To load the .env file contents into dotenv.
-  // NOTE: fileName defaults to .env and can be omitted in this case.
-  // Ensure that the filename corresponds to the path in step 1 and 2.
   await dotenv.load(fileName: ".env");
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
+  print('API URL: ${AppConfig.getApiAuthority()}');
 }
 
 class MyApp extends StatefulWidget {

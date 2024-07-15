@@ -909,7 +909,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Voyage data",
-                        "name": "voyage",
+                        "name": "groupeVoyage",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -945,7 +945,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "description": "Add by JSON voyage",
+                "description": "Add by JSON groupeVoyage",
                 "consumes": [
                     "application/json"
                 ],
@@ -955,11 +955,11 @@ const docTemplate = `{
                 "tags": [
                     "Voyages"
                 ],
-                "summary": "Add a voyage",
+                "summary": "Add a groupeVoyage",
                 "parameters": [
                     {
-                        "description": "Add voyage",
-                        "name": "voyage",
+                        "description": "Add groupeVoyage",
+                        "name": "groupeVoyage",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -997,7 +997,7 @@ const docTemplate = `{
         },
         "/api/voyages/delete/{id}": {
             "delete": {
-                "description": "Delete by voyage ID",
+                "description": "Delete by groupeVoyage ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -1007,7 +1007,7 @@ const docTemplate = `{
                 "tags": [
                     "Voyages"
                 ],
-                "summary": "Delete a voyage",
+                "summary": "Delete a groupeVoyage",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1110,7 +1110,7 @@ const docTemplate = `{
                 "tags": [
                     "Voyages"
                 ],
-                "summary": "Show a voyage",
+                "summary": "Show a groupeVoyage",
                 "parameters": [
                     {
                         "type": "integer",
@@ -2322,10 +2322,18 @@ const docTemplate = `{
         "requests.ResetPasswordRequest": {
             "type": "object",
             "required": [
-                "password"
+                "new_password",
+                "password",
+                "token"
             ],
             "properties": {
+                "new_password": {
+                    "type": "string"
+                },
                 "password": {
+                    "type": "string"
+                },
+                "token": {
                     "type": "string"
                 }
             }
