@@ -47,7 +47,7 @@ class _GroupChatState extends State<GroupChat> {
           content: NotificationContent(
               id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
               channelKey: 'basic_channel',
-              title: widget.groupeId.toString(),
+              title: 'Message du groupe',
               body: _controller.text,
               notificationLayout: NotificationLayout.Default,
           )
