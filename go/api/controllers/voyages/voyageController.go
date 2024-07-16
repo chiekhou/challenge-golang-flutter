@@ -32,6 +32,8 @@ type SuccessResponse struct {
 // @Tags			Voyages
 // @Accept			json
 // @Produce		json
+// @Security Bearer
+// @Param Authorization header string true "Insert your access token" default(Bearer Add access token here)
 // @Success      200  {object}  models.Voyage
 // @Failure      400  {object}  ErrorResponse
 // @Failure      404  {object}  ErrorResponse
@@ -39,9 +41,16 @@ type SuccessResponse struct {
 //
 // @Router	 	/api/voyages [get]
 func GetVoyages(c *gin.Context) {
+	currentUser, exist := c.Get("currentUser")
+	if !exist {
+		c.JSON(http.StatusUnauthorized, ErrorResponse{Error: "Not authorized"})
+		return
+	}
+
+	user := currentUser.(models.User)
 
 	var voyages []models.Voyage
-	result := initializers.DB.Preload("Activities").Preload("Hotels").Find(&voyages)
+	result := initializers.DB.Where("user_id = ?", user.ID).Preload("Activities").Preload("Hotels").Find(&voyages)
 
 	if result.Error != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: result.Error.Error()})
@@ -59,6 +68,8 @@ func GetVoyages(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        id   path      int  true  "Voyages ID"
+// @Security Bearer
+// @Param Authorization header string true "Insert your access token" default(Bearer Add access token here)
 // @Success      200  {object}  models.Voyage
 // @Failure      400  {object}  ErrorResponse
 // @Failure      404  {object}  ErrorResponse
@@ -68,6 +79,14 @@ func GetVoyage(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 
+	currentUser, exist := c.Get("currentUser")
+	if !exist {
+		c.JSON(http.StatusUnauthorized, ErrorResponse{Error: "Not authorized"})
+		return
+	}
+
+	user := currentUser.(models.User)
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, ErrorResponse{Error: "Invalid ID format"})
 		return
@@ -75,6 +94,11 @@ func GetVoyage(c *gin.Context) {
 
 	var voyage models.Voyage
 	result := initializers.DB.Preload("Activities").Preload("Hotels").First(&voyage, id)
+
+	if voyage.UserId != user.ID {
+		c.JSON(http.StatusUnauthorized, ErrorResponse{Error: "Non Authorized User"})
+		return
+	}
 
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
@@ -94,6 +118,8 @@ func GetVoyage(c *gin.Context) {
 // @Tags        Voyages
 // @Accept      json
 // @Produce     json
+// @Security Bearer
+// @Param Authorization header string true "Insert your access token" default(Bearer Add access token here)
 // @Param       voyage body models.Voyage true "Add voyage"
 // @Success     200 {object} models.Voyage
 // @Failure     400 {object} ErrorResponse
@@ -101,10 +127,15 @@ func GetVoyage(c *gin.Context) {
 // @Failure     500 {object} ErrorResponse
 // @Router      /api/voyages [post]
 func CreateVoyage(c *gin.Context) {
+	user, exist := c.Get("currentUser")
+	if !exist {
+		c.JSON(http.StatusUnauthorized, ErrorResponse{Error: "Not authorized"})
+		return
+	}
 
-var featureToggles = map[string]bool{
-    "active_voyage": true,
-}
+	var featureToggles = map[string]bool{
+		"active_voyage": true,
+	}
 	enabled, exists := featureToggles["active_voyage"]
 	if !exists || !enabled {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Vous ne pouvez pas créer un voyage"})
@@ -126,13 +157,13 @@ var featureToggles = map[string]bool{
 		return
 	}
 
-
 	voyage := models.Voyage{
 		Destination: input.Destination,
 		DateAller:   input.DateAller,
 		DateRetour:  input.DateRetour,
 		Activities:  input.Activities,
 		Hotels:      input.Hotels,
+		UserId:      user.(models.User).ID,
 	}
 
 	if err := initializers.DB.Create(&voyage).Error; err != nil {
@@ -153,15 +184,34 @@ var featureToggles = map[string]bool{
 // @Accept json
 // @Produce json
 // @Param voyage body models.Voyage true "Voyage data"
+// @Security Bearer
+// @Param Authorization header string true "Insert your access token" default(Bearer Add access token here)
 // @Success      200  {object}  models.Voyage
 // @Failure      400  {object}  ErrorResponse
 // @Failure      404  {object}  ErrorResponse
 // @Failure      500  {object}  ErrorResponse
 // @Router /api/voyages [put]
 func UpdatePutVoyage(c *gin.Context) {
+	currentUser, exist := c.Get("currentUser")
+	if !exist {
+		c.JSON(http.StatusUnauthorized, ErrorResponse{Error: "Not authorized"})
+		return
+	}
+
+	user, ok := currentUser.(models.User)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "Unable to retrieve user information"})
+		return
+	}
+
 	var body models.Voyage
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if body.UserId != user.ID {
+		c.JSON(http.StatusForbidden, ErrorResponse{Error: "You do not have permission to update this voyage"})
 		return
 	}
 
@@ -175,7 +225,8 @@ func UpdatePutVoyage(c *gin.Context) {
 	voyage.DateAller = body.DateAller
 	voyage.DateRetour = body.DateRetour
 	voyage.Activities = body.Activities
-	//voyage.Hotels = body.Hotels
+	voyage.Hotels = body.Hotels
+	voyage.UserId = user.ID
 
 	if err := initializers.DB.Session(&gorm.Session{FullSaveAssociations: true}).Updates(&voyage).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -192,12 +243,24 @@ func UpdatePutVoyage(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param voyage body models.Voyage true "Voyage data"
+// @Security Bearer
+// @Param Authorization header string true "Insert your access token" default(Bearer Add access token here)
 // @Success      200  {object}  models.Voyage
 // @Failure      400  {object}  ErrorResponse
 // @Failure      404  {object}  ErrorResponse
 // @Failure      500  {object}  ErrorResponse
 // @Router /api/voyages/hotel [put]
 func UpdatePutVoyageHotel(c *gin.Context) {
+	currentUser, exist := c.Get("currentUser")
+	if !exist {
+		c.JSON(http.StatusUnauthorized, ErrorResponse{Error: "Not authorized"})
+		return
+	}
+	user, ok := currentUser.(models.User)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "Unable to retrieve user information"})
+	}
+
 	var body models.Voyage
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -209,11 +272,17 @@ func UpdatePutVoyageHotel(c *gin.Context) {
 		return
 	}
 
+	if voyage.UserId != user.ID {
+		c.JSON(http.StatusForbidden, ErrorResponse{Error: "You do not have permission to update this voyage"})
+		return
+	}
+
 	voyage.Destination = body.Destination
 	voyage.DateAller = body.DateAller
 	voyage.DateRetour = body.DateRetour
 	voyage.Activities = body.Activities
 	voyage.Hotels = body.Hotels
+	voyage.UserId = user.ID
 
 	if err := initializers.DB.Session(&gorm.Session{FullSaveAssociations: true}).Updates(&voyage).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -232,6 +301,8 @@ func UpdatePutVoyageHotel(c *gin.Context) {
 //	@Produce		json
 //	@Param			id	path		int	true	"Voyage ID"	Format(int64)
 //
+// @Security Bearer
+// @Param Authorization header string true "Insert your access token" default(Bearer Add access token here)
 // @Success      200  {object}  models.Voyage
 // @Failure      400  {object}  ErrorResponse
 // @Failure      404  {object}  ErrorResponse
@@ -239,6 +310,16 @@ func UpdatePutVoyageHotel(c *gin.Context) {
 //
 //	@Router			/api/voyages/delete/{id} [delete]
 func DeleteVoyage(c *gin.Context) {
+	currentUser, exist := c.Get("currentUser")
+	if !exist {
+		c.JSON(http.StatusUnauthorized, ErrorResponse{Error: "Not authorized"})
+		return
+	}
+	user, ok := currentUser.(models.User)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, ErrorResponse{Error: "Unable to retrieve user information"})
+	}
+
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 
@@ -250,6 +331,11 @@ func DeleteVoyage(c *gin.Context) {
 	var voyage models.Voyage
 	if err := initializers.DB.First(&voyage, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, ErrorResponse{Error: "Destination not found"})
+		return
+	}
+
+	if voyage.UserId != user.ID {
+		c.JSON(http.StatusForbidden, ErrorResponse{Error: "You do not have permission to delete this voyage"})
 		return
 	}
 

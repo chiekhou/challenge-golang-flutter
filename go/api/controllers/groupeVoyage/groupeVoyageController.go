@@ -131,13 +131,11 @@ func GetMyGroups(c *gin.Context) {
 
 	var groups []models.GroupeVoyage
 
-	// Obtenir les groupes par l'id du user et précharger les membres
 	if err := initializers.DB.Where("user_id = ?", currentUser.ID).Preload("Members").Find(&groups).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Ajouter les groupes où l'utilisateur est membre
 	var memberGroups []models.GroupeVoyage
 	subQuery := initializers.DB.Table("groupe_members").Select("groupe_voyage_id").Where("user_id = ?", currentUser.ID)
 	if err := initializers.DB.Where("id IN (?)", subQuery).Preload("Members").Find(&memberGroups).Error; err != nil {
@@ -183,7 +181,6 @@ func GetGroupById(c *gin.Context) {
 		return
 	}
 
-	// Vérifiez si l'utilisateur est le créateur ou un membre du groupe
 	if group.UserID != currentUser.ID {
 		var member models.GroupeMembers
 		if err := initializers.DB.Where("groupe_voyage_id = ? AND user_id = ?", groupID, currentUser.ID).First(&member).Error; err != nil {

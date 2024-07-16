@@ -595,6 +595,11 @@ const docTemplate = `{
         },
         "/api/voyages": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get Voyages",
                 "consumes": [
                     "application/json"
@@ -606,6 +611,16 @@ const docTemplate = `{
                     "Voyages"
                 ],
                 "summary": "List Voyages",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -634,6 +649,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update a trip by ID",
                 "consumes": [
                     "application/json"
@@ -654,6 +674,14 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.Voyage"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -684,6 +712,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Add by JSON voyage",
                 "consumes": [
                     "application/json"
@@ -696,6 +729,14 @@ const docTemplate = `{
                 ],
                 "summary": "Add a voyage",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "Add voyage",
                         "name": "voyage",
@@ -736,6 +777,11 @@ const docTemplate = `{
         },
         "/api/voyages/delete/{id}": {
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete by voyage ID",
                 "consumes": [
                     "application/json"
@@ -754,6 +800,14 @@ const docTemplate = `{
                         "description": "Voyage ID",
                         "name": "id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -787,6 +841,11 @@ const docTemplate = `{
         },
         "/api/voyages/hotel": {
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update a trip by ID",
                 "consumes": [
                     "application/json"
@@ -807,6 +866,14 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.Voyage"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -839,6 +906,11 @@ const docTemplate = `{
         },
         "/api/voyages/{id}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "get string by ID",
                 "consumes": [
                     "application/json"
@@ -856,6 +928,14 @@ const docTemplate = `{
                         "description": "Voyages ID",
                         "name": "id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -1947,6 +2027,12 @@ const docTemplate = `{
                 },
                 "username": {
                     "type": "string"
+                },
+                "voyage": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Voyage"
+                    }
                 }
             }
         },
@@ -1976,6 +2062,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "description": "gorm.Model",
+                    "type": "integer"
+                },
+                "user_id": {
                     "type": "integer"
                 }
             }

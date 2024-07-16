@@ -583,6 +583,11 @@
         },
         "/api/voyages": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get Voyages",
                 "consumes": [
                     "application/json"
@@ -594,6 +599,16 @@
                     "Voyages"
                 ],
                 "summary": "List Voyages",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -622,6 +637,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update a trip by ID",
                 "consumes": [
                     "application/json"
@@ -642,6 +662,14 @@
                         "schema": {
                             "$ref": "#/definitions/models.Voyage"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -672,6 +700,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Add by JSON voyage",
                 "consumes": [
                     "application/json"
@@ -684,6 +717,14 @@
                 ],
                 "summary": "Add a voyage",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "Add voyage",
                         "name": "voyage",
@@ -724,6 +765,11 @@
         },
         "/api/voyages/delete/{id}": {
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete by voyage ID",
                 "consumes": [
                     "application/json"
@@ -742,6 +788,14 @@
                         "description": "Voyage ID",
                         "name": "id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -775,6 +829,11 @@
         },
         "/api/voyages/hotel": {
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update a trip by ID",
                 "consumes": [
                     "application/json"
@@ -795,6 +854,14 @@
                         "schema": {
                             "$ref": "#/definitions/models.Voyage"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -827,6 +894,11 @@
         },
         "/api/voyages/{id}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "get string by ID",
                 "consumes": [
                     "application/json"
@@ -844,6 +916,14 @@
                         "description": "Voyages ID",
                         "name": "id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -1935,6 +2015,12 @@
                 },
                 "username": {
                     "type": "string"
+                },
+                "voyage": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Voyage"
+                    }
                 }
             }
         },
@@ -1964,6 +2050,9 @@
                 },
                 "id": {
                     "description": "gorm.Model",
+                    "type": "integer"
+                },
+                "user_id": {
                     "type": "integer"
                 }
             }

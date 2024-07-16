@@ -133,6 +133,10 @@ definitions:
         type: integer
       username:
         type: string
+      voyage:
+        items:
+          $ref: '#/definitions/models.Voyage'
+        type: array
     type: object
   models.Voyage:
     properties:
@@ -152,6 +156,8 @@ definitions:
         type: array
       id:
         description: gorm.Model
+        type: integer
+      user_id:
         type: integer
     type: object
   requests.EmailRequest:
@@ -610,6 +616,13 @@ paths:
       consumes:
       - application/json
       description: Get Voyages
+      parameters:
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -629,6 +642,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
+      security:
+      - Bearer: []
       summary: List Voyages
       tags:
       - Voyages
@@ -637,6 +652,12 @@ paths:
       - application/json
       description: Add by JSON voyage
       parameters:
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Add voyage
         in: body
         name: voyage
@@ -662,6 +683,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
+      security:
+      - Bearer: []
       summary: Add a voyage
       tags:
       - Voyages
@@ -676,6 +699,12 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.Voyage'
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -695,6 +724,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
+      security:
+      - Bearer: []
       summary: Update a trip
       tags:
       - Voyages
@@ -709,6 +740,12 @@ paths:
         name: id
         required: true
         type: integer
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -728,6 +765,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
+      security:
+      - Bearer: []
       summary: Show a voyage
       tags:
       - Voyages
@@ -743,6 +782,12 @@ paths:
         name: id
         required: true
         type: integer
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -762,6 +807,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
+      security:
+      - Bearer: []
       summary: Delete a voyage
       tags:
       - Voyages
@@ -777,6 +824,12 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.Voyage'
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -796,6 +849,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
+      security:
+      - Bearer: []
       summary: Update a trip
       tags:
       - Voyages

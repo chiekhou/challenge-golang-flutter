@@ -12,4 +12,5 @@ type Voyage struct {
 	Destination string     `gorm:"size:64; not null " json:"destination"`
 	Activities  []Activity `gorm:"many2many:voyage_activities;" json:"activities"`
 	Hotels      []Hotel    `gorm:"many2many:voyage_hotels; null" json:"hotels"`
+	UserId      uint       `gorm:"not null" json:"user_id"`
 }
