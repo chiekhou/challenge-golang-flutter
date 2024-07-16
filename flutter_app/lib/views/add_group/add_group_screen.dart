@@ -10,6 +10,7 @@ class AddGroupScreen extends StatelessWidget{
   Widget build(BuildContext context){
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      appBar: AppBar(),
       body: Container(
         width: double.infinity,
         height: size.height,

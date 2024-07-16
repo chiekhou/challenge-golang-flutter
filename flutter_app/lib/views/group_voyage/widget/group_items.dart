@@ -21,24 +21,30 @@ class GroupItems extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-        padding: EdgeInsets.all(8),
+       // margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+        padding: const EdgeInsets.only(
+          left: 32,
+          top: 40.0,
+          bottom: 50,
+        ),
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(15),
-          boxShadow: [
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(80.0)
+          ),
+/*          boxShadow: [
             BoxShadow(
               color: Colors.black26,
               blurRadius: 5,
               offset: Offset(0, 2),
             ),
-          ],
+          ],*/
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              budget,
+              'budget : $budget',
               style: TextStyle(color: Colors.white, fontSize: 14),
             ),
             const SizedBox(height: 8),
