@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/views/login/login_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../../../providers/auth_provider.dart';
@@ -25,28 +26,26 @@ class _RegisterFormState extends State<RegisterForm> {
   void _submit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      final authservice = Provider.of<AuthProvider>(context, listen: false);
-      bool success = await authservice.Register(_address, _email, _firstname,
-          _lastname, _password, _username, _photo);
+      final authService = Provider.of<AuthProvider>(context, listen: false);
+      bool success = await authService.Register(
+          _address, _email, _firstname, _lastname, _password, _username, _photo);
+
       if (success) {
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (BuildContext context) => HomeView()));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Inscription réussie !'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.pushNamed(context, LoginScreen.routeName);;
+
       } else {
-        showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-                  title: Text('Error'),
-                  content:
-                      Text('Echec lors de l\'inscription, veuillez réessayer'),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('OK'),
-                    )
-                  ],
-                ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Erreur lors de l\'inscription'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     }
   }

@@ -24,6 +24,8 @@ func init() {
 	initializers2.ConnectToDatabase()
 }
 
+
+
 func main() {
 
 	// Servir des fichiers statiques depuis le dossier assets

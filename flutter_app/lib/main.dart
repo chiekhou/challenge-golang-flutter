@@ -61,7 +61,7 @@ Future main() async {
   }
 
   runApp(const MyApp());
-  print('API URL: ${AppConfig.getApiAuthority()}');
+ // print('API URL: ${AppConfig.getApiAuthority()}');
 }
 
 class MyApp extends StatefulWidget {

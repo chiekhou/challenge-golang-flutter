@@ -76,6 +76,7 @@ class GroupeDetailScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         if(groupe.userId == user.id) ...[
+                          SizedBox(height: 32.0),
                           TextFormField(
                             controller: emailController,
                             keyboardType: TextInputType.emailAddress,
@@ -85,7 +86,7 @@ class GroupeDetailScreen extends StatelessWidget {
                                 hintText: 'Invitez un ami en entrant son email'
                             ),
                           ),
-                          SizedBox(height: 12.0),
+                          SizedBox(height: 40.0),
                           ElevatedButton(
                               onPressed: () async {
                                 bool success = await groupVoyageProvider.SendInvitation(groupeId, emailController.text);
@@ -95,18 +96,11 @@ class GroupeDetailScreen extends StatelessWidget {
                                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Échec de l'envoi")));
                                 }
                               },
-                              child: Text('Envoyer une invitation')
+                              child:
+                              Text('Envoyer une invitation')
                           ),
                         ],
-                        SizedBox(height: 32.0),
-                        Text(
-                          'Membres :',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 20.0),
+
                         Expanded(
                           child: groupe.members.isEmpty
                               ? Center(

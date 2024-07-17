@@ -354,7 +354,7 @@ func SendInvitation(c *gin.Context) {
 		return
 	}
 
-	invitationURL := fmt.Sprintf("http://10.0.2.2:8080/groupes/%d/join?token=%s", groupID, token)
+	invitationURL := fmt.Sprintf("https://challenge-golang-flutter-7724181c550a.herokuapp/groupes/%d/join?token=%s", groupID, token)
 
 	initializers.DB.Where("email=?", emailRequest.Email).First(&userFound)
 	if userFound.ID == 0 {

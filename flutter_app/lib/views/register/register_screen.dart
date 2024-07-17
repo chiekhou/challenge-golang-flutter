@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_app/views/login/login_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/auth_provider.dart';
@@ -52,7 +53,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           _lastname, _password, _username, _photo);
       if (success) {
         Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (BuildContext context) => HomeView()));
+            MaterialPageRoute(builder: (BuildContext context) => LoginScreen()));
       } else {
         showDialog(
             context: context,

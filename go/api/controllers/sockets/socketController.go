@@ -37,7 +37,8 @@ func HandleConnections(c *gin.Context) {
 	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		log.Printf("Failed to upgrade to WebSocket: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upgrade to WebSocket"})
+		// Utiliser log.Printf au lieu de c.JSON après un échec de mise à niveau
+		http.Error(c.Writer, "Failed to upgrade to WebSocket", http.StatusInternalServerError)
 		return
 	}
 	defer ws.Close()
@@ -112,6 +113,7 @@ func HandleMessages() {
 		WebSocket.mutex.Unlock()
 	}
 }
+
 
 func saveChatMessage(msg *models.ChatMessage) error {
 	if err := initializers.DB.Create(msg).Error; err != nil {

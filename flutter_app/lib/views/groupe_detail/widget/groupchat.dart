@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -21,12 +23,26 @@ class _GroupChatState extends State<GroupChat> {
   final TextEditingController _controller = TextEditingController();
   final List<Map<String, dynamic>> _messages = [];
   final ScrollController _scrollController = ScrollController();
+  StreamSubscription? _subscription;
+  final StreamController<String> _streamController = StreamController<String>.broadcast();
 
   @override
   void initState() {
     super.initState();
     _fetchPreviousMessages();
+   // _setupWebSocketListener();
+    _subscribeToStream();
+  }
+
+ /* void _setupWebSocketListener() {
     widget.channel.stream.listen((message) {
+      _streamController.add(message);
+    });
+  }*/
+
+  void _subscribeToStream() {
+    // Assurez-vous de n'écouter qu'une seule fois
+    _subscription = _streamController.stream.listen((message) {
       setState(() {
         _messages.add(jsonDecode(message));
       });
@@ -44,13 +60,13 @@ class _GroupChatState extends State<GroupChat> {
       widget.channel.sink.add(message);
 
       AwesomeNotifications().createNotification(
-          content: NotificationContent(
-              id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
-              channelKey: 'basic_channel',
-              title: 'Message du groupe',
-              body: _controller.text,
-              notificationLayout: NotificationLayout.Default,
-          )
+        content: NotificationContent(
+          id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
+          channelKey: 'basic_channel',
+          title: 'Message du groupe',
+          body: _controller.text,
+          notificationLayout: NotificationLayout.Default,
+        ),
       );
 
       _controller.clear();
@@ -71,12 +87,16 @@ class _GroupChatState extends State<GroupChat> {
 
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
-      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      });
     }
   }
 
   @override
   void dispose() {
+    _subscription?.cancel();
+    _streamController.close();
     widget.channel.sink.close(status.goingAway);
     _scrollController.dispose();
     super.dispose();
