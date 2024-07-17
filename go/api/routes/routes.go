@@ -24,12 +24,12 @@ func RegisterRoutes(r *gin.Engine) {
 }
 
 func VoyageRoutes(r *gin.Engine) {
-	r.GET("/api/voyages", voyage.GetVoyages)
-	r.GET("/api/voyages/:id", voyage.GetVoyage)
-	r.POST("/api/voyages", voyage.CreateVoyage)
-	r.PUT("/api/voyages", voyage.UpdatePutVoyage)
-	r.PUT("/api/voyages/hotel", voyage.UpdatePutVoyageHotel)
-	r.DELETE("/api/voyages/delete/:id", voyage.DeleteVoyage)
+	r.GET("/api/voyages", middlewares.CheckAuth, voyage.GetVoyages)
+	r.GET("/api/voyages/:id", middlewares.CheckAuth, voyage.GetVoyage)
+	r.POST("/api/voyages", middlewares.CheckAuth, voyage.CreateVoyage)
+	r.PUT("/api/voyages", middlewares.CheckAuth, voyage.UpdatePutVoyage)
+	r.PUT("/api/voyages/hotel", middlewares.CheckAuth, voyage.UpdatePutVoyageHotel)
+	r.DELETE("/api/voyages/delete/:id", middlewares.CheckAuth, voyage.DeleteVoyage)
 }
 
 func DestinationRoutes(r *gin.Engine) {

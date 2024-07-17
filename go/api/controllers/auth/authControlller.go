@@ -142,7 +142,17 @@ func Logout(c *gin.Context) {
 // @Failure 401 {object} gin.H "Unauthorized"
 // @Router /profile [get]
 func UserProfile(c *gin.Context) {
-	user, _ := c.Get("currentUser")
+	currentUser, _ := c.Get("currentUser")
+
+	var user models.User
+	initializers.DB.Preload("Voyage").
+		Preload("Voyage.Activities").
+		Preload("Voyage.Hotels").
+		Preload("GroupeVoyage").
+		Preload("GroupeVoyage.Members").
+		Preload("GroupeVoyage.Chats").
+		Where("id = ?", currentUser.(models.User).ID).First(&user)
+
 	c.JSON(http.StatusOK, gin.H{"user": user})
 }
 
