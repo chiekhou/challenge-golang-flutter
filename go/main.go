@@ -5,6 +5,7 @@ import (
 	"example/hello/config"
 	_ "example/hello/docs"
 	initializers2 "example/hello/internal/initializers"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -23,7 +24,14 @@ func init() {
 	initializers2.ConnectToDatabase()
 }
 
+func deploiement(w http.ResponseWriter, r *http.Request) {
+	io.WriteString(w, "Deploiement")
+}
+
 func main() {
+
+	// Page d'accueil server production
+	http.HandleFunc("/", deploiement)
 
 	// Servir des fichiers statiques depuis le dossier assets
 	fs := http.FileServer(http.Dir("assets"))
