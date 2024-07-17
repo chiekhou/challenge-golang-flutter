@@ -23,6 +23,10 @@ func init() {
 	initializers2.ConnectToDatabase()
 }
 
+func root(c *gin.Context) {
+	c.String(http.StatusOK, "Déploiement réussi!")
+}
+
 func main() {
 
 	// Servir des fichiers statiques depuis le dossier assets
@@ -59,6 +63,12 @@ func main() {
 
 	// Configurer le chemin pour servir les fichiers statiques
 	server.Static("/images", "./assets/images")
+
+	server.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Bienvenue à la racine!",
+		})
+	})
 
 	routes.RegisterRoutes(server)
 	routes.VoyageRoutes(server)
