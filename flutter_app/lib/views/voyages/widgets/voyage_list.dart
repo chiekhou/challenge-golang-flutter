@@ -14,17 +14,31 @@ class VoyageList extends StatelessWidget {
       itemCount: voyages.length,
       itemBuilder: (context, i) {
         var voyage = voyages[i];
+
         return ListTile(
           title: Text(voyage.destination),
-          subtitle: voyage.dateAller != null
-              ? Text(DateFormat("d/M/y").format(voyage.dateAller!))
-              : null,
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              voyage.dateAller != null
+                  ? Text(
+                      "Date Aller : ${DateFormat('d/M/y').format(voyage.dateAller!)}")
+                  : const Text('Date Aller : N/A'),
+              voyage.dateRetour != null
+                  ? Text(
+                      "Date Retour : ${DateFormat('d/M/y').format(voyage.dateRetour!)}")
+                  : const Text('Date Retour : N/A'),
+            ],
+          ),
           trailing: const Icon(Icons.info),
-          onTap: () =>
-              Navigator.pushNamed(context, VoyageView.routeName, arguments: {
-            'voyageId': voyage.id,
-            'destinationName': voyage.destination,
-          }),
+          onTap: () => Navigator.pushNamed(
+            context,
+            VoyageView.routeName,
+            arguments: {
+              'voyageId': voyage.id,
+              'destinationName': voyage.destination,
+            },
+          ),
         );
       },
     );

@@ -375,6 +375,12 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.Destination'
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -394,6 +400,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/destinations.ErrorResponse'
+      security:
+      - Bearer: []
       summary: Add a destination
       tags:
       - Destinations
@@ -481,6 +489,12 @@ paths:
         name: id
         required: true
         type: integer
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -500,6 +514,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/destinations.ErrorResponse'
+      security:
+      - Bearer: []
       summary: Delete a destination
       tags:
       - Destinations

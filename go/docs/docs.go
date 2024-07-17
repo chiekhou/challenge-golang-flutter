@@ -221,6 +221,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Add by JSON destination",
                 "consumes": [
                     "application/json"
@@ -241,6 +246,14 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.Destination"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -273,6 +286,11 @@ const docTemplate = `{
         },
         "/api/destinations/delete/{id}": {
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete by destination ID",
                 "consumes": [
                     "application/json"
@@ -291,6 +309,14 @@ const docTemplate = `{
                         "description": "Destination ID",
                         "name": "id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],

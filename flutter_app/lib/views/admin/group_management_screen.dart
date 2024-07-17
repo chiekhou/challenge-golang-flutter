@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/groupe_model.dart';
 import 'package:flutter_app/providers/group_voyage_provider.dart';
+import 'package:flutter_app/views/admin/widget/add_group.dart';
 
 class GroupManagementScreen extends StatefulWidget {
   static const routeName = '/admin/groups';
@@ -35,10 +36,6 @@ class _GroupListWidgetState extends State<GroupManagementScreen> {
       });
     } catch (e) {
       print('Error fetching groups: $e');
-      // Afficher un message d'erreur à l'utilisateur
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur lors de la récupération des groupes')),
-      );
     } finally {
       setState(() {
         _isLoading = false;
@@ -83,7 +80,7 @@ class _GroupListWidgetState extends State<GroupManagementScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Liste des Groupes'),
+        title: const Text('Liste des Groupes de voyage'),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -91,59 +88,74 @@ class _GroupListWidgetState extends State<GroupManagementScreen> {
               ? const Center(
                   child: Text('Il n\'y a pas de groupe pour l\'instant'),
                 )
-              : ListView.builder(
-                  itemCount: _groupes.length,
-                  itemBuilder: (context, index) {
-                    Groupe groupe = _groupes[index];
-                    return ListTile(
-                      title: Text(groupe.nom),
-                      subtitle: Text("${groupe.budget}"),
-                      trailing: Wrap(
-                        spacing: 12, // Espace entre les boutons
-                        children: <Widget>[
-                          IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: () {
-                              // Navigation vers l'écran de mise à jour de l'utilisateur
-                              // (à implémenter selon tes besoins)
-                            },
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            color: Colors.red,
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title:
-                                        const Text('Confirmer la suppression'),
-                                    content: const Text(
-                                        'Êtes-vous sûr de vouloir supprimer ce groupe ?'),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        child: const Text('Annuler'),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                      TextButton(
-                                        child: const Text('Supprimer'),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                          _deleteGroupe(groupe.id);
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            },
-                          ),
+              : Center(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: SizedBox(
+                      width: 1000,
+                      height: 600,
+                      child: DataTable(
+                        headingRowColor: WidgetStateProperty.resolveWith(
+                            (states) => Colors.grey.shade200),
+                        columns: const [
+                          DataColumn(label: Text("ID")),
+                          DataColumn(label: Text("Nom de groupe")),
+                          DataColumn(label: Text("Budget Voyage")),
+                          DataColumn(label: Text("Actions")),
                         ],
+                        rows: _groupes.map((groupe) {
+                          return DataRow(cells: [
+                            DataCell(Text(groupe.id.toString())),
+                            DataCell(Text(groupe.nom)),
+                            DataCell(Text(groupe.budget.toString())),
+                            DataCell(Row(
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.add_task),
+                                  onPressed: () {
+                                    Navigator.pushNamed(
+                                        context, AddGroupFormAdmin.routeName);
+                                  },
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete),
+                                  color: Colors.red,
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: const Text(
+                                              'Confirmer la suppression'),
+                                          content: const Text(
+                                              'Êtes-vous sûr de vouloir supprimer ce groupe de voyage ?'),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              child: const Text('Annuler'),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                            TextButton(
+                                              child: const Text('Supprimer'),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                                _deleteGroupe(groupe.id);
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
+                              ],
+                            )),
+                          ]);
+                        }).toList(),
                       ),
-                    );
-                  },
+                    ),
+                  ),
                 ),
     );
   }

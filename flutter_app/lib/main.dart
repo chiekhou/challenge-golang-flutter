@@ -1,10 +1,17 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/providers/admin_provider.dart';
+import 'package:flutter_app/views/add_group/components/add_group_form.dart';
 import 'package:flutter_app/views/admin/dashboard_admin.dart';
 import 'package:flutter_app/views/admin/group_management_screen.dart';
+import 'package:flutter_app/views/admin/home_dashboard.dart';
 import 'package:flutter_app/views/admin/user_management_screen.dart';
 import 'package:flutter_app/config/app_config.dart';
+import 'package:flutter_app/views/admin/voyage_management_screen.dart';
+import 'package:flutter_app/views/admin/widget/add_destination.dart';
+import 'package:flutter_app/views/admin/widget/add_group.dart';
+import 'package:flutter_app/views/admin/widget/add_user.dart';
 import 'package:flutter_app/views/groupe_detail/groupe_detail_screen.dart';
 import 'package:flutter_app/views/login/login_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -49,6 +56,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _AppVoyageState extends State<MyApp> {
+  final AdminProvider adminProvider = AdminProvider();
   final AuthProvider authProvider = AuthProvider();
   final DestinationProvider destinationProvider = DestinationProvider();
   final VoyageProvider voyageProvider = VoyageProvider();
@@ -117,6 +125,7 @@ class _AppVoyageState extends State<MyApp> {
         ChangeNotifierProvider.value(value: destinationProvider),
         ChangeNotifierProvider.value(value: authProvider),
         ChangeNotifierProvider.value(value: groupVoyageProvider),
+        ChangeNotifierProvider.value(value: adminProvider),
       ],
       child: MaterialApp(
         locale: _locale,
@@ -147,7 +156,12 @@ class _AppVoyageState extends State<MyApp> {
           AddGroupScreen.routeName: (_) => const AddGroupScreen(),
           UserManagementScreen.routeName: (_) => const UserManagementScreen(),
           GroupManagementScreen.routeName: (_) => const GroupManagementScreen(),
-          DashboardScreen.routeName: (_) => const DashboardScreen()
+          DashboardScreen.routeName: (_) => DashboardScreen(),
+          DashboardHomeScreen.routeName: (_) => const DashboardHomeScreen(),
+          VoyageManagementScreen.routeName: (_) => VoyageManagementScreen(),
+          AddUserForm.routeName: (_) => AddUserForm(),
+          AddGroupFormAdmin.routeName: (_) => const AddGroupFormAdmin(),
+          AddDestinationForm.routeName: (_) => AddDestinationForm()
         },
         onUnknownRoute: (_) => MaterialPageRoute(
           builder: (_) => const NotFound(),

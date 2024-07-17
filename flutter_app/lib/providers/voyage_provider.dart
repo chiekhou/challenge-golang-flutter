@@ -8,17 +8,18 @@ import 'package:flutter_app/models/hotel_model.dart';
 import '../models/activity_model.dart';
 import '../models/voyage_model.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class VoyageProvider extends ChangeNotifier {
-
   List<Voyage> _voyages = [];
   bool isLoading = false;
   final apiAuthority = AppConfig.getApiAuthority();
   final isSecure = AppConfig.isSecure();
+  final FlutterSecureStorage _storage = FlutterSecureStorage();
 
   UnmodifiableListView<Voyage> get voyages => UnmodifiableListView(_voyages);
-  Future<void> fetchData() async {
 
+  Future<List<Voyage>> fetchData() async {
     try {
       isLoading = true;
       notifyListeners();
@@ -26,9 +27,8 @@ class VoyageProvider extends ChangeNotifier {
       final url = isSecure
           ? Uri.https(apiAuthority, '/api/voyages')
           : Uri.http(apiAuthority, '/api/voyages');
-
       final response = await http.get(url);
-       print('Fetching data from $url');
+      print('Fetching data from $url');
       print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
@@ -47,8 +47,10 @@ class VoyageProvider extends ChangeNotifier {
       } else {
         throw Exception('Failed to load voyages');
       }
+      return _voyages;
     } catch (e) {
       print('Error: $e');
+      return [];
     } finally {
       isLoading = false;
       notifyListeners();
@@ -63,7 +65,8 @@ class VoyageProvider extends ChangeNotifier {
       final url = isSecure
           ? Uri.https(apiAuthority, '/api/voyages')
           : Uri.http(apiAuthority, '/api/voyages');
-      final response = await http.post(url,
+      final response = await http.post(
+        url,
         headers: {'Content-Type': 'application/json'},
         body: jsonData,
       );
@@ -95,7 +98,8 @@ class VoyageProvider extends ChangeNotifier {
       final url = isSecure
           ? Uri.https(apiAuthority, '/api/voyages')
           : Uri.http(apiAuthority, '/api/voyages');
-      http.Response response = await http.put(url,
+      http.Response response = await http.put(
+        url,
         body: json.encode(
           voyage.toJson(),
         ),
@@ -111,16 +115,15 @@ class VoyageProvider extends ChangeNotifier {
     }
   }
 
-
   Future<void> updateVoyageHotel(Voyage voyage, int hotelId) async {
     try {
-      Hotel hotel =
-      voyage.hotels.firstWhere((hotel) => hotel.id == hotelId);
+      Hotel hotel = voyage.hotels.firstWhere((hotel) => hotel.id == hotelId);
       hotel.status = HotelStatus.done;
       final url = isSecure
           ? Uri.https(apiAuthority, '/api/voyages/hotel')
           : Uri.http(apiAuthority, '/api/voyages/hotel');
-      http.Response response = await http.put(url,
+      http.Response response = await http.put(
+        url,
         body: json.encode(
           voyage.toJson(),
         ),
@@ -136,6 +139,37 @@ class VoyageProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> deleteVoyage(int voyageId) async {
+    try {
+      String? token = await _storage.read(key: 'auth_token');
+
+      final url = isSecure
+          ? Uri.https(apiAuthority, '/api/voyages/delete/$voyageId')
+          : Uri.http(apiAuthority, '/api/voyages/delete/$voyageId');
+
+      if (token != null) {
+        final response = await http.delete(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        );
+        if (response.statusCode == 200 || response.statusCode == 204) {
+          return true;
+        } else {
+          print('Failed to delete voyage: ${response.statusCode}');
+          return false;
+        }
+      } else {
+        throw Exception('Unauthorized to fetch voyages');
+      }
+    } catch (e) {
+      print('Error deleting voyage: $e');
+      return false;
+    }
+  }
+
   Voyage getById(int id) {
     return voyages.firstWhere((voyage) => voyage.id == id);
   }
@@ -146,10 +180,7 @@ class VoyageProvider extends ChangeNotifier {
         .firstWhere((activity) => activity.id == activityId);
   }
 
-
   Hotel getHotelByIds({required int hotelId, required int voyageId}) {
-    return getById(voyageId)
-        .hotels
-        .firstWhere((hotel) => hotel.id == hotelId);
+    return getById(voyageId).hotels.firstWhere((hotel) => hotel.id == hotelId);
   }
 }

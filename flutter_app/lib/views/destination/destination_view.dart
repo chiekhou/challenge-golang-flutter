@@ -29,7 +29,6 @@ class _DestinationState extends State<DestinationView> {
   late Voyage myvoyage;
   late int index;
 
-
   @override
   void initState() {
     super.initState();
@@ -55,7 +54,6 @@ class _DestinationState extends State<DestinationView> {
     return double.parse(totalAmount.toStringAsFixed(2));
   }
 
-
   void setDateAller() {
     showDatePicker(
       context: context,
@@ -66,13 +64,12 @@ class _DestinationState extends State<DestinationView> {
       if (newDate != null) {
         setState(() {
           myvoyage.dateAller = newDate;
-          myvoyage.dateRetour = null; // Reset the return date if the departure date is changed
+          myvoyage.dateRetour =
+              null; // Reset the return date if the departure date is changed
         });
       }
     });
   }
-
-
 
   void setDateRetour() {
     if (myvoyage.dateAller == null) {
@@ -98,6 +95,7 @@ class _DestinationState extends State<DestinationView> {
       }
     });
   }
+
   void switchIndex(newIndex) {
     setState(() {
       index = newIndex;
@@ -118,7 +116,6 @@ class _DestinationState extends State<DestinationView> {
     });
   }
 
-
   void toggleHotel(Hotel hotel) {
     setState(() {
       myvoyage.hotels.contains(hotel)
@@ -134,7 +131,6 @@ class _DestinationState extends State<DestinationView> {
   }
 
   void saveVoyage(String destinationName) async {
-
     try {
       // Fetch feature toggles from backend
       FlippingToggle featureToggle = await fetchFeatureToggles();
@@ -142,79 +138,84 @@ class _DestinationState extends State<DestinationView> {
       // Check if the feature is enabled
       if (!featureToggle.enabled) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.alert_function_flipping)),
+          SnackBar(
+              content:
+                  Text(AppLocalizations.of(context)!.alert_function_flipping)),
         );
         return;
       }
-    final result = await showDialog(
-      context: context,
-      builder: (context) {
-        return SimpleDialog(
-          title: Text(AppLocalizations.of(context)!.sauvegarde_voyage),
-          contentPadding: const EdgeInsets.all(20),
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[
-                ElevatedButton(
-                  child: Text(AppLocalizations.of(context)!.annulation_voyage),
-                  onPressed: () {
-                    Navigator.pop(context, 'cancel');
-                  },
-                ),
-                const SizedBox(
-                  width: 20,
-                ),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor),
-                  onPressed: () {
-                    Navigator.pop(context, 'save');
-                  },
-                  child: Text(
-                    AppLocalizations.of(context)!.sauvegarde,
-                    style: const TextStyle(color: Colors.white),
+      final result = await showDialog(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text(AppLocalizations.of(context)!.sauvegarde_voyage),
+            contentPadding: const EdgeInsets.all(20),
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  ElevatedButton(
+                    child:
+                        Text(AppLocalizations.of(context)!.annulation_voyage),
+                    onPressed: () {
+                      Navigator.pop(context, 'cancel');
+                    },
                   ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).primaryColor),
+                    onPressed: () {
+                      Navigator.pop(context, 'save');
+                    },
+                    child: Text(
+                      AppLocalizations.of(context)!.sauvegarde,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
+        },
+      );
+
+      print('Résultat de la boîte de dialogue: $result');
+
+      if (myvoyage.dateAller == null || myvoyage.dateRetour == null) {
+        print('Date du voyage non définie');
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text(AppLocalizations.of(context)!.attention),
+              content: Text(AppLocalizations.of(context)!.attention_content),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Ok'),
+                  onPressed: () => Navigator.pop(context),
                 ),
               ],
             ),
-          ],
-        );
-      },
-    );
-
-    print('Résultat de la boîte de dialogue: $result');
-
-    if (myvoyage.dateAller == null || myvoyage.dateRetour == null) {
-      print('Date du voyage non définie');
-      if (mounted) {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text(AppLocalizations.of(context)!.attention),
-            content: Text(AppLocalizations.of(context)!.attention_content),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('Ok'),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
-          ),
-        );
+          );
+        }
+      } else if (result == 'save') {
+        if (mounted) {
+          myvoyage.destination = destinationName;
+          print('Sauvegarde du voyage avant ajout au fournisseur: $myvoyage');
+          Provider.of<VoyageProvider>(context, listen: false)
+              .addVoyage(myvoyage);
+          print('Voyage ajouté au fournisseur: $myvoyage');
+          Navigator.pushNamed(context, HomeView.routeName);
+        }
       }
-    } else if (result == 'save') {
-      if (mounted) {
-        myvoyage.destination = destinationName;
-        print('Sauvegarde du voyage avant ajout au fournisseur: $myvoyage');
-        Provider.of<VoyageProvider>(context, listen: false).addVoyage(myvoyage);
-        print('Voyage ajouté au fournisseur: $myvoyage');
-        Navigator.pushNamed(context, HomeView.routeName);
-      }
-    }
     } catch (e) {
       print('Exception lors de la sauvegarde du voyage: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-         SnackBar(content: Text(AppLocalizations.of(context)!.erreur_sauvegarde)),
+        SnackBar(
+            content: Text(AppLocalizations.of(context)!.erreur_sauvegarde)),
       );
     }
   }
@@ -265,26 +266,24 @@ class _DestinationState extends State<DestinationView> {
           Expanded(
             child: index == 0
                 ? VoyageActivityHotelList(
-              activities: destination.activities,
-              selectedActivities: myvoyage.activities,
-              toggleActivity: toggleActivity,
-              hotels: destination.hotels,
-              selectedHotels: myvoyage.hotels,
-              toggleHotel: toggleHotel,
-            )
+                    activities: destination.activities,
+                    selectedActivities: myvoyage.activities,
+                    toggleActivity: toggleActivity,
+                    hotels: destination.hotels,
+                    selectedHotels: myvoyage.hotels,
+                    toggleHotel: toggleHotel,
+                  )
                 : index == 1
-                ? VoyageActivityList(
-              activities: myvoyage.activities,
-              deleteVoyageActivity: deleteVoyageActivity,
-
-            )
-                : index == 2
-                ? VoyageHotelList(
-              hotels: myvoyage.hotels,
-              deleteVoyageHotel: deleteVoyageHotel,
-            )
-            :
-            Container(),
+                    ? VoyageActivityList(
+                        activities: myvoyage.activities,
+                        deleteVoyageActivity: deleteVoyageActivity,
+                      )
+                    : index == 2
+                        ? VoyageHotelList(
+                            hotels: myvoyage.hotels,
+                            deleteVoyageHotel: deleteVoyageHotel,
+                          )
+                        : Container(),
           ),
         ],
       ),
@@ -294,7 +293,7 @@ class _DestinationState extends State<DestinationView> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: index,
-        items:  [
+        items: [
           BottomNavigationBarItem(
             icon: const Icon(Icons.map),
             label: AppLocalizations.of(context)!.label_decouverte,
@@ -313,9 +312,3 @@ class _DestinationState extends State<DestinationView> {
     );
   }
 }
-
-
-
-
-
-

@@ -17,10 +17,13 @@ class GroupVoyageProvider extends ChangeNotifier {
   Future<List<Groupe>> fetchGroupes() async {
     try {
       final token = await _storage.read(key: 'auth_token');
+      final url = isSecure
+          ? Uri.https(apiAuthority, '/groupes')
+          : Uri.http(apiAuthority, '/groupes');
 
       if (token != null) {
         final response = await http.get(
-          Uri.parse('http://$host:8080/groupes'),
+          url,
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $token',
@@ -222,10 +225,13 @@ class GroupVoyageProvider extends ChangeNotifier {
   Future<bool> deleteGroup(int groupeId) async {
     try {
       final token = await _storage.read(key: 'auth_token');
+      final url = isSecure
+          ? Uri.https(apiAuthority, '/groupes/${groupeId}/delete_group')
+          : Uri.http(apiAuthority, '/groupes/${groupeId}/delete_group');
 
       if (token != null) {
         final response = await http.delete(
-          Uri.parse('http://$host:8080/groupes/$groupeId/delete_group'),
+          url,
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $token',
