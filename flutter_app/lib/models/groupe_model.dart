@@ -1,6 +1,7 @@
 import 'voyage_model.dart';
 
 class Groupe {
+
   final int id;
   final String nom;
   final double budget;
@@ -19,7 +20,9 @@ class Groupe {
     required this.voyage,
   });
 
+
   factory Groupe.fromJson(Map<String, dynamic> json) {
+
     return Groupe(
       id: json['id'],
       nom: json['nom'],

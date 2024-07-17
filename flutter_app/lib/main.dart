@@ -2,6 +2,16 @@ import 'dart:async';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/providers/admin_provider.dart';
+import 'package:flutter_app/views/admin/dashboard_admin.dart';
+import 'package:flutter_app/views/admin/group_management_screen.dart';
+import 'package:flutter_app/views/admin/home_dashboard.dart';
+import 'package:flutter_app/views/admin/user_management_screen.dart';
+import 'package:flutter_app/config/app_config.dart';
+import 'package:flutter_app/views/admin/voyage_management_screen.dart';
+import 'package:flutter_app/views/admin/widget/add_destination.dart';
+import 'package:flutter_app/views/admin/widget/add_group.dart';
+import 'package:flutter_app/views/admin/widget/add_user.dart';
 import 'package:flutter_app/notifications_controller.dart';
 import 'package:flutter_app/service/context_utility.dart';
 import 'package:flutter_app/service/uni_service.dart';
@@ -29,40 +39,29 @@ import 'views/voyages/voyages_view.dart';
 import 'views/not-found/not_found.dart';
 import './views/home/home_view.dart';
 
-
-
 Future main() async {
-  // To load the .env file contents into dotenv.
-  // NOTE: fileName defaults to .env and can be omitted in this case.
-  // Ensure that the filename corresponds to the path in step 1 and 2.
   await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
   await UniService.init();
   //Initialisation des notifications
-  await AwesomeNotifications().initialize(
-    null,
-    [
-      NotificationChannel(
+  await AwesomeNotifications().initialize(null, [
+    NotificationChannel(
         channelGroupKey: 'basic_channel_group',
-          channelKey: 'basic_channel',
-          channelName: 'Basic Notifications',
-          channelDescription: 'Basic notifications channel'
-      )
-    ],
-    channelGroups: [
-      NotificationChannelGroup(
-          channelGroupKey: 'basic_channel_group',
-          channelGroupName: 'Basic Group'
-      )
-    ]
-  );
+        channelKey: 'basic_channel',
+        channelName: 'Basic Notifications',
+        channelDescription: 'Basic notifications channel')
+  ], channelGroups: [
+    NotificationChannelGroup(
+        channelGroupKey: 'basic_channel_group', channelGroupName: 'Basic Group')
+  ]);
   bool isAllowedToSendNotifs =
-  await AwesomeNotifications().isNotificationAllowed();
-  if(!isAllowedToSendNotifs){
+      await AwesomeNotifications().isNotificationAllowed();
+  if (!isAllowedToSendNotifs) {
     AwesomeNotifications().requestPermissionToSendNotifications();
   }
 
   runApp(const MyApp());
+  print('API URL: ${AppConfig.getApiAuthority()}');
 }
 
 class MyApp extends StatefulWidget {
@@ -78,13 +77,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _AppVoyageState extends State<MyApp> {
+  final AdminProvider adminProvider = AdminProvider();
   final AuthProvider authProvider = AuthProvider();
   final DestinationProvider destinationProvider = DestinationProvider();
   final VoyageProvider voyageProvider = VoyageProvider();
   Locale _locale = const Locale('fr', '');
   final GroupVoyageProvider groupVoyageProvider = GroupVoyageProvider();
   StreamSubscription? _sub;
-
 
   @override
   void initState() {
@@ -93,14 +92,15 @@ class _AppVoyageState extends State<MyApp> {
 
     AwesomeNotifications().setListeners(
         onActionReceivedMethod: NotificationsController.onActionReceivedMethod,
-        onDismissActionReceivedMethod: NotificationsController.onActionReceivedMethod,
-        onNotificationCreatedMethod: NotificationsController.onNotificationCreatedMethod,
-        onNotificationDisplayedMethod: NotificationsController.onNotificationDisplayedMethod
-    );
+        onDismissActionReceivedMethod:
+            NotificationsController.onActionReceivedMethod,
+        onNotificationCreatedMethod:
+            NotificationsController.onNotificationCreatedMethod,
+        onNotificationDisplayedMethod:
+            NotificationsController.onNotificationDisplayedMethod);
 
     super.initState();
   }
-
 
   void setLocale(Locale locale) {
     setState(() {
@@ -114,18 +114,50 @@ class _AppVoyageState extends State<MyApp> {
     super.dispose();
   }
 
+  void initUniLinks() async {
+    _sub = linkStream.listen(
+        (String link) async {
+          // Gérer le lien profond ici
+          Uri uri = Uri.parse(link);
+          if (uri.pathSegments.contains('join')) {
+            // Extraire les paramètres nécessaires
+            int groupeId = int.parse(uri.pathSegments[1]);
+            String? token = uri.queryParameters['token'];
+
+            // Utiliser GroupProvider pour rejoindre le groupe
+            try {
+              await groupVoyageProvider.JoinGroup(groupeId, token);
+
+              // Rediriger vers la page de détail du groupe
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => GroupeDetailScreen(
+                    groupeId: groupeId,
+                    // token: token
+                  ),
+                ),
+              );
+            } catch (e) {
+              // Gérer les erreurs si la tentative de rejoindre échoue
+              print('Erreur lors de la tentative de rejoindre le groupe: $e');
+            }
+          }
+        } as void Function(String? event)?, onError: (err) {
+      // Gérer les erreurs de lien profond ici
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-
-
       providers: [
         ChangeNotifierProvider.value(value: voyageProvider),
         ChangeNotifierProvider.value(value: destinationProvider),
         ChangeNotifierProvider.value(value: authProvider),
         ChangeNotifierProvider.value(value: groupVoyageProvider),
+        ChangeNotifierProvider.value(value: adminProvider),
       ],
-
       child: MaterialApp(
         navigatorKey: ContextUtility.navigatorKey,
         locale: _locale,
@@ -140,7 +172,6 @@ class _AppVoyageState extends State<MyApp> {
           Locale('en'),
           Locale('es'),
         ],
-
         debugShowCheckedModeBanner: false,
         routes: {
           '/': (context) => const LoginScreen(),
@@ -148,13 +179,21 @@ class _AppVoyageState extends State<MyApp> {
           VoyageView.routeName: (_) => const VoyageView(),
           VoyagesView.routeName: (_) => const VoyagesView(),
           ActivityFormView.routeName: (_) => const ActivityFormView(),
-          ProfileScreen.routeName: (_)=> const ProfileScreen(),
+          ProfileScreen.routeName: (_) => const ProfileScreen(),
           RegisterScreen.routeName: (_) => const RegisterScreen(),
           HomeView.routeName: (_) => const HomeView(),
           GoogleMapView.routeName: (_) => const GoogleMapView(),
           GoogleMapViewHotel.routeName: (_) => const GoogleMapViewHotel(),
           GroupevoyageScreen.routeName: (_) => const GroupevoyageScreen(),
-          AddGroupScreen.routeName: (_) => const AddGroupScreen()
+          AddGroupScreen.routeName: (_) => const AddGroupScreen(),
+          UserManagementScreen.routeName: (_) => const UserManagementScreen(),
+          GroupManagementScreen.routeName: (_) => const GroupManagementScreen(),
+          DashboardScreen.routeName: (_) => DashboardScreen(),
+          DashboardHomeScreen.routeName: (_) => const DashboardHomeScreen(),
+          VoyageManagementScreen.routeName: (_) => VoyageManagementScreen(),
+          AddUserForm.routeName: (_) => AddUserForm(),
+          AddGroupFormAdmin.routeName: (_) => const AddGroupFormAdmin(),
+          AddDestinationForm.routeName: (_) => AddDestinationForm()
         },
         onUnknownRoute: (_) => MaterialPageRoute(
           builder: (_) => const NotFound(),

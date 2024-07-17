@@ -25,22 +25,22 @@ class _LoginFormState extends State<LoginForm> {
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-                builder: (BuildContext context) => HomeView()));
+                builder: (BuildContext context) => const HomeView()));
       } else {
         showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: Text('Erreur'),
-              content: Text('Connexion échouée, veuillez réessayer'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('OK'),
-                )
-              ],
-            ));
+                  title: const Text('Erreur'),
+                  content: const Text('Connexion échouée, veuillez réessayer'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('OK'),
+                    )
+                  ],
+                ));
       }
     }
   }
@@ -118,9 +118,10 @@ class _LoginFormState extends State<LoginForm> {
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (BuildContext context) => RegisterScreen()));
+                        builder: (BuildContext context) =>
+                            const RegisterScreen()));
               },
-              title: Text(
+              title: const Text(
                 'Créer un compte',
                 textAlign: TextAlign.center,
                 style: TextStyle(

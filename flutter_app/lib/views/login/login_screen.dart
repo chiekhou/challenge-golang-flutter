@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/providers/auth_provider.dart';
 import 'package:flutter_app/views/login/components/login_form.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatelessWidget {
   static const String routeName = '/';
   const LoginScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    TextEditingController usernameController = TextEditingController();
+    TextEditingController passwordController = TextEditingController();
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+
     return Scaffold(
       body: Stack(
         children: [
           Container(
             width: double.infinity,
             height: size.height,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/images/background.jpg'),
                 fit: BoxFit.cover,
@@ -28,7 +35,7 @@ class LoginScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Spacer(flex: 2),
-                Text(
+                const Text(
                   "CONNEXION",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -37,7 +44,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: size.height * 0.03),
-                Padding(
+                const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 30),
                   child: LoginForm(),
                 ),

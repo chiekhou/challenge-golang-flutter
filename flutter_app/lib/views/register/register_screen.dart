@@ -48,35 +48,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       final authService = Provider.of<AuthProvider>(context, listen: false);
-      bool success = await authService.Register(
-          _address,
-          _email,
-          _firstname,
-          _lastname,
-          _password,
-          _username,
-          _photo
-      );
+      bool success = await authService.Register(_address, _email, _firstname,
+          _lastname, _password, _username, _photo);
       if (success) {
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (BuildContext context) => HomeView()));
       } else {
         showDialog(
             context: context,
-            builder: (context) =>
-                AlertDialog(
+            builder: (context) => AlertDialog(
                   title: Text('Erreur'),
-                  content: Text(
-                      'Échec lors de l\'inscription, veuillez réessayer'),
+                  content:
+                      Text('Échec lors de l\'inscription, veuillez réessayer'),
                   actions: [
-                    TextButton(onPressed: () {
-                      Navigator.of(context).pop();
-                    },
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
                       child: Text('OK'),
                     )
                   ],
-                )
-        );
+                ));
       }
     }
   }
@@ -85,35 +77,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
-          appBar: AppBar(
-            title: Text('Inscription'),
-            centerTitle: true,
+      appBar: AppBar(
+        title: Text('Inscription'),
+        centerTitle: true,
+      ),
+      body: Container(
+        padding: const EdgeInsets.all(20),
+        child: Form(
+          key: _formKey,
+          child: Stepper(
+            type: StepperType.horizontal,
+            currentStep: _currentStep,
+            onStepCancel: () => _currentStep == 0 ? null : _previousStep(),
+            onStepContinue: () {
+              bool isLastStep = (_currentStep == getSteps().length - 1);
+              if (isLastStep) {
+                submitForm();
+              } else {
+                _nextStep();
+              }
+            },
+            onStepTapped: (step) => setState(() {
+              _currentStep = step;
+            }),
+            steps: getSteps(),
           ),
-          body: Container(
-            padding: const EdgeInsets.all(20),
-            child: Form(
-              key: _formKey,
-              child: Stepper(
-                type: StepperType.horizontal,
-                currentStep: _currentStep,
-                onStepCancel: () => _currentStep == 0 ? null : _previousStep(),
-                onStepContinue: () {
-                  bool isLastStep = (_currentStep == getSteps().length - 1);
-                  if (isLastStep) {
-                    submitForm();
-                  } else {
-                    _nextStep();
-                  }
-                },
-                onStepTapped: (step) => setState(() {
-                  _currentStep = step;
-                }),
-                steps: getSteps(),
-              ),
-            ),
-          ),
-        )
-    );
+        ),
+      ),
+    ));
   }
 
   List<Step> getSteps() {
@@ -134,8 +125,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     prefixIcon: Padding(
                       padding: EdgeInsets.all(16.0),
                       child: Icon(Icons.person),
-                    )
-                ),
+                    )),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Veuillez entrer votre prénom';
@@ -150,8 +140,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   onSaved: (lastname) => _lastname = lastname!,
                   decoration: const InputDecoration(
                       hintText: "Votre nom de famille",
-                      prefixIcon: Icon(Icons.person)
-                  ),
+                      prefixIcon: Icon(Icons.person)),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Veuillez entrer votre nom de famille';
@@ -167,8 +156,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   onSaved: (address) => _address = address!,
                   decoration: const InputDecoration(
                       hintText: "Votre adresse",
-                      prefixIcon: Icon(Icons.location_city)
-                  ),
+                      prefixIcon: Icon(Icons.location_city)),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Veuillez entrer votre Adresse';
@@ -178,8 +166,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
             ],
-          )
-      ),
+          )),
       Step(
           state: _currentStep > 1 ? StepState.complete : StepState.indexed,
           isActive: _currentStep >= 1,
@@ -213,16 +200,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       }
                       return null;
                     },
-                  )
-              ),
+                  )),
               Padding(
                 padding: EdgeInsets.all(10.0),
                 child: TextFormField(
                   textInputAction: TextInputAction.done,
                   onSaved: (password) => _password = password!,
-                  decoration: const InputDecoration(
-                      hintText: 'Entrez un mot de passe'
-                  ),
+                  decoration:
+                      const InputDecoration(hintText: 'Entrez un mot de passe'),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Veuillez entrer votre mot de passe';
@@ -232,8 +217,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               )
             ],
-          )
-      ),
+          )),
       Step(
           state: _currentStep > 2 ? StepState.complete : StepState.indexed,
           isActive: _currentStep >= 2,
@@ -245,9 +229,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 allowEdit: true,
                 addImageIcon: Container(
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(100)
-                  ),
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(100)),
                   child: const Padding(
                     padding: EdgeInsets.all(8.0),
                     child: Icon(Icons.add_a_photo),
@@ -255,13 +238,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 removeImageIcon: Container(
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(100)
-                  ),
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(100)),
                   child: const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Icon(Icons.close)
-                  ),
+                      padding: EdgeInsets.all(8.0), child: Icon(Icons.close)),
                 ),
 /*                onImageChanged: (XFile? image){
                   setState(() {
@@ -280,8 +260,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 child: Text('S\'inscrire'),
               )
             ],
-          )
-      )
+          ))
     ];
   }
 }

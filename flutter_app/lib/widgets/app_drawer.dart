@@ -1,18 +1,19 @@
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
+
 import 'package:flutter_app/main.dart';
+import 'package:flutter_app/models/user_model.dart';
 import 'package:flutter_app/providers/auth_provider.dart';
+import 'package:flutter_app/views/admin/dashboard_admin.dart';
 import 'package:flutter_app/views/group_voyage/groupeVoyage_screen.dart';
 import 'package:flutter_app/providers/flipping_provider.dart';
 import 'package:flutter_app/views/login/login_screen.dart';
 import 'package:flutter_app/views/profile/profile_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
 import '../views/home/home_view.dart';
 import '../views/voyages/voyages_view.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
 
 class AppDrawer extends StatefulWidget {
   const AppDrawer({Key? key}) : super(key: key);
@@ -22,9 +23,16 @@ class AppDrawer extends StatefulWidget {
 }
 
 class _AppDrawerState extends State<AppDrawer> {
-
   Locale _locale = const Locale('fr', '');
+  late Future<User> _userRole;
   bool isFeatureEnabled = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _userRole =
+        Provider.of<AuthProvider>(context, listen: false).ProfileAdmin();
+  }
 
   void _changeLanguage(Locale locale) {
     setState(() {
@@ -93,7 +101,7 @@ class _AppDrawerState extends State<AppDrawer> {
 
   Future<String?> getToken() async {
     const storage = FlutterSecureStorage();
-    return await storage.read(key:'auth_token');
+    return await storage.read(key: 'auth_token');
   }
 
   @override
@@ -112,8 +120,9 @@ class _AppDrawerState extends State<AppDrawer> {
                 end: Alignment.bottomRight,
               ),
             ),
-            child: Text(AppLocalizations.of(context)!.title_drawer,
-              style: TextStyle(
+            child: Text(
+              AppLocalizations.of(context)!.title_drawer,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 30,
               ),
@@ -133,18 +142,62 @@ class _AppDrawerState extends State<AppDrawer> {
               Navigator.pushNamed(context, ProfileScreen.routeName);
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.groups),
-            title: const Text('Mes groupes'),
-            onTap: () {
-              Navigator.pushNamed(context, GroupevoyageScreen.routeName);
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.flight),
-            title: Text(AppLocalizations.of(context)!.mes_voyages),
-            onTap: () {
-              Navigator.pushNamed(context, VoyagesView.routeName);
+          FutureBuilder<User>(
+            future: _userRole,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return ListTile(
+                  title: Text('Chargement...'),
+                  onTap: () {},
+                );
+              } else if (snapshot.hasError) {
+                return ListTile(
+                  title: Text('Erreur : ${snapshot.error}'),
+                  onTap: () {},
+                );
+              } else if (snapshot.hasData) {
+                User user = snapshot.data!;
+                return Column(
+                  children: [
+                    if (user.roleId == 1) ...[
+                      ListTile(
+                        leading: const Icon(Icons.dashboard),
+                        title: const Text('Dashboard'),
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, DashboardScreen.routeName);
+                        },
+                      ),
+                      SwitchListTile(
+                        title:
+                            Text(AppLocalizations.of(context)!.toogle_drawer),
+                        value: isFeatureEnabled,
+                        onChanged: (bool value) {
+                          toggleFeature(value);
+                        },
+                      ),
+                    ] else ...[
+                      ListTile(
+                        leading: const Icon(Icons.groups),
+                        title: const Text('Mes groupes'),
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, GroupevoyageScreen.routeName);
+                        },
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.flight),
+                        title: Text(AppLocalizations.of(context)!.mes_voyages),
+                        onTap: () {
+                          Navigator.pushNamed(context, VoyagesView.routeName);
+                        },
+                      ),
+                    ],
+                  ],
+                );
+              } else {
+                return Container();
+              }
             },
           ),
           FutureBuilder<String?>(
@@ -160,16 +213,17 @@ class _AppDrawerState extends State<AppDrawer> {
                   leading: const Icon(Icons.logout),
                   title: const Text('Déconnexion'),
                   onTap: () async {
-                    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                    final authProvider =
+                        Provider.of<AuthProvider>(context, listen: false);
                     await authProvider.logout();
                     const storage = FlutterSecureStorage();
-                    await storage.delete(key: 'auth_token');
+                    await storage.delete(
+                        key: 'auth_token'); // Supprimer le token
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (BuildContext context) => const LoginScreen()
-                        )
-                    );
+                            builder: (BuildContext context) =>
+                                const LoginScreen()));
                   },
                 );
               } else {
@@ -180,19 +234,11 @@ class _AppDrawerState extends State<AppDrawer> {
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (BuildContext context) => const LoginScreen()
-                        )
-                    );
+                            builder: (BuildContext context) =>
+                                const LoginScreen()));
                   },
                 );
               }
-            },
-          ),
-          SwitchListTile(
-            title: Text(AppLocalizations.of(context)!.toogle_drawer),
-            value: isFeatureEnabled,
-            onChanged: (bool value) {
-              toggleFeature(value);
             },
           ),
           ListTile(
@@ -205,9 +251,7 @@ class _AppDrawerState extends State<AppDrawer> {
                   value: const Locale('fr', ''),
                   child: Row(
                     children: [
-                      CountryFlag.fromLanguageCode('fr',
-                          width: 20,
-                          height: 20),
+                      CountryFlag.fromLanguageCode('fr', width: 20, height: 20),
                       const SizedBox(width: 8),
                       const Text('Français'),
                     ],
@@ -217,9 +261,7 @@ class _AppDrawerState extends State<AppDrawer> {
                   value: const Locale('en', ''),
                   child: Row(
                     children: [
-                      CountryFlag.fromLanguageCode('en',
-                          width: 20,
-                          height: 20),
+                      CountryFlag.fromLanguageCode('en', width: 20, height: 20),
                       const SizedBox(width: 8),
                       const Text('English'),
                     ],

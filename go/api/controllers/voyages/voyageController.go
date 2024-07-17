@@ -62,7 +62,7 @@ func GetVoyages(c *gin.Context) {
 }
 
 // ShowVoyage godoc
-// @Summary      Show a voyage
+// @Summary      Show a groupeVoyage
 // @Description  get string by ID
 // @Tags         Voyages
 // @Accept       json
@@ -113,14 +113,15 @@ func GetVoyage(c *gin.Context) {
 }
 
 // AddVoyage godoc
-// @Summary     Add a voyage
-// @Description Add by JSON voyage
+// @Summary     Add a groupeVoyage
+// @Description Add by JSON groupeVoyage
 // @Tags        Voyages
 // @Accept      json
 // @Produce     json
 // @Security Bearer
 // @Param Authorization header string true "Insert your access token" default(Bearer Add access token here)
 // @Param       voyage body models.Voyage true "Add voyage"
+// @Param       groupeVoyage body models.Voyage true "Add groupeVoyage"
 // @Success     200 {object} models.Voyage
 // @Failure     400 {object} ErrorResponse
 // @Failure     404 {object} ErrorResponse
@@ -158,13 +159,6 @@ func CreateVoyage(c *gin.Context) {
 		return
 	}
 
-	/*	if input.GroupeVoyageID != nil {
-		var groupeVoyage models.GroupeVoyage
-		if err := initializers.DB.First(&groupeVoyage, *input.GroupeVoyageID).Error; err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Groupe de voyage non trouvé"})
-			return
-		}
-	}*/
 
 	voyage := models.Voyage{
 		Destination:    input.Destination,
@@ -178,7 +172,7 @@ func CreateVoyage(c *gin.Context) {
 
 	if err := initializers.DB.Create(&voyage).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		fmt.Println("Erreur de création de voyage:", err.Error())
+		fmt.Println("Erreur de création de groupeVoyage:", err.Error())
 		return
 	}
 
@@ -303,8 +297,8 @@ func UpdatePutVoyageHotel(c *gin.Context) {
 
 // DeleteVoyage godoc
 //
-//	@Summary		Delete a voyage
-//	@Description	Delete by voyage ID
+//	@Summary		Delete a groupeVoyage
+//	@Description	Delete by groupeVoyage ID
 //	@Tags			Voyages
 //	@Accept			json
 //	@Produce		json

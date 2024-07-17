@@ -189,6 +189,205 @@ paths:
       summary: Allow you to register as a new User
       tags:
       - Auth
+  /admin/groups:
+    get:
+      description: Récupère la liste de tous les groupes de voyage
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Liste des groupes de voyage
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Erreur serveur interne
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Récupère tous les groupes de voyage
+      tags:
+      - Groupes
+    post:
+      consumes:
+      - application/json
+      description: Ajoute un nouveau groupe de voyage à la base de données
+      parameters:
+      - description: Détails du groupe de voyage
+        in: body
+        name: group
+        required: true
+        schema:
+          $ref: '#/definitions/models.GroupeVoyage'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Groupe de voyage créé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Requête invalide
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Erreur serveur interne
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Crée un nouveau groupe de voyage
+      tags:
+      - Groupes
+  /admin/groups/{id}:
+    delete:
+      description: Supprime un groupe de voyage de la base de données
+      parameters:
+      - description: ID du groupe de voyage
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Groupe de voyage supprimé avec succès
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Erreur serveur interne
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Supprime un groupe de voyage
+      tags:
+      - Groupes
+    get:
+      description: Récupère les détails d'un groupe de voyage spécifique
+      parameters:
+      - description: ID du groupe de voyage
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Détails du groupe de voyage
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Groupe de voyage non trouvé
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Récupère un groupe de voyage par ID
+      tags:
+      - Groupes
+    put:
+      consumes:
+      - application/json
+      description: Met à jour les détails d'un groupe de voyage existant
+      parameters:
+      - description: ID du groupe de voyage
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Détails du groupe de voyage
+        in: body
+        name: group
+        required: true
+        schema:
+          $ref: '#/definitions/models.GroupeVoyage'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Groupe de voyage mis à jour
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Requête invalide
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Groupe de voyage non trouvé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Erreur serveur interne
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Met à jour un groupe de voyage
+      tags:
+      - Groupes
+  /admin/users:
+    get:
+      description: Récupère la liste de tous les utilisateurs
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Liste des utilisateurs
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Récupère tous les utilisateurs
+      tags:
+      - Utilisateurs
+  /admin/users/{id}:
+    delete:
+      description: Supprime un utilisateur de la base de données
+      parameters:
+      - description: ID de l'utilisateur
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Utilisateur supprimé avec succès
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Échec de la suppression de l'utilisateur
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Supprime un utilisateur
+      tags:
+      - Utilisateurs
+    put:
+      consumes:
+      - application/json
+      description: Met à jour les informations d'un utilisateur existant
+      parameters:
+      - description: ID de l'utilisateur
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Détails de l'utilisateur
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Utilisateur mis à jour avec succès
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: Requête invalide
+          schema:
+            $ref: '#/definitions/gin.H'
+        "404":
+          description: Utilisateur non trouvé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Erreur serveur interne
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Met à jour un utilisateur
+      tags:
+      - Utilisateurs
   /api/activity/images:
     post:
       consumes:
@@ -534,6 +733,146 @@ paths:
       summary: Met à jour l'état d'une fonctionnalité
       tags:
       - Features
+  /api/users:
+    get:
+      description: Récupère la liste de tous les utilisateurs
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "500":
+          description: Erreur serveur interne
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - ApiKeyAuth: []
+      summary: Récupère tous les utilisateurs
+      tags:
+      - Utilisateurs
+    post:
+      consumes:
+      - application/json
+      description: Crée un nouvel utilisateur avec les informations fournies
+      parameters:
+      - description: Utilisateur à créer
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "500":
+          description: Erreur serveur interne
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - ApiKeyAuth: []
+      summary: Crée un nouvel utilisateur
+      tags:
+      - Users
+  /api/users/{id}:
+    get:
+      description: Récupère les informations d'un utilisateur spécifique
+      parameters:
+      - description: ID de l'utilisateur
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "404":
+          description: Utilisateur non trouvé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Erreur serveur interne
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - ApiKeyAuth: []
+      summary: Récupère un utilisateur par ID
+      tags:
+      - Users
+  /api/users{id}:
+    delete:
+      description: Supprime un utilisateur spécifique
+      parameters:
+      - description: ID de l'utilisateur
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Utilisateur non trouvé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Erreur serveur interne
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - ApiKeyAuth: []
+      summary: Supprime un utilisateur par ID
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: Met à jour les informations d'un utilisateur spécifique
+      parameters:
+      - description: ID de l'utilisateur
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Utilisateur à mettre à jour
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "404":
+          description: Utilisateur non trouvé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Erreur serveur interne
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - ApiKeyAuth: []
+      summary: Met à jour un utilisateur par ID
+      tags:
+      - Users
   /api/voyages:
     get:
       consumes:
@@ -564,11 +903,11 @@ paths:
     post:
       consumes:
       - application/json
-      description: Add by JSON voyage
+      description: Add by JSON groupeVoyage
       parameters:
-      - description: Add voyage
+      - description: Add groupeVoyage
         in: body
-        name: voyage
+        name: groupeVoyage
         required: true
         schema:
           $ref: '#/definitions/models.Voyage'
@@ -591,7 +930,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
-      summary: Add a voyage
+      summary: Add a groupeVoyage
       tags:
       - Voyages
     put:
@@ -601,7 +940,7 @@ paths:
       parameters:
       - description: Voyage data
         in: body
-        name: voyage
+        name: groupeVoyage
         required: true
         schema:
           $ref: '#/definitions/models.Voyage'
@@ -657,14 +996,14 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
-      summary: Show a voyage
+      summary: Show a groupeVoyage
       tags:
       - Voyages
   /api/voyages/delete/{id}:
     delete:
       consumes:
       - application/json
-      description: Delete by voyage ID
+      description: Delete by groupeVoyage ID
       parameters:
       - description: Voyage ID
         format: int64
@@ -691,7 +1030,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
-      summary: Delete a voyage
+      summary: Delete a groupeVoyage
       tags:
       - Voyages
   /api/voyages/hotel:
@@ -886,6 +1225,34 @@ paths:
       summary: Logout
       tags:
       - Auth
+  /middleware/checkadmin:
+    get:
+      description: Vérifie le rôle de l'utilisateur pour s'assurer qu'il est administrateur
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insérez votre jeton d'accès
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Autorisé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "401":
+          description: Non autorisé
+          schema:
+            $ref: '#/definitions/gin.H'
+        "403":
+          description: Interdit
+          schema:
+            $ref: '#/definitions/gin.H'
+      security:
+      - Bearer: []
+      summary: Vérifie si l'utilisateur est un administrateur
+      tags:
+      - Middleware
   /profile:
     get:
       consumes:
