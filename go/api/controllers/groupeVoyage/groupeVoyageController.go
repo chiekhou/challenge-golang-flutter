@@ -156,14 +156,22 @@ func GetMyGroups(c *gin.Context) {
 
 	var groups []models.GroupeVoyage
 
-	if err := initializers.DB.Where("user_id = ?", currentUser.ID).Preload("Members").Find(&groups).Error; err != nil {
+	if err := initializers.DB.Where("user_id = ?", currentUser.ID).
+		Preload("Members").
+		Preload("Voyage.Activities").
+		Preload("Voyage.Hotels").
+		Find(&groups).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	var memberGroups []models.GroupeVoyage
 	subQuery := initializers.DB.Table("groupe_members").Select("groupe_voyage_id").Where("user_id = ?", currentUser.ID)
-	if err := initializers.DB.Where("id IN (?)", subQuery).Preload("Members").Find(&memberGroups).Error; err != nil {
+	if err := initializers.DB.Where("id IN (?)", subQuery).
+		Preload("Members").
+		Preload("Voyage.Activities").
+		Preload("Voyage.Hotels").
+		Find(&memberGroups).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -452,6 +460,7 @@ func DeleteGroupMember(c *gin.Context) {
 	var member models.GroupeMembers
 	if err := initializers.DB.Where("groupe_voyage_id = ? AND user_id = ?", groupID, memberID).First(&member).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Membre non trouvé"})
+		return
 	} else {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

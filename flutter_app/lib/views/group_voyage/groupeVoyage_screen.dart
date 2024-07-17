@@ -46,6 +46,7 @@ class _GroupevoyageState extends State<GroupevoyageScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
+            print(snapshot);
             return Center(child: Text('Erreur: ${snapshot.error}'));
           } else {
             if (groupVoyageProvider.groupes.isEmpty) {

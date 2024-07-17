@@ -24,8 +24,13 @@ class VoyageProvider extends ChangeNotifier {
         isLoading = true;
         notifyListeners();
 
-        final url = Uri.http(host, '/api/voyages');
-        final response = await http.get(url);
+        final response = await http.get(
+          Uri.http(host,'/api/voyages'),
+            headers:{
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token'
+            }
+        );
         // print('Fetching data from $url');
         // print('Response body: ${response.body}');
 
