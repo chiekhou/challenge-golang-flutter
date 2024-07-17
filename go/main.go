@@ -23,10 +23,6 @@ func init() {
 	initializers2.ConnectToDatabase()
 }
 
-func root(c *gin.Context) {
-	c.String(http.StatusOK, "Déploiement réussi!")
-}
-
 func main() {
 
 	// Servir des fichiers statiques depuis le dossier assets
