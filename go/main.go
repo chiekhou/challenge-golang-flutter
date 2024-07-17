@@ -73,12 +73,7 @@ func main() {
 	routes.DestinationRoutes(server)
 	routes.ActivityRoutes(server)
 	routes.FlippingRoutes(server)
-
-	server.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Déploiement project",
-		})
-	})
+	routes.RootRoutes(server)
 
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

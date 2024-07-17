@@ -6,6 +6,7 @@ import (
 	"example/hello/api/controllers/destinations"
 	flipping "example/hello/api/controllers/flipping"
 	groupVoyage "example/hello/api/controllers/groupeVoyage"
+	"example/hello/api/controllers/root"
 	voyage "example/hello/api/controllers/voyages"
 	"example/hello/api/middlewares"
 
@@ -55,4 +56,8 @@ func FlippingRoutes(r *gin.Engine) {
 	r.GET("/api/flipping/feature", flipping.GetFeatureToggle)
 	r.PUT("/api/flipping/feature", flipping.UpdateFeatureToggle)
 
+}
+
+func RootRoutes(r *gin.Engine) {
+	r.GET("/", root.Deploiement)
 }
