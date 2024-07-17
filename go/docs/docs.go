@@ -974,7 +974,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Permet aux user de créé un groupe de groupeVoyage",
+                "description": "Permet aux utilisateurs de créer un groupe de voyage",
                 "consumes": [
                     "application/json"
                 ],
@@ -984,7 +984,7 @@ const docTemplate = `{
                 "tags": [
                     "Groupe Voyage"
                 ],
-                "summary": "Créé un groupe de groupeVoyage",
+                "summary": "Créé un groupe de voyage",
                 "parameters": [
                     {
                         "type": "string",
@@ -995,8 +995,8 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Mise à jour du budget",
-                        "name": "budget",
+                        "description": "Données du groupe",
+                        "name": "group",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -1017,8 +1017,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/gin.H"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
                     "404": {
-                        "description": "Bad request",
+                        "description": "Voyage non trouvé",
                         "schema": {
                             "$ref": "#/definitions/gin.H"
                         }
@@ -2094,6 +2100,9 @@ const docTemplate = `{
                 },
                 "nom": {
                     "type": "string"
+                },
+                "voyage_id": {
+                    "type": "integer"
                 }
             }
         },

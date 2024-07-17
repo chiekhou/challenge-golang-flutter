@@ -177,6 +177,8 @@ definitions:
         type: number
       nom:
         type: string
+      voyage_id:
+        type: integer
     type: object
   requests.LoginRequest:
     properties:
@@ -862,7 +864,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Permet aux user de créé un groupe de groupeVoyage
+      description: Permet aux utilisateurs de créer un groupe de voyage
       parameters:
       - default: Bearer Add access token here
         description: Insert your access token
@@ -870,9 +872,9 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: Mise à jour du budget
+      - description: Données du groupe
         in: body
-        name: budget
+        name: group
         required: true
         schema:
           $ref: '#/definitions/requests.GroupRequest'
@@ -887,8 +889,12 @@ paths:
           description: Bad request
           schema:
             $ref: '#/definitions/gin.H'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/gin.H'
         "404":
-          description: Bad request
+          description: Voyage non trouvé
           schema:
             $ref: '#/definitions/gin.H'
         "409":
@@ -901,7 +907,7 @@ paths:
             $ref: '#/definitions/gin.H'
       security:
       - Bearer: []
-      summary: Créé un groupe de groupeVoyage
+      summary: Créé un groupe de voyage
       tags:
       - Groupe Voyage
   /forgotten_password:
