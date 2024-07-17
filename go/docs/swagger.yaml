@@ -228,6 +228,23 @@ definitions:
 info:
   contact: {}
 paths:
+  /:
+    get:
+      consumes:
+      - application/json
+      description: Renvoie un message JSON indiquant que le déploiement a réussi
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Affiche un message de déploiement réussi
+      tags:
+      - déploiement
   /Signup:
     post:
       consumes:

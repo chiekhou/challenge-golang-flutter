@@ -70,8 +70,6 @@ func main() {
 		})
 	})*/
 
-	server.GET("/", deploiement)
-
 	routes.RegisterRoutes(server)
 	routes.VoyageRoutes(server)
 	routes.DestinationRoutes(server)
