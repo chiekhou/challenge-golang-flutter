@@ -1943,6 +1943,9 @@
                 },
                 "user_id": {
                     "type": "integer"
+                },
+                "voyage": {
+                    "$ref": "#/definitions/models.Voyage"
                 }
             }
         },
@@ -2041,6 +2044,9 @@
                 },
                 "destination": {
                     "type": "string"
+                },
+                "groupe_voyage_id": {
+                    "type": "integer"
                 },
                 "hotels": {
                     "type": "array",

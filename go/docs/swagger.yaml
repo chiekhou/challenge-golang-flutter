@@ -85,6 +85,8 @@ definitions:
         type: string
       user_id:
         type: integer
+      voyage:
+        $ref: '#/definitions/models.Voyage'
     type: object
   models.Hotel:
     properties:
@@ -150,6 +152,8 @@ definitions:
         type: string
       destination:
         type: string
+      groupe_voyage_id:
+        type: integer
       hotels:
         items:
           $ref: '#/definitions/models.Hotel'

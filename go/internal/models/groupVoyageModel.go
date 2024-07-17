@@ -8,4 +8,5 @@ type GroupeVoyage struct {
 	User    User          `gorm:"foreignkey:UserID" json:"-"`
 	Members []User        `gorm:"many2many:groupe_members;" json:"members"`
 	Chats   []ChatMessage `gorm:"foreignKey:GroupeVoyageID" json:"chats"`
+	Voyage  Voyage        `gorm:"foreignkey:GroupeVoyageID" json:"voyage"`
 }

@@ -1955,6 +1955,9 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "integer"
+                },
+                "voyage": {
+                    "$ref": "#/definitions/models.Voyage"
                 }
             }
         },
@@ -2053,6 +2056,9 @@ const docTemplate = `{
                 },
                 "destination": {
                     "type": "string"
+                },
+                "groupe_voyage_id": {
+                    "type": "integer"
                 },
                 "hotels": {
                     "type": "array",

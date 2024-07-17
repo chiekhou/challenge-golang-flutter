@@ -143,11 +143,12 @@ func CreateVoyage(c *gin.Context) {
 	}
 
 	var input struct {
-		Destination string            `json:"destination"`
-		DateAller   time.Time         `json:"dateAller"`
-		DateRetour  time.Time         `json:"dateRetour"`
-		Activities  []models.Activity `json:"activities"`
-		Hotels      []models.Hotel    `json:"hotels"`
+		Destination    string            `json:"destination"`
+		DateAller      time.Time         `json:"dateAller"`
+		DateRetour     time.Time         `json:"dateRetour"`
+		Activities     []models.Activity `json:"activities"`
+		Hotels         []models.Hotel    `json:"hotels"`
+		GroupeVoyageID *uint64           `json:"groupe_voyage_id,omitempty"`
 	}
 
 	// Bind JSON input to the input struct
@@ -157,13 +158,22 @@ func CreateVoyage(c *gin.Context) {
 		return
 	}
 
+	/*	if input.GroupeVoyageID != nil {
+		var groupeVoyage models.GroupeVoyage
+		if err := initializers.DB.First(&groupeVoyage, *input.GroupeVoyageID).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Groupe de voyage non trouvé"})
+			return
+		}
+	}*/
+
 	voyage := models.Voyage{
-		Destination: input.Destination,
-		DateAller:   input.DateAller,
-		DateRetour:  input.DateRetour,
-		Activities:  input.Activities,
-		Hotels:      input.Hotels,
-		UserId:      user.(models.User).ID,
+		Destination:    input.Destination,
+		DateAller:      input.DateAller,
+		DateRetour:     input.DateRetour,
+		Activities:     input.Activities,
+		Hotels:         input.Hotels,
+		UserId:         user.(models.User).ID,
+		GroupeVoyageID: input.GroupeVoyageID,
 	}
 
 	if err := initializers.DB.Create(&voyage).Error; err != nil {
@@ -174,7 +184,6 @@ func CreateVoyage(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": voyage})
 	fmt.Println("Voyage créé avec succès:", voyage)
-
 }
 
 // updateVoyage with Put godoc
