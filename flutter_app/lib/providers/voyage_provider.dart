@@ -66,7 +66,10 @@ class VoyageProvider extends ChangeNotifier {
 
         final response = await http.post(
           Uri.http(host, '/api/voyages'),
-          headers: {'Content-Type': 'application/json'},
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token'
+          },
           body: jsonData,
         );
 
@@ -105,7 +108,10 @@ class VoyageProvider extends ChangeNotifier {
           body: json.encode(
             voyage.toJson(),
           ),
-          headers: {'Content-type': 'application/json'},
+          headers: {
+            'Content-type': 'application/json',
+            'Authorization': 'Bearer $token'
+          },
         );
         if (response.statusCode != 200) {
           activity.status = ActivityStatus.ongoing;
@@ -134,7 +140,10 @@ class VoyageProvider extends ChangeNotifier {
           body: json.encode(
             voyage.toJson(),
           ),
-          headers: {'Content-type': 'application/json'},
+          headers: {
+            'Content-type': 'application/json',
+            'Authorization': 'Bearer $token'
+          },
         );
         if (response.statusCode != 200) {
           hotel.status = HotelStatus.ongoing;
