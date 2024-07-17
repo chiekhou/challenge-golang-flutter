@@ -70,34 +70,44 @@ class GroupeDetailScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        TextFormField(
-                          controller: emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          cursorColor: Colors.blue,
-                          textInputAction: TextInputAction.done,
-                          decoration: InputDecoration(
-                              hintText: 'Invitez un ami en entrant son email'
+                        if(groupe.userId == user.id) ...[
+                          TextFormField(
+                            controller: emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            cursorColor: Colors.blue,
+                            textInputAction: TextInputAction.done,
+                            decoration: InputDecoration(
+                                hintText: 'Invitez un ami en entrant son email'
+                            ),
+                          ),
+                          SizedBox(height: 12.0),
+                          ElevatedButton(
+                              onPressed: () async {
+                                bool success = await groupVoyageProvider.SendInvitation(groupeId, emailController.text);
+                                if (success) {
+                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Invitation envoyée!')));
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Échec de l'envoi")));
+                                }
+                              },
+                              child: Text('Envoyer une invitation')
+                          ),
+                        ],
+                        SizedBox(height: 32.0),
+                        Text(
+                          'Membres :',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        ElevatedButton(
-                            onPressed: () async {
-                              bool success = await groupVoyageProvider.SendInvitation(groupeId, emailController.text);
-                              if (success) {
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Invitation envoyée!')));
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Échec de l'envoi")));
-                              }
-                            },
-                            child: Text('Envoyer une invitation')
-                        ),
-                        Text('Membres:',
-                            style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold
-                            )
-                        ),
+                        SizedBox(height: 20.0),
                         Expanded(
-                          child: ListView.builder(
+                          child: groupe.members.isEmpty
+                              ? Center(
+                            child: Text('Aucun membre pour le moment'),
+                          )
+                              : ListView.builder(
                             itemCount: groupe.members.length,
                             itemBuilder: (context, index) {
                               Member member = groupe.members[index];

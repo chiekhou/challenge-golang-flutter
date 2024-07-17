@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/views/group_voyage/groupeVoyage_screen.dart';
@@ -59,6 +61,9 @@ class _AddGroupFormState extends State<AddGroupForm>{
             onSaved: (nom)=> _nom = nom!,
             decoration: const InputDecoration(
               hintText: 'Nom de votre groupe',
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(30.0))
+                )
             ),
             validator: (value) {
               if(value == null || value.isEmpty){
@@ -68,17 +73,20 @@ class _AddGroupFormState extends State<AddGroupForm>{
             },
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            padding: const EdgeInsets.symmetric(vertical: 20.0),
             child: TextFormField(
               keyboardType: TextInputType.number,
               textInputAction: TextInputAction.done,
               onSaved: (budget)=> _budget = double.parse(budget!),
               decoration: const InputDecoration(
-                hintText: 'Votre budget'
+                hintText: 'Votre budget',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(30.0))
+                )
               ),
             )
           ),
-          const SizedBox(height: 16.0),
+          const SizedBox(height: 32.0),
           ElevatedButton(
               onPressed: _submit,
               child: Text('Créer le groupe de voyage'.toUpperCase()),

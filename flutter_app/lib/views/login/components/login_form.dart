@@ -22,20 +22,22 @@ class _LoginFormState extends State<LoginForm> {
       final authservice = Provider.of<AuthProvider>(context, listen: false);
       bool success = await authservice.Login(_email, _password);
       if (success) {
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (BuildContext context) => HomeView()));
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext context) => const HomeView()));
       } else {
         showDialog(
             context: context,
             builder: (context) => AlertDialog(
-                  title: Text('Error'),
-                  content: Text('Connexion failed, please try again'),
+                  title: const Text('Erreur'),
+                  content: const Text('Connexion échouée, veuillez réessayer'),
                   actions: [
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: Text('OK'),
+                      child: const Text('OK'),
                     )
                   ],
                 ));
@@ -54,11 +56,15 @@ class _LoginFormState extends State<LoginForm> {
             cursorColor: Colors.blue,
             onSaved: (email) => _email = email!,
             decoration: const InputDecoration(
-                hintText: "Votre email",
-                prefixIcon: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Icon(Icons.person),
-                )),
+              hintText: "Votre email",
+              prefixIcon: Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Icon(Icons.person),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(30.0)),
+              ),
+            ),
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Veuillez entrer votre email';
@@ -66,6 +72,7 @@ class _LoginFormState extends State<LoginForm> {
               return null;
             },
           ),
+          const SizedBox(height: 16.0),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: TextFormField(
@@ -76,8 +83,11 @@ class _LoginFormState extends State<LoginForm> {
               decoration: const InputDecoration(
                 hintText: "Votre mot de passe",
                 prefixIcon: Padding(
-                  padding: EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(8.0),
                   child: Icon(Icons.lock),
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(30.0)),
                 ),
               ),
               validator: (value) {
@@ -91,8 +101,15 @@ class _LoginFormState extends State<LoginForm> {
           const SizedBox(height: 16.0),
           ElevatedButton(
             onPressed: _submit,
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30.0),
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+            ),
             child: Text(
               "Connexion".toUpperCase(),
+              style: TextStyle(fontSize: 16),
             ),
           ),
           const SizedBox(height: 16.0),
@@ -101,9 +118,18 @@ class _LoginFormState extends State<LoginForm> {
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (BuildContext context) => RegisterScreen()));
+                        builder: (BuildContext context) =>
+                            const RegisterScreen()));
               },
-              title: Text('Créer un compte')),
+              title: const Text(
+                'Créer un compte',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.underline,
+                ),
+              )),
         ]));
   }
 }

@@ -383,6 +383,13 @@ func Join(c *gin.Context) {
 		return
 	}
 
+	// Vérifiez si l'utilisateur est déjà membre du groupe
+	var existingGroupMember models.GroupeMembers
+	if err := initializers.DB.Where("groupe_voyage_id = ? AND user_id = ?", group.ID, user.ID).First(&existingGroupMember).Error; err == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Vous êtes déjà membre de ce groupe de voyage"})
+		return
+	}
+
 	// Ajouter l'utilisateur au groupe en utilisant le modèle GroupMember
 	groupMember := models.GroupeMembers{
 		GroupeVoyageID: group.ID,

@@ -10,6 +10,6 @@ type User struct {
 	Password    string         `gorm:"size:255; not null" json:"password"`
 	Email       string         `gorm:"size:100; not null; unique" json:"email"`
 	Address     string         `gorm:"size:255; not null" json:"address"`
-	RoleID      uint           `gorm:"size: 64; default:1; not null" json:"role_id"`
+	RoleID      uint           `gorm:"size: 64; default:2; not null" json:"role_id"`
 	GroupVoyage []GroupeVoyage `gorm:"many2many:group_members;"json:"groupe_voyage"`
 }

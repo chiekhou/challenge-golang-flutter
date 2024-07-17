@@ -1,8 +1,8 @@
 import 'dart:async';
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/providers/admin_provider.dart';
-import 'package:flutter_app/views/add_group/components/add_group_form.dart';
 import 'package:flutter_app/views/admin/dashboard_admin.dart';
 import 'package:flutter_app/views/admin/group_management_screen.dart';
 import 'package:flutter_app/views/admin/home_dashboard.dart';
@@ -12,6 +12,9 @@ import 'package:flutter_app/views/admin/voyage_management_screen.dart';
 import 'package:flutter_app/views/admin/widget/add_destination.dart';
 import 'package:flutter_app/views/admin/widget/add_group.dart';
 import 'package:flutter_app/views/admin/widget/add_user.dart';
+import 'package:flutter_app/notifications_controller.dart';
+import 'package:flutter_app/service/context_utility.dart';
+import 'package:flutter_app/service/uni_service.dart';
 import 'package:flutter_app/views/groupe_detail/groupe_detail_screen.dart';
 import 'package:flutter_app/views/login/login_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -39,6 +42,24 @@ import './views/home/home_view.dart';
 Future main() async {
   await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
+  await UniService.init();
+  //Initialisation des notifications
+  await AwesomeNotifications().initialize(null, [
+    NotificationChannel(
+        channelGroupKey: 'basic_channel_group',
+        channelKey: 'basic_channel',
+        channelName: 'Basic Notifications',
+        channelDescription: 'Basic notifications channel')
+  ], channelGroups: [
+    NotificationChannelGroup(
+        channelGroupKey: 'basic_channel_group', channelGroupName: 'Basic Group')
+  ]);
+  bool isAllowedToSendNotifs =
+      await AwesomeNotifications().isNotificationAllowed();
+  if (!isAllowedToSendNotifs) {
+    AwesomeNotifications().requestPermissionToSendNotifications();
+  }
+
   runApp(const MyApp());
   print('API URL: ${AppConfig.getApiAuthority()}');
 }
@@ -68,6 +89,16 @@ class _AppVoyageState extends State<MyApp> {
   void initState() {
     voyageProvider.fetchData();
     destinationProvider.fetchData();
+
+    AwesomeNotifications().setListeners(
+        onActionReceivedMethod: NotificationsController.onActionReceivedMethod,
+        onDismissActionReceivedMethod:
+            NotificationsController.onActionReceivedMethod,
+        onNotificationCreatedMethod:
+            NotificationsController.onNotificationCreatedMethod,
+        onNotificationDisplayedMethod:
+            NotificationsController.onNotificationDisplayedMethod);
+
     super.initState();
   }
 
@@ -128,6 +159,7 @@ class _AppVoyageState extends State<MyApp> {
         ChangeNotifierProvider.value(value: adminProvider),
       ],
       child: MaterialApp(
+        navigatorKey: ContextUtility.navigatorKey,
         locale: _locale,
         localizationsDelegates: const [
           AppLocalizations.delegate,
