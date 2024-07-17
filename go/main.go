@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"
@@ -65,6 +66,8 @@ func main() {
 			"message": "Bienvenue à la racine!",
 		})
 	})
+
+	server.Use(static.Serve("/", static.LocalFile("./assets", true)))
 
 	routes.RegisterRoutes(server)
 	routes.VoyageRoutes(server)
