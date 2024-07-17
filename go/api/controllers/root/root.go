@@ -9,6 +9,6 @@ import (
 func Deploiement(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Déploiement réussi!",
+		"message": "Déploiement réussi inshaàllah!",
 	})
 }
