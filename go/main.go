@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"
@@ -22,6 +21,10 @@ func init() {
 	config.LoadConfig()
 	initializers2.LoadEnvVariables()
 	initializers2.ConnectToDatabase()
+}
+
+func deploiement(c *gin.Context) {
+	c.String(http.StatusOK, "Déploiement réussi!")
 }
 
 func main() {
@@ -61,13 +64,13 @@ func main() {
 	// Configurer le chemin pour servir les fichiers statiques
 	server.Static("/images", "./assets/images")
 
-	server.GET("/", func(c *gin.Context) {
+	/*server.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Bienvenue à la racine!",
 		})
-	})
+	})*/
 
-	server.Use(static.Serve("/", static.LocalFile("./assets", true)))
+	server.GET("/", deploiement)
 
 	routes.RegisterRoutes(server)
 	routes.VoyageRoutes(server)
