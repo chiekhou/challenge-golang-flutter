@@ -68,7 +68,6 @@ func main() {
 	routes.UsersRoutes(server)
 	routes.SocketRoutes(server)
 
-	// Route pour gérer les connexions WebSocket
 	go sockets.HandleMessages()
 
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
