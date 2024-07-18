@@ -61,7 +61,7 @@ Future main() async {
   }
 
   runApp(const MyApp());
- // print('API URL: ${AppConfig.getApiAuthority()}');
+  // print('API URL: ${AppConfig.getApiAuthority()}');
 }
 
 class MyApp extends StatefulWidget {
@@ -126,8 +126,6 @@ class _AppVoyageState extends State<MyApp> {
 
             // Utiliser GroupProvider pour rejoindre le groupe
             try {
-              await groupVoyageProvider.JoinGroup(groupeId, token);
-
               // Rediriger vers la page de détail du groupe
               Navigator.push(
                 context,

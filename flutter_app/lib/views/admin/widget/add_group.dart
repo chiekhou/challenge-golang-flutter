@@ -16,6 +16,7 @@ class _AddGroupFormState extends State<AddGroupFormAdmin> {
   double _budget = 0.0;
   String _nom = "";
   String _photo = "";
+  int _voyageId = 0;
 
   bool _isLoading = false;
 
@@ -29,11 +30,12 @@ class _AddGroupFormState extends State<AddGroupFormAdmin> {
       String nom = _nom.trim();
       double budget = _budget;
       String photo = _photo.trim();
+      int voyageId = _voyageId;
 
       final groupService =
           Provider.of<GroupVoyageProvider>(context, listen: false);
 
-      bool success = await groupService.CreateGroup(budget, nom);
+      bool success = await groupService.CreateGroup(budget, nom, voyageId);
 
       setState(() {
         _isLoading = false;

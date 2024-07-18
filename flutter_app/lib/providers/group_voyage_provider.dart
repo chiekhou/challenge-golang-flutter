@@ -7,18 +7,13 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class GroupVoyageProvider extends ChangeNotifier {
-
   final String host = "10.0.2.2";
   final FlutterSecureStorage _storage = FlutterSecureStorage();
   List<Groupe> _groupes = [];
-  UnmodifiableListView<Groupe> get groupes => UnmodifiableListView(_groupes)
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  UnmodifiableListView<Groupe> get groupes => UnmodifiableListView(_groupes);
   final apiAuthority = AppConfig.getApiAuthority();
   final isSecure = AppConfig.isSecure();
-  List<Groupe> _groupes = [];
-  UnmodifiableListView<Groupe> get groupes => UnmodifiableListView(_groupes);
 
-  
   Future<List<Groupe>> fetchGroupes() async {
     try {
       final token = await _storage.read(key: 'auth_token');
@@ -58,8 +53,7 @@ class GroupVoyageProvider extends ChangeNotifier {
       rethrow;
     }
   }
-        
-        
+
   Future<bool> CreateGroup(double budget, String nom, int? voyageId) async {
     try {
       final url = isSecure
@@ -67,16 +61,14 @@ class GroupVoyageProvider extends ChangeNotifier {
           : Uri.http(apiAuthority, '/create_group');
       String? token = await _storage.read(key: 'auth_token');
       if (token != null) {
-        final response = await http.post(url,
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer $token'
-            },
-          body: jsonEncode({
-            'budget': budget,
-            'nom': nom,
-            'voyage_id': voyageId
-          }),
+        final response = await http.post(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token'
+          },
+          body:
+              jsonEncode({'budget': budget, 'nom': nom, 'voyage_id': voyageId}),
         );
         return response.statusCode == 200;
       } else {
@@ -86,7 +78,6 @@ class GroupVoyageProvider extends ChangeNotifier {
       rethrow;
     }
   }
-
 
   //Update le budget
   Future<bool> UpdateBudget(int ID, double budget) async {
@@ -120,27 +111,29 @@ class GroupVoyageProvider extends ChangeNotifier {
 
   // Récupérer les groupes par user
   Future<void> GetGroups() async {
-
     try {
-       
-    String? token = await _storage.read(key: 'auth_token');
-    if (token != null) {
+      String? token = await _storage.read(key: 'auth_token');
+      if (token != null) {
         final url = isSecure
-        ? Uri.https(apiAuthority, '/groupes/my_groups')
-        : Uri.http(apiAuthority, '/groupes/my_groups');
-      final response = await http.get(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        },
-      );
+            ? Uri.https(apiAuthority, '/groupes/my_groups')
+            : Uri.http(apiAuthority, '/groupes/my_groups');
+        final response = await http.get(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token'
+          },
+        );
         if (response.statusCode == 200) {
           final responseData = jsonDecode(response.body);
           if (responseData is List) {
-            _groupes = responseData.map((groupeJson) => Groupe.fromJson(groupeJson)).toList();
+            _groupes = responseData
+                .map((groupeJson) => Groupe.fromJson(groupeJson))
+                .toList();
           } else if (responseData is Map && responseData.containsKey('data')) {
-            _groupes = (responseData['data'] as List).map((groupJson) => Groupe.fromJson(groupJson)).toList();
+            _groupes = (responseData['data'] as List)
+                .map((groupJson) => Groupe.fromJson(groupJson))
+                .toList();
           } else {
             throw Exception('Unexpected response format');
           }
@@ -160,7 +153,6 @@ class GroupVoyageProvider extends ChangeNotifier {
   Groupe getGroupeById(int id) {
     return _groupes.firstWhere((groupe) => groupe.id == id);
   }
-
 
   //Groupe par ID
   Future<Map<String, dynamic>> GetGroupByID(int ID) async {
@@ -184,7 +176,6 @@ class GroupVoyageProvider extends ChangeNotifier {
     }
   }
 
-        
   Future<bool> SendInvitation(int ID, String email) async {
     try {
       String? token = await _storage.read(key: 'auth_token');
@@ -213,8 +204,6 @@ class GroupVoyageProvider extends ChangeNotifier {
     }
   }
 
-        
-        
   Future<bool> deleteGroup(int groupeId) async {
     try {
       final token = await _storage.read(key: 'auth_token');

@@ -23,23 +23,18 @@ class VoyageProvider extends ChangeNotifier {
   Future<List<Voyage>> fetchData() async {
     try {
       String? token = await _storage.read(key: 'auth_token');
-      if(token != null){
+      if (token != null) {
         isLoading = true;
         notifyListeners();
-        
-         final url = isSecure
-          ? Uri.https(apiAuthority, '/api/voyages')
-          : Uri.http(apiAuthority, '/api/voyages');
-  
 
+        final url = isSecure
+            ? Uri.https(apiAuthority, '/api/voyages')
+            : Uri.http(apiAuthority, '/api/voyages');
 
-        final response = await http.get(
-          url,
-            headers:{
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer $token'
-            }
-        );
+        final response = await http.get(url, headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        });
         // print('Fetching data from $url');
         // print('Response body: ${response.body}');
 
@@ -56,11 +51,10 @@ class VoyageProvider extends ChangeNotifier {
           } else {
             throw Exception('Unexpected response format');
           }
-
         } else {
           throw Exception('Failed to load voyages');
         }
-      }else{
+      } else {
         print('Aucun token trouvé');
         throw Exception('No token found');
       }
@@ -76,18 +70,17 @@ class VoyageProvider extends ChangeNotifier {
 
   Future<void> addVoyage(Voyage voyage) async {
     try {
-
       String? token = await _storage.read(key: 'auth_token');
-      if(token != null){
+      if (token != null) {
         final jsonData = json.encode(voyage.toJson());
         print('Données envoyées : $jsonData');
-        
-         final url = isSecure
-          ? Uri.https(apiAuthority, '/api/voyages')
-          : Uri.http(apiAuthority, '/api/voyages');
+
+        final url = isSecure
+            ? Uri.https(apiAuthority, '/api/voyages')
+            : Uri.http(apiAuthority, '/api/voyages');
 
         final response = await http.post(
-           url,
+          url,
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $token'
@@ -109,7 +102,7 @@ class VoyageProvider extends ChangeNotifier {
           throw Exception(
               'Erreur lors de l\'ajout du voyage : ${response.statusCode}');
         }
-      }else{
+      } else {
         print('Aucun token trouvé');
         throw Exception('No token found');
       }
@@ -120,19 +113,18 @@ class VoyageProvider extends ChangeNotifier {
 
   Future<void> updateVoyage(Voyage voyage, int activityId) async {
     try {
-
       String? token = await _storage.read(key: 'auth_token');
-      if(token != null){
-        Activity activity =
-        voyage.activities.firstWhere((activity) => activity.id == activityId);
+      if (token != null) {
+        Activity activity = voyage.activities
+            .firstWhere((activity) => activity.id == activityId);
         activity.status = ActivityStatus.done;
-        
-          final url = isSecure
-          ? Uri.https(apiAuthority, '/api/voyages')
-          : Uri.http(apiAuthority, '/api/voyages');
-        
+
+        final url = isSecure
+            ? Uri.https(apiAuthority, '/api/voyages')
+            : Uri.http(apiAuthority, '/api/voyages');
+
         http.Response response = await http.put(
-          url),
+          url,
           body: json.encode(
             voyage.toJson(),
           ),
@@ -145,7 +137,7 @@ class VoyageProvider extends ChangeNotifier {
           activity.status = ActivityStatus.ongoing;
           throw const HttpException('error');
         }
-      }else{
+      } else {
         print('Aucun token trouvé');
         throw Exception('No token found');
       }
@@ -157,17 +149,15 @@ class VoyageProvider extends ChangeNotifier {
 
   Future<void> updateVoyageHotel(Voyage voyage, int hotelId) async {
     try {
-
       String? token = await _storage.read(key: 'auth_token');
-      if(token != null){
-        Hotel hotel =
-        voyage.hotels.firstWhere((hotel) => hotel.id == hotelId);
+      if (token != null) {
+        Hotel hotel = voyage.hotels.firstWhere((hotel) => hotel.id == hotelId);
         hotel.status = HotelStatus.done;
-        
+
         final url = isSecure
-          ? Uri.https(apiAuthority, '/api/voyages/hotel')
-          : Uri.http(apiAuthority, '/api/voyages/hotel');
-        
+            ? Uri.https(apiAuthority, '/api/voyages/hotel')
+            : Uri.http(apiAuthority, '/api/voyages/hotel');
+
         http.Response response = await http.put(
           url,
           body: json.encode(
@@ -183,10 +173,9 @@ class VoyageProvider extends ChangeNotifier {
           throw const HttpException('error');
         }
         notifyListeners();
-      }else{
+      } else {
         print('Aucun token trouvé');
         throw Exception('No token found');
-
       }
     } catch (e) {
       rethrow;
