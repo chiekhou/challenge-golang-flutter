@@ -1,16 +1,40 @@
 package groupeVoyage
 
 import (
+	"errors"
 	"example/hello/api/controllers/requests"
 	"example/hello/bin/utils"
 	"example/hello/internal/initializers"
 	"example/hello/internal/models"
 	mailer2 "example/hello/pkg/mailer"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
+
+// @Summary Créé un groupe de voyage
+// @Description Permet aux utilisateurs de créer un groupe de voyage
+// GetAllGroups - Récupère tous les groupes de voyage
+// @Summary Récupère tous les groupes de voyage
+// @Description Récupère la liste de tous les groupes de voyage
+// @Tags Groupe Voyage
+// @Produce json
+// @Security Bearer
+// @Param Authorization header string true "Insert your access token" default(Bearer Add access token here)
+// @Success 200 {object} gin.H "Liste des groupes de voyage"
+// @Failure 500 {object} gin.H "Erreur serveur interne"
+// @Router /groupes [get]
+func GetAllGroups(c *gin.Context) {
+	var groups []models.GroupeVoyage
+	if err := initializers.DB.Preload("Members").Preload("Chats").Find(&groups).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Impossible de récupérer les groupes de voyage"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": groups})
+}
 
 // @Summary Créé un groupe de groupeVoyage
 // @Description Permet aux user de créé un groupe de groupeVoyage
@@ -19,10 +43,11 @@ import (
 // @Produce json
 // @Security Bearer
 // @Param Authorization header string true "Insert your access token" default(Bearer Add access token here)
-// @Param budget body requests.GroupRequest true "Mise à jour du budget"
+// @Param group body requests.GroupRequest true "Données du groupe"
 // @Success 200 {object} gin.H "Groupe créé"
 // @Failure 400 {object} gin.H "Bad request"
-// @Failure 404 {object} gin.H "Bad request"
+// @Failure 401 {object} gin.H "Unauthorized"
+// @Failure 404 {object} gin.H "Voyage non trouvé"
 // @Failure 409 {object} gin.H "Conflict"
 // @Failure 500 {object} gin.H "Internal server error"
 // @Router /create_group [post]
@@ -40,18 +65,94 @@ func CreateGroup(c *gin.Context) {
 		return
 	}
 
+	var voyage models.Voyage
+	if groupData.VoyageID != 0 {
+		if err := initializers.DB.Preload("Activities").Preload("Hotels").First(&voyage, groupData.VoyageID).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Voyage non trouvé"})
+			return
+		} else if voyage.UserId != user.(models.User).ID {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Vous n'êtes pas autorisé à utiliser ce voyage"})
+			return
+		}
+	}
+
 	group := models.GroupeVoyage{
 		Budget: groupData.Budget,
 		UserID: user.(models.User).ID,
 		Nom:    groupData.Nom,
+		Voyage: voyage,
 	}
-	err = initializers.DB.Create(&group).Error
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Impossible de créer le groupe de groupeVoyage"})
+
+	if err := initializers.DB.Create(&group).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Impossible de créer le groupe de voyage"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Groupe de groupeVoyage créé avec succès"})
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Groupe de voyage créé avec succès",
+		"groupe":  group,
+	})
+}
+
+// @Summary Suppression d'un groupe de voyage
+// @Description Permet de supprimer un groupe de voyage
+// @Tags Groupe Voyage
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Param Authorization header string true "Insert your access token" default(Bearer Add access token here)
+// @Param group_id path int true "ID du groupe de voyage"
+// @Success 200 {object} gin.H "Groupe de voyage supprimé avec succès"
+// @Success 204 "Groupe de voyage supprimé avec succès, aucune réponse"
+// @Failure 400 {object} gin.H "Requête incorrecte"
+// @Failure 404 {object} gin.H "Groupe de voyage non trouvé"
+// @Failure 409 {object} gin.H "Conflit lors de la suppression du groupe de voyage"
+// @Failure 500 {object} gin.H "Erreur interne du serveur"
+// @Router /groupes/{group_id}/delete_group [delete]
+func DeleteGroup(c *gin.Context) {
+	user, exists := c.Get("currentUser")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	currentUser := user.(models.User)
+	groupID := c.Param("group_id")
+
+	var group models.GroupeVoyage
+	if err := initializers.DB.Where("id = ?", groupID).First(&group).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Groupe de voyage non trouvé"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+		return
+	}
+
+	if group.UserID != currentUser.ID {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Vous n'êtes pas autorisé à supprimer ce groupe"})
+		return
+	}
+
+	// Supprimer tous les membres associés au groupe de voyage
+	if err := initializers.DB.Model(&group).Association("Members").Clear(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur lors de la suppression des membres du groupe"})
+		return
+	}
+
+	var voyage models.Voyage
+	if err := initializers.DB.Model(&models.Voyage{}).Where("id = ?", voyage.ID).Update("groupe_voyage_id", nil).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Impossible de mettre à jour le groupe de voyage dans le voyage"})
+		return
+	}
+
+	if err := initializers.DB.Delete(&group).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Impossible de supprimer le groupe de voyage"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Groupe supprimé avec succès",
+	})
 }
 
 // @Summary Voir un groupe de voyage
@@ -77,16 +178,22 @@ func GetMyGroups(c *gin.Context) {
 
 	var groups []models.GroupeVoyage
 
-	// Obtenir les groupes par l'id du user et précharger les membres
-	if err := initializers.DB.Where("user_id = ?", currentUser.ID).Preload("Members").Find(&groups).Error; err != nil {
+	if err := initializers.DB.Where("user_id = ?", currentUser.ID).
+		Preload("Members").
+		Preload("Voyage.Activities").
+		Preload("Voyage.Hotels").
+		Find(&groups).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Ajouter les groupes où l'utilisateur est membre
 	var memberGroups []models.GroupeVoyage
 	subQuery := initializers.DB.Table("groupe_members").Select("groupe_voyage_id").Where("user_id = ?", currentUser.ID)
-	if err := initializers.DB.Where("id IN (?)", subQuery).Preload("Members").Find(&memberGroups).Error; err != nil {
+	if err := initializers.DB.Where("id IN (?)", subQuery).
+		Preload("Members").
+		Preload("Voyage.Activities").
+		Preload("Voyage.Hotels").
+		Find(&memberGroups).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -129,7 +236,6 @@ func GetGroupById(c *gin.Context) {
 		return
 	}
 
-	// Vérifiez si l'utilisateur est le créateur ou un membre du groupe
 	if group.UserID != currentUser.ID {
 		var member models.GroupeMembers
 		if err := initializers.DB.Where("groupe_voyage_id = ? AND user_id = ?", groupID, currentUser.ID).First(&member).Error; err != nil {
@@ -194,6 +300,13 @@ func UpdateBudget(c *gin.Context) {
 // @Failure 500 {object} gin.H "Internal server error"
 // @Router /groupes/{group_id}/send_invitation [post]
 func SendInvitation(c *gin.Context) {
+	user, exists := c.Get("currentUser")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+	}
+
+	currentUser := user.(models.User)
+
 	var emailRequest requests.EmailRequest
 	groupID, err := strconv.ParseUint(c.Param("group_id"), 10, 32)
 	if err != nil {
@@ -213,10 +326,25 @@ func SendInvitation(c *gin.Context) {
 		return
 	}
 
+	if currentUser.ID != group.UserID {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Vous n'êtes pas autorisé à effectuer cette opération"})
+		return
+	}
+
 	// Vérifiez si l'utilisateur existe
 	var userFound models.User
 	if err := initializers.DB.Where("email = ?", emailRequest.Email).First(&userFound).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Utilisateur non trouvé"})
+		return
+	}
+
+	//Vérifier si l'user ne fait pas déjà partie du groupe
+	var memberFound models.GroupeMembers
+	if err := initializers.DB.Where("groupe_voyage_id = ? AND user_id = ?", groupID, userFound.ID).First(&memberFound).Error; err == nil {
+		c.JSON(http.StatusConflict, gin.H{"error": "L'utilisateur fait déjà partie du groupe"})
+		return
+	} else if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erreur interne du serveur"})
 		return
 	}
 
@@ -226,7 +354,7 @@ func SendInvitation(c *gin.Context) {
 		return
 	}
 
-	invitationURL := fmt.Sprintf("http://10.0.2.2:8080/groupes/%d/join?token=%s", groupID, token)
+	invitationURL := fmt.Sprintf("https://challenge-golang-flutter-7724181c550a.herokuapp/groupes/%d/join?token=%s", groupID, token)
 
 	initializers.DB.Where("email=?", emailRequest.Email).First(&userFound)
 	if userFound.ID == 0 {
@@ -287,6 +415,13 @@ func Join(c *gin.Context) {
 		return
 	}
 
+	// Vérifiez si l'utilisateur est déjà membre du groupe
+	var existingGroupMember models.GroupeMembers
+	if err := initializers.DB.Where("groupe_voyage_id = ? AND user_id = ?", group.ID, user.ID).First(&existingGroupMember).Error; err == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Vous êtes déjà membre de ce groupe de voyage"})
+		return
+	}
+
 	// Ajouter l'utilisateur au groupe en utilisant le modèle GroupMember
 	groupMember := models.GroupeMembers{
 		GroupeVoyageID: group.ID,
@@ -298,4 +433,64 @@ func Join(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Vous avez rejoint le groupe de voyage avec succès"})
+}
+
+// @Summary Suppression d'un membre d'un groupe de voyage
+// @Description Permet de supprimer un membre d'un groupe de voyage
+// @Tags Groupe Voyage
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Param Authorization header string true "Insert your access token" default(Bearer Add access token here)
+// @Param group_id path int true "ID du groupe de voyage"
+// @Param member_id path int true "ID du membre à supprimer"
+// @Success 200 {object} gin.H "Membre supprimé du groupe avec succès"
+// @Failure 400 {object} gin.H "Requête incorrecte"
+// @Failure 401 {object} gin.H "Non autorisé"
+// @Failure 404 {object} gin.H "Groupe de voyage ou membre non trouvé"
+// @Failure 409 {object} gin.H "Conflit lors de la suppression du membre"
+// @Failure 500 {object} gin.H "Erreur interne du serveur"
+// @Router /groupes/{group_id}/member/{member_id}/delete_member [delete]
+func DeleteGroupMember(c *gin.Context) {
+	user, exists := c.Get("currentUser")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	currentUser := user.(models.User)
+	groupID := c.Param("group_id")
+
+	var group models.GroupeVoyage
+	if err := initializers.DB.Where("id = ?", groupID).First(&group).Error; err != nil {
+		// Vérifier si l'erreur est de type record not found
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Groupe de voyage non trouvé"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+		return
+	}
+
+	// Vérifier si l'utilisateur courant est le propriétaire du groupe
+	if group.UserID != currentUser.ID {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Vous n'êtes pas autorisé à supprimer ce groupe"})
+		return
+	}
+
+	//Si le membre existe dans le groupe
+	memberID := c.Param("member_id")
+	var member models.GroupeMembers
+	if err := initializers.DB.Where("groupe_voyage_id = ? AND user_id = ?", groupID, memberID).First(&member).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Membre non trouvé"})
+		return
+	} else {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := initializers.DB.Delete(&member).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Membre supprimé avec succés"})
 }

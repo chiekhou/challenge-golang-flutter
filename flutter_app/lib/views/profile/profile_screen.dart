@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_input/image_input.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_app/models/member_model.dart'; // Importez le modèle de membre
 import 'package:flutter_app/providers/auth_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -13,12 +14,11 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  late Future<Map<String, dynamic>> _profileFuture;
+  late Future<Member> _profileFuture;
 
   @override
   void initState() {
     super.initState();
-    // Initialisation de l'appel API pour récupérer le profil
     _profileFuture = Provider.of<AuthProvider>(context, listen: false).Profile();
   }
 
@@ -26,9 +26,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profil'),
+        title: Text('Profile'),
       ),
-      body: FutureBuilder<Map<String, dynamic>>(
+      body: FutureBuilder<Member>(
         future: _profileFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -36,7 +36,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Erreur: ${snapshot.error}'));
           } else if (snapshot.hasData) {
-            var profileData = snapshot.data!['user'];
+            Member profileData = snapshot.data!;
             return Padding(
               padding: const EdgeInsets.all(16.0),
               child: SingleChildScrollView(
@@ -69,7 +69,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     SizedBox(height: 20),
                     TextFormField(
-                      initialValue: profileData['username'],
+                      initialValue: profileData.username,
                       decoration: InputDecoration(
                         labelText: 'Nom d\'utilisateur',
                         border: OutlineInputBorder(),
@@ -77,7 +77,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     SizedBox(height: 10),
                     TextFormField(
-                      initialValue: profileData['first_name'],
+                      initialValue: profileData.first_name,
                       decoration: InputDecoration(
                         labelText: 'Prénom',
                         border: OutlineInputBorder(),
@@ -85,7 +85,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     SizedBox(height: 10),
                     TextFormField(
-                      initialValue: profileData['last_name'],
+                      initialValue: profileData.last_name,
                       decoration: InputDecoration(
                         labelText: 'Nom',
                         border: OutlineInputBorder(),
@@ -93,7 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     SizedBox(height: 10),
                     TextFormField(
-                      initialValue: profileData['email'],
+                      initialValue: profileData.email,
                       decoration: InputDecoration(
                         labelText: 'Email',
                         border: OutlineInputBorder(),
@@ -121,3 +121,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 }
+

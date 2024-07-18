@@ -1,14 +1,15 @@
-class Member{
-  int? id;
-  String first_name;
-  String last_name;
-  String username;
-  String? photo;
-  String email;
-  String? password;
-  String address;
+class Member {
+  final int id;
+  final String first_name;
+  final String last_name;
+  final String username;
+  final String? photo;
+  final String email;
+  final String? password;
+  final String address;
+
   Member({
-    this.id,
+    required this.id,
     this.photo,
     required this.first_name,
     required this.last_name,
@@ -16,37 +17,18 @@ class Member{
     required this.email,
     this.password,
     required this.address,
-});
+  });
 
-  @override
-  String toString(){
-    return 'Groupe{id: $id, first_name: $first_name, last_name: $last_name, '
-        'username: $username, email: $email, password: $password, photo: $photo'
-        'address: $address}';
-  }
-
-  Member.fromJson(Map<String, dynamic> json) :
-        id = json['id'],
-        first_name = json['first_name'],
-        last_name = json['last_name'],
-        username = json['username'],
-        password = json['password'],
-        photo = json['photo'],
-        email = json['email'],
-        address = json['address'];
-
-  Map<String, dynamic> toJson(){
-    Map<String, dynamic> value = {
-      'id': id,
-      'first_name': first_name,
-      'last_name': last_name,
-      'username': username,
-      'password': password,
-      'photo': photo,
-      'email': email,
-      'address': address
-    };
-    value['id'] = id;
-    return value;
+  factory Member.fromJson(Map<String, dynamic> json) {
+    return Member(
+      id: json['id'],
+      first_name: json['first_name'],
+      last_name: json['last_name'],
+      username: json['username'],
+      photo: json['photo'],
+      email: json['email'],
+      password: json['password'],
+      address: json['address'],
+    );
   }
 }

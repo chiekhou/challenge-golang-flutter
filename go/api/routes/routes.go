@@ -6,7 +6,6 @@ import (
 	"example/hello/api/controllers/destinations"
 	flipping "example/hello/api/controllers/flipping"
 	groupVoyage "example/hello/api/controllers/groupeVoyage"
-	"example/hello/api/controllers/root"
 	voyage "example/hello/api/controllers/voyages"
 	"example/hello/api/middlewares"
 
@@ -23,12 +22,12 @@ func RegisterRoutes(r *gin.Engine) {
 }
 
 func VoyageRoutes(r *gin.Engine) {
-	r.GET("/api/voyages", voyage.GetVoyages)
-	r.GET("/api/voyages/:id", voyage.GetVoyage)
-	r.POST("/api/voyages", voyage.CreateVoyage)
-	r.PUT("/api/voyages", voyage.UpdatePutVoyage)
-	r.PUT("/api/voyages/hotel", voyage.UpdatePutVoyageHotel)
-	r.DELETE("/api/voyages/delete/:id", voyage.DeleteVoyage)
+	r.GET("/api/voyages", middlewares.CheckAuth, voyage.GetVoyages)
+	r.GET("/api/voyages/:id", middlewares.CheckAuth, voyage.GetVoyage)
+	r.POST("/api/voyages", middlewares.CheckAuth, voyage.CreateVoyage)
+	r.PUT("/api/voyages", middlewares.CheckAuth, voyage.UpdatePutVoyage)
+	r.PUT("/api/voyages/hotel", middlewares.CheckAuth, voyage.UpdatePutVoyageHotel)
+	r.DELETE("/api/voyages/delete/:id", middlewares.CheckAuth, voyage.DeleteVoyage)
 }
 
 func DestinationRoutes(r *gin.Engine) {
@@ -45,19 +44,18 @@ func DestinationRoutes(r *gin.Engine) {
 func ActivityRoutes(r *gin.Engine) {
 	r.POST("/api/activity/images", activity.UploadImage)
 	r.POST("/create_group", middlewares.CheckAuth, groupVoyage.CreateGroup)
+	r.DELETE("/groupes/:group_id/delete_group", middlewares.CheckAuth, groupVoyage.DeleteGroup)
+	r.GET("/groupes", groupVoyage.GetAllGroups)
 	r.GET("/groupes/:group_id/join", groupVoyage.Join)
 	r.POST("/groupes/:group_id/send_invitation", middlewares.CheckAuth, groupVoyage.SendInvitation)
 	r.PUT("/groupes/:group_id/update_budget", middlewares.CheckAuth, groupVoyage.UpdateBudget)
 	r.GET("/groupes/my_groups", middlewares.CheckAuth, groupVoyage.GetMyGroups)
 	r.GET("/groupes/:group_id", middlewares.CheckAuth, groupVoyage.GetGroupById)
+	r.DELETE("/groupes/:group_id/member/:member_id/delete_member", middlewares.CheckAuth, groupVoyage.DeleteGroupMember)
 }
 
 func FlippingRoutes(r *gin.Engine) {
 	r.GET("/api/flipping/feature", flipping.GetFeatureToggle)
 	r.PUT("/api/flipping/feature", flipping.UpdateFeatureToggle)
 
-}
-
-func RootRoutes(r *gin.Engine) {
-	r.GET("/", root.Deploiement)
 }

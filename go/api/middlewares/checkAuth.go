@@ -4,12 +4,13 @@ import (
 	"example/hello/internal/initializers"
 	"example/hello/internal/models"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 	"net/http"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func CheckAuth(c *gin.Context) {

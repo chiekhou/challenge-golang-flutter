@@ -3,6 +3,7 @@
   "title_drawer" : "TRIP ESGI",
   "accueil": "Home",
   "mes_voyages" : "My trips",
+  "profile" : "Profile",
   "deconnexion" : "Logout",
   "toogle_drawer" : "Activate/Disable Trip",
   "langage" : "Langage",

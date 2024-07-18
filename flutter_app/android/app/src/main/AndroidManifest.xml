@@ -1,4 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
         android:label="flutter_app"
         android:name="${applicationName}"
@@ -27,7 +31,7 @@
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="http" android:host="10.0.2.2" android:pathPrefix="/groupes"/>
+                <data android:scheme="https" android:host="challenge-golang-flutter-7724181c550a.herokuapp" android:pathPrefix="/groupes"/>
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.

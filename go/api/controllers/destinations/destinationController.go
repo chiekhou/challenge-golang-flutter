@@ -99,6 +99,9 @@ func GetDestination(c *gin.Context) {
 // @Failure     400 {object} ErrorResponse
 // @Failure     404 {object} ErrorResponse
 // @Failure     500 {object} ErrorResponse
+// @Security Bearer
+// @Param Authorization header string true "Insert your access token" default(Bearer Add access token here)
+//
 // @Router      /api/destinations [post]
 func CreateDestination(c *gin.Context) {
 	var input struct {
@@ -195,6 +198,8 @@ func UpdateDestination(c *gin.Context) {
 // @Failure      400  {object}  ErrorResponse
 // @Failure      404  {object}  ErrorResponse
 // @Failure      500  {object}  ErrorResponse
+// @Security Bearer
+// @Param Authorization header string true "Insert your access token" default(Bearer Add access token here)
 //
 //	@Router			/api/destinations/delete/{id} [delete]
 func DeleteDestination(c *gin.Context) {

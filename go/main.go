@@ -1,6 +1,7 @@
 package main
 
 import (
+	"example/hello/api/controllers/sockets"
 	"example/hello/api/routes"
 	"example/hello/config"
 	_ "example/hello/docs"
@@ -23,9 +24,6 @@ func init() {
 	initializers2.ConnectToDatabase()
 }
 
-func deploiement(c *gin.Context) {
-	c.String(http.StatusOK, "Déploiement réussi!")
-}
 
 func main() {
 
@@ -76,13 +74,17 @@ func main() {
 	routes.ActivityRoutes(server)
 	routes.FlippingRoutes(server)
 	routes.RootRoutes(server)
+	routes.UsersRoutes(server)
+	routes.SocketRoutes(server)
+
+	// Route pour gérer les connexions WebSocket
+	go sockets.HandleMessages()
 
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
-	}
 
 	log.Printf("Listening on port %s", port)
 	if err := server.Run(":" + port); err != nil {

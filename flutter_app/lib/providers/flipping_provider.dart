@@ -4,7 +4,6 @@ import 'package:flutter_app/config/app_config.dart';
 import 'package:http/http.dart' as http;
 
 class FlippingToggle extends ChangeNotifier {
-
   final bool enabled;
 
   FlippingToggle({required this.enabled});
@@ -24,7 +23,6 @@ final url = isSecure
     : Uri.http(apiAuthority, '/api/flipping/feature', queryParams);
 
 Future<FlippingToggle> fetchFeatureToggles() async {
-
   final response = await http.get(url);
   print('Fetching data from $url');
   if (response.statusCode == 200) {
@@ -35,13 +33,16 @@ Future<FlippingToggle> fetchFeatureToggles() async {
       throw Exception('Erreur lors de la conversion JSON');
     }
   } else {
-    print('Erreur lors de la récupération des basculements de fonctionnalité: ${response.body}');
-    throw Exception('Erreur lors de la récupération des basculements de fonctionnalité');
+    print(
+        'Erreur lors de la récupération des basculements de fonctionnalité: ${response.body}');
+    throw Exception(
+        'Erreur lors de la récupération des basculements de fonctionnalité');
   }
 }
 
-Future<void> updateFeatureToggle( bool enabled) async {
-  final response = await http.put(url,
+Future<void> updateFeatureToggle(bool enabled) async {
+  final response = await http.put(
+    url,
     headers: {
       'Content-Type': 'application/json',
     },
