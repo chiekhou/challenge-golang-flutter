@@ -13,7 +13,7 @@ var DB *gorm.DB
 
 func ConnectToDatabase() {
 	var err error
-	dsn := os.Getenv("DB_URL")
+	dsn := os.Getenv("DATABASE_URL")
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: true,
 	})
