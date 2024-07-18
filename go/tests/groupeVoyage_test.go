@@ -24,7 +24,7 @@ import (
 
 func setupGroupeVoyageTestDB() *gorm.DB {
 	// Charger les variables d'environnement à partir du fichier .env
-	err := godotenv.Load(".env")
+	err := godotenv.Load("../.env")
 	if err != nil {
 		panic("Error loading .env file")
 	}
