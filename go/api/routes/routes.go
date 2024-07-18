@@ -6,6 +6,8 @@ import (
 	"example/hello/api/controllers/destinations"
 	flipping "example/hello/api/controllers/flipping"
 	groupVoyage "example/hello/api/controllers/groupeVoyage"
+	"example/hello/api/controllers/sockets"
+	"example/hello/api/controllers/user"
 	voyage "example/hello/api/controllers/voyages"
 	"example/hello/api/middlewares"
 
@@ -58,4 +60,17 @@ func FlippingRoutes(r *gin.Engine) {
 	r.GET("/api/flipping/feature", flipping.GetFeatureToggle)
 	r.PUT("/api/flipping/feature", flipping.UpdateFeatureToggle)
 
+}
+
+func UsersRoutes(r *gin.Engine) {
+	r.POST("/api/users", middlewares.CheckAuth, user.CreateUser)
+	r.GET("/api/users", middlewares.CheckAuth, user.GetUsers)
+	r.GET("/api/users/:id", middlewares.CheckAuth, user.GetUser)
+	r.PUT("/api/users/:id", middlewares.CheckAuth, user.UpdateUser)
+	r.DELETE("/api/users/:id", middlewares.CheckAuth, user.DeleteUser)
+
+}
+
+func SocketRoutes(r *gin.Engine) {
+	r.GET("/api/messages/:groupe_voyage_id", sockets.GetPreviousMessages)
 }

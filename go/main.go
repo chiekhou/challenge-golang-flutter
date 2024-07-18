@@ -24,7 +24,6 @@ func init() {
 	initializers2.ConnectToDatabase()
 }
 
-
 func main() {
 
 	// Servir des fichiers statiques depuis le dossier assets
@@ -62,18 +61,11 @@ func main() {
 	// Configurer le chemin pour servir les fichiers statiques
 	server.Static("/images", "./assets/images")
 
-	/*server.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Bienvenue à la racine!",
-		})
-	})*/
-
 	routes.RegisterRoutes(server)
 	routes.VoyageRoutes(server)
 	routes.DestinationRoutes(server)
 	routes.ActivityRoutes(server)
 	routes.FlippingRoutes(server)
-	routes.RootRoutes(server)
 	routes.UsersRoutes(server)
 	routes.SocketRoutes(server)
 
@@ -86,8 +78,10 @@ func main() {
 	if port == "" {
 		port = "8080"
 
-	log.Printf("Listening on port %s", port)
-	if err := server.Run(":" + port); err != nil {
-		log.Fatal(err)
+		log.Printf("Listening on port %s", port)
+		if err := server.Run(":" + port); err != nil {
+			log.Fatal(err)
+		}
+
 	}
 }
