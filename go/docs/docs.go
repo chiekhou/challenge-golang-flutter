@@ -882,11 +882,6 @@ const docTemplate = `{
         },
         "/api/voyages": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Get Voyages",
                 "consumes": [
                     "application/json"
@@ -898,16 +893,6 @@ const docTemplate = `{
                     "Voyages"
                 ],
                 "summary": "List Voyages",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "default": "Bearer Add access token here",
-                        "description": "Insert your access token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -936,11 +921,6 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Update a trip by ID",
                 "consumes": [
                     "application/json"
@@ -961,14 +941,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.Voyage"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "default": "Bearer Add access token here",
-                        "description": "Insert your access token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -999,14 +971,7 @@ const docTemplate = `{
                 }
             },
             "post": {
-
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Add by JSON voyage",
-
+                "description": "Add by JSON groupeVoyage",
                 "consumes": [
                     "application/json"
                 ],
@@ -1019,17 +984,8 @@ const docTemplate = `{
                 "summary": "Add a groupeVoyage",
                 "parameters": [
                     {
-
-                        "type": "string",
-                        "default": "Bearer Add access token here",
-                        "description": "Insert your access token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "Add voyage",
-                        "name": "voyage",
+                        "description": "Add groupeVoyage",
+                        "name": "groupeVoyage",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -1067,14 +1023,7 @@ const docTemplate = `{
         },
         "/api/voyages/delete/{id}": {
             "delete": {
-
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Delete by voyage ID",
-
+                "description": "Delete by groupeVoyage ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -1092,14 +1041,6 @@ const docTemplate = `{
                         "description": "Voyage ID",
                         "name": "id",
                         "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "default": "Bearer Add access token here",
-                        "description": "Insert your access token",
-                        "name": "Authorization",
-                        "in": "header",
                         "required": true
                     }
                 ],
@@ -1133,11 +1074,6 @@ const docTemplate = `{
         },
         "/api/voyages/hotel": {
             "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Update a trip by ID",
                 "consumes": [
                     "application/json"
@@ -1158,14 +1094,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/models.Voyage"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "default": "Bearer Add access token here",
-                        "description": "Insert your access token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -1198,11 +1126,6 @@ const docTemplate = `{
         },
         "/api/voyages/{id}": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "get string by ID",
                 "consumes": [
                     "application/json"
@@ -1220,14 +1143,6 @@ const docTemplate = `{
                         "description": "Voyages ID",
                         "name": "id",
                         "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "default": "Bearer Add access token here",
-                        "description": "Insert your access token",
-                        "name": "Authorization",
-                        "in": "header",
                         "required": true
                     }
                 ],
@@ -1266,7 +1181,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Permet aux utilisateurs de créer un groupe de voyage",
+                "description": "Permet aux user de créé un groupe de groupeVoyage",
                 "consumes": [
                     "application/json"
                 ],
@@ -1276,7 +1191,7 @@ const docTemplate = `{
                 "tags": [
                     "Groupe Voyage"
                 ],
-                "summary": "Créé un groupe de voyage",
+                "summary": "Créé un groupe de groupeVoyage",
                 "parameters": [
                     {
                         "type": "string",
@@ -1287,8 +1202,8 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Données du groupe",
-                        "name": "group",
+                        "description": "Mise à jour du budget",
+                        "name": "budget",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -1309,14 +1224,8 @@ const docTemplate = `{
                             "$ref": "#/definitions/gin.H"
                         }
                     },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/gin.H"
-                        }
-                    },
                     "404": {
-                        "description": "Voyage non trouvé",
+                        "description": "Bad request",
                         "schema": {
                             "$ref": "#/definitions/gin.H"
                         }
@@ -2294,9 +2203,6 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "integer"
-                },
-                "voyage": {
-                    "$ref": "#/definitions/models.Voyage"
                 }
             }
         },
@@ -2369,12 +2275,6 @@ const docTemplate = `{
                 },
                 "username": {
                     "type": "string"
-                },
-                "voyage": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Voyage"
-                    }
                 }
             }
         },
@@ -2396,9 +2296,6 @@ const docTemplate = `{
                 "destination": {
                     "type": "string"
                 },
-                "groupe_voyage_id": {
-                    "type": "integer"
-                },
                 "hotels": {
                     "type": "array",
                     "items": {
@@ -2407,9 +2304,6 @@ const docTemplate = `{
                 },
                 "id": {
                     "description": "gorm.Model",
-                    "type": "integer"
-                },
-                "user_id": {
                     "type": "integer"
                 }
             }
@@ -2433,9 +2327,6 @@ const docTemplate = `{
                 },
                 "nom": {
                     "type": "string"
-                },
-                "voyage_id": {
-                    "type": "integer"
                 }
             }
         },

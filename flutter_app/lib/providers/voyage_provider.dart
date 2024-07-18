@@ -7,7 +7,6 @@ import 'package:flutter_app/config/app_config.dart';
 import 'package:flutter_app/models/hotel_model.dart';
 import '../models/activity_model.dart';
 import '../models/voyage_model.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -22,47 +21,31 @@ class VoyageProvider extends ChangeNotifier {
 
   Future<List<Voyage>> fetchData() async {
     try {
-      String? token = await _storage.read(key: 'auth_token');
-      if(token != null){
-        isLoading = true;
-        notifyListeners();
-        
-         final url = isSecure
+      isLoading = true;
+      notifyListeners();
+
+      final url = isSecure
           ? Uri.https(apiAuthority, '/api/voyages')
           : Uri.http(apiAuthority, '/api/voyages');
-  
+      final response = await http.get(url);
+      print('Fetching data from $url');
+      print('Response body: ${response.body}');
 
-
-        final response = await http.get(
-          url,
-            headers:{
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer $token'
-            }
-        );
-        // print('Fetching data from $url');
-        // print('Response body: ${response.body}');
-
-        if (response.statusCode == 200) {
-          final responseData = json.decode(response.body);
-          if (responseData is List) {
-            _voyages = responseData
-                .map((voyageJson) => Voyage.fromJson(voyageJson))
-                .toList();
-          } else if (responseData is Map && responseData.containsKey('data')) {
-            _voyages = (responseData['data'] as List)
-                .map((voyageJson) => Voyage.fromJson(voyageJson))
-                .toList();
-          } else {
-            throw Exception('Unexpected response format');
-          }
-
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        if (responseData is List) {
+          _voyages = responseData
+              .map((voyageJson) => Voyage.fromJson(voyageJson))
+              .toList();
+        } else if (responseData is Map && responseData.containsKey('data')) {
+          _voyages = (responseData['data'] as List)
+              .map((voyageJson) => Voyage.fromJson(voyageJson))
+              .toList();
         } else {
-          throw Exception('Failed to load voyages');
+          throw Exception('Unexpected response format');
         }
-      }else{
-        print('Aucun token trouvé');
-        throw Exception('No token found');
+      } else {
+        throw Exception('Failed to load voyages');
       }
       return _voyages;
     } catch (e) {
@@ -76,42 +59,31 @@ class VoyageProvider extends ChangeNotifier {
 
   Future<void> addVoyage(Voyage voyage) async {
     try {
+      final jsonData = json.encode(voyage.toJson());
+      print('Données envoyées : $jsonData');
 
-      String? token = await _storage.read(key: 'auth_token');
-      if(token != null){
-        final jsonData = json.encode(voyage.toJson());
-        print('Données envoyées : $jsonData');
-        
-         final url = isSecure
+      final url = isSecure
           ? Uri.https(apiAuthority, '/api/voyages')
           : Uri.http(apiAuthority, '/api/voyages');
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonData,
+      );
 
-        final response = await http.post(
-           url,
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token'
-          },
-          body: jsonData,
-        );
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        ('Réponse reçue : $responseData');
 
-        if (response.statusCode == 200) {
-          final responseData = json.decode(response.body);
-          // print('Réponse reçue : $responseData');
+        final Voyage newVoyage = Voyage.fromJson(responseData['data']);
+        print('Nouveau voyage créé : ${newVoyage.id}');
 
-          final Voyage newVoyage = Voyage.fromJson(responseData['data']);
-          // print('Nouveau voyage créé : ${newVoyage.id}');
-
-          _voyages.add(newVoyage);
-          notifyListeners();
-        } else {
-          print('Erreur lors de l\'ajout du voyage : ${response.body}');
-          throw Exception(
-              'Erreur lors de l\'ajout du voyage : ${response.statusCode}');
-        }
-      }else{
-        print('Aucun token trouvé');
-        throw Exception('No token found');
+        _voyages.add(newVoyage);
+        notifyListeners();
+      } else {
+        print('Erreur lors de l\'ajout du voyage : ${response.body}');
+        throw Exception(
+            'Erreur lors de l\'ajout du voyage : ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('Erreur lors de l\'ajout du voyage : $e');
@@ -120,34 +92,22 @@ class VoyageProvider extends ChangeNotifier {
 
   Future<void> updateVoyage(Voyage voyage, int activityId) async {
     try {
-
-      String? token = await _storage.read(key: 'auth_token');
-      if(token != null){
-        Activity activity =
-        voyage.activities.firstWhere((activity) => activity.id == activityId);
-        activity.status = ActivityStatus.done;
-        
-          final url = isSecure
+      Activity activity =
+          voyage.activities.firstWhere((activity) => activity.id == activityId);
+      activity.status = ActivityStatus.done;
+      final url = isSecure
           ? Uri.https(apiAuthority, '/api/voyages')
           : Uri.http(apiAuthority, '/api/voyages');
-        
-        http.Response response = await http.put(
-          url),
-          body: json.encode(
-            voyage.toJson(),
-          ),
-          headers: {
-            'Content-type': 'application/json',
-            'Authorization': 'Bearer $token'
-          },
-        );
-        if (response.statusCode != 200) {
-          activity.status = ActivityStatus.ongoing;
-          throw const HttpException('error');
-        }
-      }else{
-        print('Aucun token trouvé');
-        throw Exception('No token found');
+      http.Response response = await http.put(
+        url,
+        body: json.encode(
+          voyage.toJson(),
+        ),
+        headers: {'Content-type': 'application/json'},
+      );
+      if (response.statusCode != 200) {
+        activity.status = ActivityStatus.ongoing;
+        throw const HttpException('error');
       }
       notifyListeners();
     } catch (e) {
@@ -157,37 +117,23 @@ class VoyageProvider extends ChangeNotifier {
 
   Future<void> updateVoyageHotel(Voyage voyage, int hotelId) async {
     try {
-
-      String? token = await _storage.read(key: 'auth_token');
-      if(token != null){
-        Hotel hotel =
-        voyage.hotels.firstWhere((hotel) => hotel.id == hotelId);
-        hotel.status = HotelStatus.done;
-        
-        final url = isSecure
+      Hotel hotel = voyage.hotels.firstWhere((hotel) => hotel.id == hotelId);
+      hotel.status = HotelStatus.done;
+      final url = isSecure
           ? Uri.https(apiAuthority, '/api/voyages/hotel')
           : Uri.http(apiAuthority, '/api/voyages/hotel');
-        
-        http.Response response = await http.put(
-          url,
-          body: json.encode(
-            voyage.toJson(),
-          ),
-          headers: {
-            'Content-type': 'application/json',
-            'Authorization': 'Bearer $token'
-          },
-        );
-        if (response.statusCode != 200) {
-          hotel.status = HotelStatus.ongoing;
-          throw const HttpException('error');
-        }
-        notifyListeners();
-      }else{
-        print('Aucun token trouvé');
-        throw Exception('No token found');
-
+      http.Response response = await http.put(
+        url,
+        body: json.encode(
+          voyage.toJson(),
+        ),
+        headers: {'Content-type': 'application/json'},
+      );
+      if (response.statusCode != 200) {
+        hotel.status = HotelStatus.ongoing;
+        throw const HttpException('error');
       }
+      notifyListeners();
     } catch (e) {
       rethrow;
     }

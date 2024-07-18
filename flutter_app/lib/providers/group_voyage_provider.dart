@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_app/config/app_config.dart';
 import 'package:flutter_app/models/groupe_model.dart';
@@ -7,18 +8,12 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class GroupVoyageProvider extends ChangeNotifier {
-
-  final String host = "10.0.2.2";
-  final FlutterSecureStorage _storage = FlutterSecureStorage();
-  List<Groupe> _groupes = [];
-  UnmodifiableListView<Groupe> get groupes => UnmodifiableListView(_groupes)
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   final apiAuthority = AppConfig.getApiAuthority();
   final isSecure = AppConfig.isSecure();
   List<Groupe> _groupes = [];
   UnmodifiableListView<Groupe> get groupes => UnmodifiableListView(_groupes);
 
-  
   Future<List<Groupe>> fetchGroupes() async {
     try {
       final token = await _storage.read(key: 'auth_token');
@@ -58,9 +53,9 @@ class GroupVoyageProvider extends ChangeNotifier {
       rethrow;
     }
   }
-        
-        
-  Future<bool> CreateGroup(double budget, String nom, int? voyageId) async {
+
+  //Créer un groupe
+  Future<bool> CreateGroup(double budget, String nom) async {
     try {
       final url = isSecure
           ? Uri.https(apiAuthority, '/create_group')
@@ -72,13 +67,12 @@ class GroupVoyageProvider extends ChangeNotifier {
               'Content-Type': 'application/json',
               'Authorization': 'Bearer $token'
             },
-          body: jsonEncode({
-            'budget': budget,
-            'nom': nom,
-            'voyage_id': voyageId
-          }),
-        );
-        return response.statusCode == 200;
+            body: jsonEncode({'budget': budget, 'nom': nom}));
+        if (response.statusCode == 200) {
+          return true;
+        } else {
+          return false;
+        }
       } else {
         throw Exception('User not logged in');
       }
@@ -86,7 +80,6 @@ class GroupVoyageProvider extends ChangeNotifier {
       rethrow;
     }
   }
-
 
   //Update le budget
   Future<bool> UpdateBudget(int ID, double budget) async {
@@ -118,16 +111,13 @@ class GroupVoyageProvider extends ChangeNotifier {
     }
   }
 
-  // Récupérer les groupes par user
+  //Récupérer les groupes par user
   Future<void> GetGroups() async {
-
-    try {
-       
-    String? token = await _storage.read(key: 'auth_token');
-    if (token != null) {
-        final url = isSecure
+    final url = isSecure
         ? Uri.https(apiAuthority, '/groupes/my_groups')
         : Uri.http(apiAuthority, '/groupes/my_groups');
+    String? token = await _storage.read(key: 'auth_token');
+    if (token != null) {
       final response = await http.get(
         url,
         headers: {
@@ -135,32 +125,30 @@ class GroupVoyageProvider extends ChangeNotifier {
           'Authorization': 'Bearer $token'
         },
       );
-        if (response.statusCode == 200) {
-          final responseData = jsonDecode(response.body);
-          if (responseData is List) {
-            _groupes = responseData.map((groupeJson) => Groupe.fromJson(groupeJson)).toList();
-          } else if (responseData is Map && responseData.containsKey('data')) {
-            _groupes = (responseData['data'] as List).map((groupJson) => Groupe.fromJson(groupJson)).toList();
-          } else {
-            throw Exception('Unexpected response format');
-          }
+
+      print(url);
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        if (responseData is List) {
+          _groupes = responseData
+              .map((groupeJson) => Groupe.fromJson(groupeJson))
+              .toList();
         } else {
-          throw Exception('No groups found');
+          throw Exception('Unexpected response format');
         }
+        notifyListeners();
       } else {
-        throw Exception('User not logged in');
+        throw Exception('No groups found');
       }
-    } catch (e) {
-      rethrow;
-    } finally {
-      notifyListeners();
+    } else {
+      throw Exception('User not logged in');
     }
   }
 
   Groupe getGroupeById(int id) {
     return _groupes.firstWhere((groupe) => groupe.id == id);
   }
-
 
   //Groupe par ID
   Future<Map<String, dynamic>> GetGroupByID(int ID) async {
@@ -173,7 +161,6 @@ class GroupVoyageProvider extends ChangeNotifier {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token'
       });
-
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
@@ -184,7 +171,7 @@ class GroupVoyageProvider extends ChangeNotifier {
     }
   }
 
-        
+  //Inviter un user
   Future<bool> SendInvitation(int ID, String email) async {
     try {
       String? token = await _storage.read(key: 'auth_token');
@@ -200,7 +187,7 @@ class GroupVoyageProvider extends ChangeNotifier {
               'Authorization': 'Bearer $token'
             },
             body: jsonEncode({"email": email}));
-        if (response.statusCode == 200) {
+        if (response.statusCode == 201) {
           return true;
         } else {
           return false;
@@ -213,8 +200,28 @@ class GroupVoyageProvider extends ChangeNotifier {
     }
   }
 
-        
-        
+  Future<void> JoinGroup(int _gorupId, String? _token) async {
+    try {
+      final url = isSecure
+          ? Uri.https(apiAuthority, '/groupes/$_gorupId/join?token=$_token')
+          : Uri.http(apiAuthority, '/groupes/$_gorupId/join?token=$_token');
+
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          //'Authorization': 'Bearer $authToken',
+        },
+      );
+      if (response.statusCode != 200) {
+        throw Exception('Erreur lors de la tentative de rejoindre le groupe');
+      }
+      notifyListeners();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<bool> deleteGroup(int groupeId) async {
     try {
       final token = await _storage.read(key: 'auth_token');
@@ -241,7 +248,6 @@ class GroupVoyageProvider extends ChangeNotifier {
       }
     } catch (e) {
       print('Error deleting groupe: $e');
-
       rethrow;
     }
   }

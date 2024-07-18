@@ -6,7 +6,7 @@ type SignupRequest struct {
 	LastName  string `form:"last_name" json:"last_name" binding:"required"`
 	Address   string `form:"address" json:"address" binding:"required"`
 	Email     string `form:"email" json:"email" binding:"required"`
-	Photo     string `form:"photo" json:"photo"`
+	Photo     string `form:"photo" json:"photo"swag init —parseDependency —parseInteral —parseDepth 1`
 	Username  string `json:"username" binding:"required"`
 	Password  string `json:"password" binding:"required"`
 }
@@ -34,9 +34,8 @@ type InvitationGroupRequest struct {
 }
 
 type GroupRequest struct {
-	Budget   float32 `json:"budget"`
-	Nom      string  `json:"nom"`
-	VoyageID uint    `json:"voyage_id"`
+	Budget float32 `json:"budget"`
+	Nom    string  `json:"nom"`
 }
 
 type UpdateBudgetRequest struct {

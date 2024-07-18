@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/views/groupe_detail/widget/group_hotels_activites.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/io.dart';
 import '../../models/groupe_model.dart';
@@ -57,11 +56,7 @@ class GroupeDetailScreen extends StatelessWidget {
                         Text('Nom: ${groupe.nom}', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                         SizedBox(height: 8),
                         Text('Budget: ${groupe.budget?.toString() ?? 'Pas de budget'}'),
-                        SizedBox(height: 24),
-                        GroupHotelsActivites(
-                            groupeId: groupeId,
-                            //voyageId: voyageId
-                        )
+                        SizedBox(height: 16),
                       ],
                     ),
                   ),

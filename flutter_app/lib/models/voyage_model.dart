@@ -4,24 +4,20 @@ import 'package:intl/intl.dart';
 import 'activity_model.dart';
 
 class Voyage {
-  final int? id;
+  int? id;
   String destination;
   List<Activity> activities;
   List<Hotel> hotels;
   DateTime? dateAller;
   DateTime? dateRetour;
-  final int? userId;
-
   Voyage({
-    this.id,
     required this.destination,
     required this.activities,
     required this.hotels,
     this.dateAller,
     this.dateRetour,
-    this.userId,
+    this.id,
   });
-
 
   @override
   String toString() {
@@ -29,7 +25,6 @@ class Voyage {
   }
 
   factory Voyage.fromJson(Map<String, dynamic> json) {
-
     var activitiesFromJson = json['activities'] as List;
     List<Activity> activityList = activitiesFromJson
         .map((activityJson) =>
@@ -43,16 +38,11 @@ class Voyage {
 
     return Voyage(
       id: json['id'],
-      destination: json['destination'] ?? '',
-      activities: json['activities'] != null
-          ? (json['activities'] as List).map((i) => Activity.fromJson(i)).toList()
-          : [],
-      hotels: json['hotels'] != null
-          ? (json['hotels'] as List).map((i) => Hotel.fromJson(i)).toList()
-          : [],
+      activities: activityList,
+      hotels: hotelList,
       dateAller: DateTime.parse(json['dateAller']),
       dateRetour: DateTime.parse(json['dateRetour']),
-      userId: json['user_id'],
+      destination: json['destination'],
     );
   }
   Map<String, dynamic> toJson() {

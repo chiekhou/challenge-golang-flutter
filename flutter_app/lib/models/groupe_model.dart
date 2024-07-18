@@ -1,36 +1,48 @@
-import 'voyage_model.dart';
+import 'member_model.dart';
 
 class Groupe {
+  int id;
+  String nom;
+  double? budget;
+  int userId;
+  String? cover;
+  List<Member> members;
 
-  final int id;
-  final String nom;
-  final double budget;
-  final int userId;
-  final List<dynamic> members;
-  final dynamic chats;
-  final Voyage voyage;
+  Groupe(
+      {required this.id,
+      required this.nom,
+      required this.userId,
+      this.cover,
+      this.budget,
+      required this.members});
 
-  Groupe({
-    required this.id,
-    required this.nom,
-    required this.budget,
-    required this.userId,
-    required this.members,
-    this.chats,
-    required this.voyage,
-  });
-
+  @override
+  String toString() {
+    return 'Groupe{id: $id, nom: $nom, budget: $budget, userId: $userId, members: $members}';
+  }
 
   factory Groupe.fromJson(Map<String, dynamic> json) {
-
+    var membersFromJson = json['members'] as List;
+    List<Member> memberList = membersFromJson
+        .map((memberJson) => Member.fromJson(memberJson))
+        .toList();
     return Groupe(
       id: json['id'],
-      nom: json['nom'],
-      budget: (json['budget'] as num).toDouble(),
+      nom: json['nom'] ?? '',
+      budget: (json['budget'] as num?)?.toDouble(),
       userId: json['user_id'],
-      members: json['members'] ?? [],
-      chats: json['chats'],
-      voyage: Voyage.fromJson(json['voyage']),
+      members: memberList,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'nom': nom,
+      'user_id': userId,
+      'cover': cover,
+      'budget': budget,
+      'members': members.map((member) => member.toJson()).toList(),
+    };
   }
 }
