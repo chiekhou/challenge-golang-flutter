@@ -95,7 +95,7 @@ class AdminProvider with ChangeNotifier {
         );
 
         if (response.statusCode == 204) {
-          return true; // Suppression réussie
+          return true;
         } else {
           print('Failed to delete user: ${response.statusCode}');
           return false;

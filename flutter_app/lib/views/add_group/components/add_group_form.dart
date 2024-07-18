@@ -20,12 +20,15 @@ class _AddGroupFormState extends State<AddGroupForm> {
   void _submit() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      final groupVoyageProvider = Provider.of<GroupVoyageProvider>(context, listen: false);
-      bool success = await groupVoyageProvider.CreateGroup(_budget, _nom, _voyageId);
+      final groupVoyageProvider =
+          Provider.of<GroupVoyageProvider>(context, listen: false);
+      bool success =
+          await groupVoyageProvider.CreateGroup(_budget, _nom, _voyageId);
       if (success) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (BuildContext context) => GroupevoyageScreen()),
+          MaterialPageRoute(
+              builder: (BuildContext context) => GroupevoyageScreen()),
         );
       } else {
         showDialog(
