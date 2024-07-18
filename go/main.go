@@ -58,7 +58,6 @@ func main() {
 
 	server.Use(cors.New(config))
 
-	// Configurer le chemin pour servir les fichiers statiques
 	server.Static("/images", "./assets/images")
 
 	routes.RegisterRoutes(server)
