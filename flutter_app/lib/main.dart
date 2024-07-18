@@ -42,7 +42,7 @@ import './views/home/home_view.dart';
 Future main() async {
   await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
-  await UniService.init();
+  //await UniService.init();
   //Initialisation des notifications
   await AwesomeNotifications().initialize(null, [
     NotificationChannel(
