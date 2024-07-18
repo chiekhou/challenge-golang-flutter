@@ -850,7 +850,6 @@ paths:
       - application/json
       description: Add by JSON groupeVoyage
       parameters:
-
       - default: Bearer Add access token here
         description: Insert your access token
         in: header
@@ -858,6 +857,12 @@ paths:
         required: true
         type: string
       - description: Add voyage
+        in: body
+        name: voyage
+        required: true
+        schema:
+          $ref: '#/definitions/models.Voyage'
+      - description: Add groupeVoyage
         in: body
         name: groupeVoyage
         required: true
@@ -882,10 +887,9 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
-
       security:
       - Bearer: []
-      summary: Add a voyage
+      summary: Add a groupeVoyage
       tags:
       - Voyages
     put:
@@ -895,7 +899,7 @@ paths:
       parameters:
       - description: Voyage data
         in: body
-        name: groupeVoyage
+        name: voyage
         required: true
         schema:
           $ref: '#/definitions/models.Voyage'
@@ -965,11 +969,9 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
-
       security:
       - Bearer: []
-      summary: Show a voyage
-
+      summary: Show a groupeVoyage
       tags:
       - Voyages
   /api/voyages/delete/{id}:
@@ -1009,10 +1011,9 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
-
       security:
       - Bearer: []
-      summary: Delete a voyage
+      summary: Delete a groupeVoyage
       tags:
       - Voyages
   /api/voyages/hotel:
@@ -1061,7 +1062,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Permet aux utilisateurs de créer un groupe de voyage
+      description: Permet aux user de créé un groupe de groupeVoyage
       parameters:
       - default: Bearer Add access token here
         description: Insert your access token
@@ -1104,7 +1105,7 @@ paths:
             $ref: '#/definitions/gin.H'
       security:
       - Bearer: []
-      summary: Créé un groupe de voyage
+      summary: Créé un groupe de groupeVoyage
       tags:
       - Groupe Voyage
   /forgotten_password:
@@ -1148,7 +1149,9 @@ paths:
       - Auth
   /groupes:
     get:
-      description: Récupère la liste de tous les groupes de voyage
+      description: |-
+        Permet aux utilisateurs de créer un groupe de voyage
+        Récupère la liste de tous les groupes de voyage
       parameters:
       - default: Bearer Add access token here
         description: Insert your access token

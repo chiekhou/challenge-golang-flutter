@@ -79,11 +79,11 @@ class _GroupChatState extends State<GroupChat> {
 
   void _fetchPreviousMessages() async {
     final url = isSecure
-        ? Uri.https(apiAuthority, '/api/users')
-        : Uri.http(apiAuthority, '/api/users');
+        ? Uri.https(apiAuthority, '/api/messages')
+        : Uri.http(apiAuthority, '/api/messages');
 
     final response =
-        await http.get(Uri.parse('$url/api/messages/${widget.groupeId}'));
+        await http.get(Uri.parse('$url/${widget.groupeId}'));
     if (response.statusCode == 200) {
       final List<dynamic> previousMessages = jsonDecode(response.body);
       setState(() {

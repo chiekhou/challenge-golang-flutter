@@ -47,7 +47,7 @@ class _GroupHotelsActivitesState extends State<GroupHotelsActivites> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (activities.isEmpty && hotels.isEmpty)
-            Padding(
+            const Padding(
               padding: EdgeInsets.all(32.0),
               child: Text('Aucunes activités ou hôtels enregistrés'),
             ),
@@ -84,21 +84,13 @@ class _GroupHotelsActivitesState extends State<GroupHotelsActivites> {
                       ),
                     ),
                     key: ValueKey(activity.id),
-                    child: InkWell(
-                      onTap: () => Navigator.pushNamed(
-                        context,
-                        GoogleMapView.routeName,
-                        arguments: {
-                          'activityId': activity.id,
-                          //'voyageId': voyage.id
-                        },
-                      ),
+
                       child: Card(
                         child: ListTile(
                           title: Text(activity.name),
                         ),
                       ),
-                    ),
+
                   )
                       : Card(
                     child: ListTile(

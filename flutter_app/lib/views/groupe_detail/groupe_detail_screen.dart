@@ -11,7 +11,7 @@ import 'widget/groupchat.dart';
 class GroupeDetailScreen extends StatelessWidget {
   final int groupeId;
   final TextEditingController emailController = TextEditingController();
-  final String host = "10.0.2.2";
+
   final channel = IOWebSocketChannel.connect('ws://10.0.2.2:8080/ws');
 
   GroupeDetailScreen({

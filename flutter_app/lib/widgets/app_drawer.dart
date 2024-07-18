@@ -137,7 +137,7 @@ class _AppDrawerState extends State<AppDrawer> {
           ),
           ListTile(
             leading: const Icon(Icons.person),
-            title: const Text('Profile'),
+            title: const Text('Profil'),
             onTap: () {
               Navigator.pushNamed(context, ProfileScreen.routeName);
             },

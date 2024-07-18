@@ -955,7 +955,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Voyage data",
-                        "name": "groupeVoyage",
+                        "name": "voyage",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -999,14 +999,12 @@ const docTemplate = `{
                 }
             },
             "post": {
-
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Add by JSON voyage",
-
+                "description": "Add by JSON groupeVoyage",
                 "consumes": [
                     "application/json"
                 ],
@@ -1019,7 +1017,6 @@ const docTemplate = `{
                 "summary": "Add a groupeVoyage",
                 "parameters": [
                     {
-
                         "type": "string",
                         "default": "Bearer Add access token here",
                         "description": "Insert your access token",
@@ -1030,6 +1027,15 @@ const docTemplate = `{
                     {
                         "description": "Add voyage",
                         "name": "voyage",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Voyage"
+                        }
+                    },
+                    {
+                        "description": "Add groupeVoyage",
+                        "name": "groupeVoyage",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -1067,14 +1073,12 @@ const docTemplate = `{
         },
         "/api/voyages/delete/{id}": {
             "delete": {
-
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Delete by voyage ID",
-
+                "description": "Delete by groupeVoyage ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -1266,7 +1270,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Permet aux utilisateurs de créer un groupe de voyage",
+                "description": "Permet aux user de créé un groupe de groupeVoyage",
                 "consumes": [
                     "application/json"
                 ],
@@ -1276,7 +1280,7 @@ const docTemplate = `{
                 "tags": [
                     "Groupe Voyage"
                 ],
-                "summary": "Créé un groupe de voyage",
+                "summary": "Créé un groupe de groupeVoyage",
                 "parameters": [
                     {
                         "type": "string",
@@ -1401,7 +1405,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Récupère la liste de tous les groupes de voyage",
+                "description": "Permet aux utilisateurs de créer un groupe de voyage\nRécupère la liste de tous les groupes de voyage",
                 "produces": [
                     "application/json"
                 ],
