@@ -29,18 +29,6 @@ class Voyage {
   }
 
   factory Voyage.fromJson(Map<String, dynamic> json) {
-
-    var activitiesFromJson = json['activities'] as List;
-    List<Activity> activityList = activitiesFromJson
-        .map((activityJson) =>
-            Activity.fromJson(activityJson as Map<String, dynamic>))
-        .toList();
-
-    var hotelsFromJson = json['hotels'] as List;
-    List<Hotel> hotelList = hotelsFromJson
-        .map((hotelJson) => Hotel.fromJson(hotelJson as Map<String, dynamic>))
-        .toList();
-
     return Voyage(
       id: json['id'],
       destination: json['destination'] ?? '',
@@ -55,6 +43,7 @@ class Voyage {
       userId: json['user_id'],
     );
   }
+
   Map<String, dynamic> toJson() {
     final DateFormat formatter = DateFormat("yyyy-MM-ddTHH:mm:ss'Z'");
     final String? dateFormattedA =
