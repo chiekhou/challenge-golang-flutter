@@ -19,8 +19,8 @@ Inviter des personnes : Les utilisateurs peuvent inviter d'autres personnes à r
 
 | Nom         | Prenom   | Pseudo Git     |
 |-------------|----------|----------------|
-| Gomet       | Eddy     | Teyo01         |
-| Youssouf     | Nourdine | mlaurie       |
+| Gomet       | Eddy     | EddyGmt        |
+| Youssouf    | Nourdine | nono231000     |
 | Traore      | Chiekhou | chiekhou       |
 
 
@@ -48,6 +48,7 @@ Pour lancer le serveur sur le localhost:8080:
 2) go run server main.go
 3) go run internal/migrate/migrate.go (pour executer des migrations)
 4) swag init --parseDependency --parseInternal --parseDepth 1
+5) go test / go test -v
 
 
 Pour le front se rendre dans le dossier FLUTTER-APP:
