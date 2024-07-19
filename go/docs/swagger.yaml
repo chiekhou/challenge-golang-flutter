@@ -85,6 +85,8 @@ definitions:
         type: string
       user_id:
         type: integer
+      voyage:
+        $ref: '#/definitions/models.Voyage'
     type: object
   models.Hotel:
     properties:
@@ -133,6 +135,10 @@ definitions:
         type: integer
       username:
         type: string
+      voyage:
+        items:
+          $ref: '#/definitions/models.Voyage'
+        type: array
     type: object
   models.Voyage:
     properties:
@@ -146,12 +152,16 @@ definitions:
         type: string
       destination:
         type: string
+      groupe_voyage_id:
+        type: integer
       hotels:
         items:
           $ref: '#/definitions/models.Hotel'
         type: array
       id:
         description: gorm.Model
+        type: integer
+      user_id:
         type: integer
     type: object
   requests.EmailRequest:
@@ -167,6 +177,8 @@ definitions:
         type: number
       nom:
         type: string
+      voyage_id:
+        type: integer
     type: object
   requests.LoginRequest:
     properties:
@@ -180,10 +192,16 @@ definitions:
     type: object
   requests.ResetPasswordRequest:
     properties:
+      new_password:
+        type: string
       password:
         type: string
+      token:
+        type: string
     required:
+    - new_password
     - password
+    - token
     type: object
   requests.SignupRequest:
     properties:
@@ -222,6 +240,23 @@ definitions:
 info:
   contact: {}
 paths:
+  /:
+    get:
+      consumes:
+      - application/json
+      description: Renvoie un message JSON indiquant que le déploiement a réussi
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Affiche un message de déploiement réussi
+      tags:
+      - déploiement
   /Signup:
     post:
       consumes:
@@ -369,6 +404,12 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.Destination'
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -388,6 +429,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/destinations.ErrorResponse'
+      security:
+      - Bearer: []
       summary: Add a destination
       tags:
       - Destinations
@@ -475,6 +518,12 @@ paths:
         name: id
         required: true
         type: integer
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -494,6 +543,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/destinations.ErrorResponse'
+      security:
+      - Bearer: []
       summary: Delete a destination
       tags:
       - Destinations
@@ -780,6 +831,13 @@ paths:
       consumes:
       - application/json
       description: Get Voyages
+      parameters:
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -799,17 +857,31 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
+      security:
+      - Bearer: []
       summary: List Voyages
       tags:
       - Voyages
     post:
       consumes:
       - application/json
-      description: Add by JSON voyage
+      description: Add by JSON groupeVoyage
       parameters:
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: Add voyage
         in: body
         name: voyage
+        required: true
+        schema:
+          $ref: '#/definitions/models.Voyage'
+      - description: Add groupeVoyage
+        in: body
+        name: groupeVoyage
         required: true
         schema:
           $ref: '#/definitions/models.Voyage'
@@ -832,7 +904,9 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
-      summary: Add a voyage
+      security:
+      - Bearer: []
+      summary: Add a groupeVoyage
       tags:
       - Voyages
     put:
@@ -846,6 +920,12 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.Voyage'
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -865,6 +945,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
+      security:
+      - Bearer: []
       summary: Update a trip
       tags:
       - Voyages
@@ -879,6 +961,12 @@ paths:
         name: id
         required: true
         type: integer
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -898,14 +986,16 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
-      summary: Show a voyage
+      security:
+      - Bearer: []
+      summary: Show a groupeVoyage
       tags:
       - Voyages
   /api/voyages/delete/{id}:
     delete:
       consumes:
       - application/json
-      description: Delete by voyage ID
+      description: Delete by groupeVoyage ID
       parameters:
       - description: Voyage ID
         format: int64
@@ -913,6 +1003,12 @@ paths:
         name: id
         required: true
         type: integer
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -932,7 +1028,9 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
-      summary: Delete a voyage
+      security:
+      - Bearer: []
+      summary: Delete a groupeVoyage
       tags:
       - Voyages
   /api/voyages/hotel:
@@ -947,6 +1045,12 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/models.Voyage'
+      - default: Bearer Add access token here
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -966,6 +1070,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/voyages.ErrorResponse'
+      security:
+      - Bearer: []
       summary: Update a trip
       tags:
       - Voyages
@@ -981,9 +1087,9 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: Mise à jour du budget
+      - description: Données du groupe
         in: body
-        name: budget
+        name: group
         required: true
         schema:
           $ref: '#/definitions/requests.GroupRequest'
@@ -998,8 +1104,12 @@ paths:
           description: Bad request
           schema:
             $ref: '#/definitions/gin.H'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/gin.H'
         "404":
-          description: Bad request
+          description: Voyage non trouvé
           schema:
             $ref: '#/definitions/gin.H'
         "409":
@@ -1056,7 +1166,9 @@ paths:
       - Auth
   /groupes:
     get:
-      description: Récupère la liste de tous les groupes de voyage
+      description: |-
+        Permet aux utilisateurs de créer un groupe de voyage
+        Récupère la liste de tous les groupes de voyage
       parameters:
       - default: Bearer Add access token here
         description: Insert your access token

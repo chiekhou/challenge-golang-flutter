@@ -80,6 +80,16 @@ class S {
     );
   }
 
+  /// `Profile`
+  String get profile {
+    return Intl.message(
+      'Profile',
+      name: 'profile',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Logout`
   String get deconnexion {
     return Intl.message(
@@ -260,20 +270,20 @@ class S {
     );
   }
 
-  /// `Faeture Update`
+  /// `Feature Update`
   String get message_function_desactivate {
     return Intl.message(
-      'Faeture Update',
+      'Feature Update',
       name: 'message_function_desactivate',
       desc: '',
       args: [],
     );
   }
 
-  /// `Mise à jour de la fonctionnalité`
+  /// `Update feature`
   String get alert_update_function {
     return Intl.message(
-      'Mise à jour de la fonctionnalité',
+      'Update feature',
       name: 'alert_update_function',
       desc: '',
       args: [],
@@ -285,6 +295,216 @@ class S {
     return Intl.message(
       'Failed to update feature',
       name: 'echec_update_function',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `List of activities`
+  String get title_activities {
+    return Intl.message(
+      'List of activities',
+      name: 'title_activities',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `List of Hotels`
+  String get title_hotels {
+    return Intl.message(
+      'List of Hotels',
+      name: 'title_hotels',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Activity deleted`
+  String get delete_activite {
+    return Intl.message(
+      'Activity deleted',
+      name: 'delete_activite',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hotel deleted`
+  String get delete_hotel {
+    return Intl.message(
+      'Hotel deleted',
+      name: 'delete_hotel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Date to Go`
+  String get date_aller {
+    return Intl.message(
+      'Date to Go',
+      name: 'date_aller',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Return Date`
+  String get date_retour {
+    return Intl.message(
+      'Return Date',
+      name: 'date_retour',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select a date`
+  String get selected_date {
+    return Intl.message(
+      'Select a date',
+      name: 'selected_date',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Amount/person`
+  String get montant_personne {
+    return Intl.message(
+      'Amount/person',
+      name: 'montant_personne',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Esgi-Trip`
+  String get title_home {
+    return Intl.message(
+      'Esgi-Trip',
+      name: 'title_home',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search for a city`
+  String get recherche_ville {
+    return Intl.message(
+      'Search for a city',
+      name: 'recherche_ville',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No result`
+  String get resultat {
+    return Intl.message(
+      'No result',
+      name: 'resultat',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No journey is over yet`
+  String get statut_voyage {
+    return Intl.message(
+      'No journey is over yet',
+      name: 'statut_voyage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `In progress`
+  String get statut_in_progress {
+    return Intl.message(
+      'In progress',
+      name: 'statut_in_progress',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Finished`
+  String get statut_terminer {
+    return Intl.message(
+      'Finished',
+      name: 'statut_terminer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Missing or invalid arguments`
+  String get args_manquants_invalides {
+    return Intl.message(
+      'Missing or invalid arguments',
+      name: 'args_manquants_invalides',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invalid arguments`
+  String get args_invalides {
+    return Intl.message(
+      'Invalid arguments',
+      name: 'args_invalides',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `DestinationProvider not found`
+  String get destination_prov_not_found {
+    return Intl.message(
+      'DestinationProvider not found',
+      name: 'destination_prov_not_found',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Destination not found`
+  String get destination_not_found {
+    return Intl.message(
+      'Destination not found',
+      name: 'destination_not_found',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Future`
+  String get voyage_futur {
+    return Intl.message(
+      'Future',
+      name: 'voyage_futur',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Past`
+  String get voyage_passed {
+    return Intl.message(
+      'Past',
+      name: 'voyage_passed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No travel at the moment`
+  String get aucun_voyage {
+    return Intl.message(
+      'No travel at the moment',
+      name: 'aucun_voyage',
       desc: '',
       args: [],
     );

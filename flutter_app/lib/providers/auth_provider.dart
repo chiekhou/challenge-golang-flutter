@@ -1,31 +1,26 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_app/config/app_config.dart';
+import 'package:flutter_app/models/user_model.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/member_model.dart';
 
 class AuthProvider extends ChangeNotifier {
-  final String host = "localhost";
   final FlutterSecureStorage _storage = FlutterSecureStorage();
-  final String _baseUrl = "http://localhost:8080"; // URL de votre backend
+  final apiAuthority = AppConfig.getApiAuthority();
+  final isSecure = AppConfig.isSecure();
+  User? _currentUser;
 
-  bool get isAuthenticated => _storage.read(key: 'auth_token') != null;
-  bool get isAdmin => true;
-
-  //Appel Api register
-  Future<bool> Register({
-    required String address,
-    required String email,
-    required String firstname,
-    required String lastname,
-    required String password,
-    required String username,
-    required String photo,
-  }) async {
+  Future<bool> Register(String address, String email, String firstname,
+      String lastname, String password, String username, String photo) async {
     try {
+      final url = isSecure
+          ? Uri.https(apiAuthority, '/Signup')
+          : Uri.http(apiAuthority, '/Signup');
       final response = await http.post(
-        Uri.parse('http://$host:8080/Signup'),
+        url,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -53,9 +48,13 @@ class AuthProvider extends ChangeNotifier {
   }
 
   //Appel APi pour se loguer
-  Future<bool> login(String email, String password) async {
+  Future<bool> Login(String email, String password) async {
     try {
-      final response = await http.post(Uri.parse('http://$host:8080/login'),
+      final url = isSecure
+          ? Uri.https(apiAuthority, '/login')
+          : Uri.http(apiAuthority, '/login');
+
+      final response = await http.post(url,
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({'email': email, 'password': password}));
 
@@ -87,8 +86,11 @@ class AuthProvider extends ChangeNotifier {
       print('Token récupéré: $token');
 
       if (token != null) {
+        final url = isSecure
+            ? Uri.https(apiAuthority, '/logout')
+            : Uri.http(apiAuthority, '/logout');
         final response = await http.post(
-          Uri.parse('http://$host:8080/logout'),
+          url,
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $token',
@@ -120,8 +122,11 @@ class AuthProvider extends ChangeNotifier {
   Future<Member> Profile() async {
     String? token = await _storage.read(key: 'auth_token');
     if (token != null) {
+      final url = isSecure
+          ? Uri.https(apiAuthority, '/profile')
+          : Uri.http(apiAuthority, '/profile');
       final response = await http.get(
-        Uri.parse('http://$host:8080/profile'),
+        url,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token'
@@ -139,5 +144,40 @@ class AuthProvider extends ChangeNotifier {
     } else {
       throw Exception('User not logged in');
     }
+  }
+
+  Future<User> ProfileAdmin() async {
+    String? token = await _storage.read(key: 'auth_token');
+    if (token != null) {
+      final url = isSecure
+          ? Uri.https(apiAuthority, '/profile')
+          : Uri.http(apiAuthority, '/profile');
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token'
+        },
+      );
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = jsonDecode(response.body);
+        Map<String, dynamic> userData = data['user'];
+        print(response.body);
+        print(User.fromJson(userData));
+        _currentUser = User.fromJson(userData);
+        notifyListeners();
+        return _currentUser!;
+      } else {
+        throw Exception('No profile found');
+      }
+    } else {
+      throw Exception('User not logged in');
+    }
+  }
+
+  User? get currentUser => _currentUser;
+
+  bool isAdmin() {
+    return _currentUser?.roleId == 1;
   }
 }

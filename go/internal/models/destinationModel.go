@@ -6,5 +6,5 @@ type Destination struct {
 	Name       string     `gorm:"size: 255;not null" json:"name"`
 	Image      string     `gorm:"size: 255;null" json:"image"`
 	Activities []Activity `gorm:"many2many:destination_activities; null" json:"activities"`
-	Hotels []Hotel `gorm:"many2many:destination_hotels; null" json:"hotels"`
+	Hotels     []Hotel    `gorm:"many2many:destination_hotels; null" json:"hotels"`
 }

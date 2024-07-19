@@ -4,6 +4,32 @@
         "contact": {}
     },
     "paths": {
+        "/": {
+            "get": {
+                "description": "Renvoie un message JSON indiquant que le déploiement a réussi",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "déploiement"
+                ],
+                "summary": "Affiche un message de déploiement réussi",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/Signup": {
             "post": {
                 "description": "Create a new user with the provided information",
@@ -210,6 +236,11 @@
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Add by JSON destination",
                 "consumes": [
                     "application/json"
@@ -230,6 +261,14 @@
                         "schema": {
                             "$ref": "#/definitions/models.Destination"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -262,6 +301,11 @@
         },
         "/api/destinations/delete/{id}": {
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Delete by destination ID",
                 "consumes": [
                     "application/json"
@@ -280,6 +324,14 @@
                         "description": "Destination ID",
                         "name": "id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -845,6 +897,11 @@
         },
         "/api/voyages": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Get Voyages",
                 "consumes": [
                     "application/json"
@@ -856,6 +913,16 @@
                     "Voyages"
                 ],
                 "summary": "List Voyages",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -884,6 +951,11 @@
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update a trip by ID",
                 "consumes": [
                     "application/json"
@@ -904,6 +976,14 @@
                         "schema": {
                             "$ref": "#/definitions/models.Voyage"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -934,7 +1014,12 @@
                 }
             },
             "post": {
-                "description": "Add by JSON voyage",
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Add by JSON groupeVoyage",
                 "consumes": [
                     "application/json"
                 ],
@@ -944,11 +1029,28 @@
                 "tags": [
                     "Voyages"
                 ],
-                "summary": "Add a voyage",
+                "summary": "Add a groupeVoyage",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "Add voyage",
                         "name": "voyage",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Voyage"
+                        }
+                    },
+                    {
+                        "description": "Add groupeVoyage",
+                        "name": "groupeVoyage",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -986,7 +1088,12 @@
         },
         "/api/voyages/delete/{id}": {
             "delete": {
-                "description": "Delete by voyage ID",
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Delete by groupeVoyage ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -996,7 +1103,7 @@
                 "tags": [
                     "Voyages"
                 ],
-                "summary": "Delete a voyage",
+                "summary": "Delete a groupeVoyage",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1004,6 +1111,14 @@
                         "description": "Voyage ID",
                         "name": "id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -1037,6 +1152,11 @@
         },
         "/api/voyages/hotel": {
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Update a trip by ID",
                 "consumes": [
                     "application/json"
@@ -1057,6 +1177,14 @@
                         "schema": {
                             "$ref": "#/definitions/models.Voyage"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1089,6 +1217,11 @@
         },
         "/api/voyages/{id}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "get string by ID",
                 "consumes": [
                     "application/json"
@@ -1099,13 +1232,21 @@
                 "tags": [
                     "Voyages"
                 ],
-                "summary": "Show a voyage",
+                "summary": "Show a groupeVoyage",
                 "parameters": [
                     {
                         "type": "integer",
                         "description": "Voyages ID",
                         "name": "id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "default": "Bearer Add access token here",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -1165,8 +1306,8 @@
                         "required": true
                     },
                     {
-                        "description": "Mise à jour du budget",
-                        "name": "budget",
+                        "description": "Données du groupe",
+                        "name": "group",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -1187,8 +1328,14 @@
                             "$ref": "#/definitions/gin.H"
                         }
                     },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
                     "404": {
-                        "description": "Bad request",
+                        "description": "Voyage non trouvé",
                         "schema": {
                             "$ref": "#/definitions/gin.H"
                         }
@@ -1273,7 +1420,7 @@
                         "Bearer": []
                     }
                 ],
-                "description": "Récupère la liste de tous les groupes de voyage",
+                "description": "Permet aux utilisateurs de créer un groupe de voyage\nRécupère la liste de tous les groupes de voyage",
                 "produces": [
                     "application/json"
                 ],
@@ -2166,6 +2313,9 @@
                 },
                 "user_id": {
                     "type": "integer"
+                },
+                "voyage": {
+                    "$ref": "#/definitions/models.Voyage"
                 }
             }
         },
@@ -2238,6 +2388,12 @@
                 },
                 "username": {
                     "type": "string"
+                },
+                "voyage": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Voyage"
+                    }
                 }
             }
         },
@@ -2259,6 +2415,9 @@
                 "destination": {
                     "type": "string"
                 },
+                "groupe_voyage_id": {
+                    "type": "integer"
+                },
                 "hotels": {
                     "type": "array",
                     "items": {
@@ -2267,6 +2426,9 @@
                 },
                 "id": {
                     "description": "gorm.Model",
+                    "type": "integer"
+                },
+                "user_id": {
                     "type": "integer"
                 }
             }
@@ -2290,6 +2452,9 @@
                 },
                 "nom": {
                     "type": "string"
+                },
+                "voyage_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -2311,10 +2476,18 @@
         "requests.ResetPasswordRequest": {
             "type": "object",
             "required": [
-                "password"
+                "new_password",
+                "password",
+                "token"
             ],
             "properties": {
+                "new_password": {
+                    "type": "string"
+                },
                 "password": {
+                    "type": "string"
+                },
+                "token": {
                     "type": "string"
                 }
             }

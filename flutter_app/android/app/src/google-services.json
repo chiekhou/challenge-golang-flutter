@@ -1,0 +1,29 @@
+{
+    "project_info": {
+      "project_number": "691548167630",
+      "project_id": "esgi-voyage",
+      "storage_bucket": "esgi-voyage.appspot.com"
+    },
+    "client": [
+      {
+        "client_info": {
+          "mobilesdk_app_id": "1:691548167630:android:94df5257e506079ba65f9f",
+          "android_client_info": {
+            "package_name": "com.example.flutter_app"
+          }
+        },
+        "oauth_client": [],
+        "api_key": [
+          {
+            "current_key": "AIzaSyAhznL9jIbUJDdkRfSIPF2L_YOXRrPO-8g"
+          }
+        ],
+        "services": {
+          "appinvite_service": {
+            "other_platform_oauth_client": []
+          }
+        }
+      }
+    ],
+    "configuration_version": "1"
+  }

@@ -47,15 +47,6 @@ class _HomeState extends State<HomeView> {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.title_home),
-        actions: <Widget>[
-          if (authProvider.isAdmin)
-            IconButton(
-              icon: const Icon(Icons.admin_panel_settings),
-              onPressed: () {
-                Navigator.pushNamed(context, '/admin/dashboard');
-              },
-            ),
-        ],
       ),
       drawer: const AppDrawer(),
       body: Column(

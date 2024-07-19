@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/user_model.dart';
 import 'package:flutter_app/providers/admin_provider.dart';
+import 'package:flutter_app/views/admin/widget/add_user.dart';
 
 class UserManagementScreen extends StatefulWidget {
   static const routeName = '/admin/users';
@@ -87,66 +88,76 @@ class _UserListWidgetState extends State<UserManagementScreen> {
               ? const Center(
                   child: Text('Il n\'y a pas d\'utilisateurs pour l\'instant'),
                 )
-              : ListView.builder(
-                  itemCount: _users.length,
-                  itemBuilder: (context, index) {
-                    User user = _users[index];
-                    return ListTile(
-                      title: Text('Votre identifiant: ${user.lastName}'),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Nom: ${user.lastName}'),
-                          Text('Prenom: ${user.firstName}'),
-                          Text('Email: ${user.email}'),
+              : Center(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: SizedBox(
+                      width: 1000,
+                      height: 600,
+                      child: DataTable(
+                        headingRowColor: MaterialStateProperty.resolveWith(
+                            (states) => Colors.grey.shade200),
+                        columns: const [
+                          DataColumn(label: Text("ID")),
+                          DataColumn(label: Text("Nom")),
+                          DataColumn(label: Text("Prénom")),
+                          DataColumn(label: Text("Email")),
+                          DataColumn(label: Text("Actions")),
                         ],
+                        rows: _users.map((user) {
+                          return DataRow(cells: [
+                            DataCell(Text(user.id.toString())),
+                            DataCell(Text(user.lastName)),
+                            DataCell(Text(user.firstName)),
+                            DataCell(Text(user.email)),
+                            DataCell(Row(
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.add_task),
+                                  onPressed: () {
+                                    Navigator.pushNamed(
+                                        context, AddUserForm.routeName);
+                                  },
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete),
+                                  color: Colors.red,
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: const Text(
+                                              'Confirmer la suppression'),
+                                          content: const Text(
+                                              'Êtes-vous sûr de vouloir supprimer cet utilisateur ?'),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              child: const Text('Annuler'),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                            TextButton(
+                                              child: const Text('Supprimer'),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                                _deleteUser(user.id);
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
+                              ],
+                            )),
+                          ]);
+                        }).toList(),
                       ),
-                      trailing: Wrap(
-                        spacing: 12,
-                        children: <Widget>[
-                          IconButton(
-                            icon: Icon(Icons.edit),
-                            onPressed: () {
-                              // Navigation vers l'écran de mise à jour de l'utilisateur
-                              // (à implémenter selon tes besoins)
-                            },
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            color: Colors.red,
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title:
-                                        const Text('Confirmer la suppression'),
-                                    content: const Text(
-                                        'Êtes-vous sûr de vouloir supprimer cet utilisateur ?'),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        child: const Text('Annuler'),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                      TextButton(
-                                        child: const Text('Supprimer'),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                          _deleteUser(user.id);
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                    ),
+                  ),
                 ),
     );
   }

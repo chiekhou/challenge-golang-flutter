@@ -1,21 +1,26 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_app/config/app_config.dart';
 import 'package:flutter_app/models/user_model.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class AdminProvider with ChangeNotifier {
-  final String host = "localhost";
   final FlutterSecureStorage _storage = FlutterSecureStorage();
-  final String _baseUrl = "http://localhost:8080";
+  final apiAuthority = AppConfig.getApiAuthority();
+  final isSecure = AppConfig.isSecure();
 
   Future<List<User>> fetchUsers() async {
     try {
       final token = await _storage.read(key: 'auth_token');
 
+      final url = isSecure
+          ? Uri.https(apiAuthority, '/api/users')
+          : Uri.http(apiAuthority, '/api/users');
+
       if (token != null) {
         final response = await http.get(
-          Uri.parse('http://$host:8080/api/users'),
+          url,
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $token',
@@ -43,9 +48,13 @@ class AdminProvider with ChangeNotifier {
     try {
       final token = await _storage.read(key: 'auth_token');
 
+      final url = isSecure
+          ? Uri.https(apiAuthority, '/api/users/${user.id}')
+          : Uri.http(apiAuthority, '/api/users/${user.id}');
+
       if (token != null) {
         final response = await http.put(
-          Uri.parse('http://$host:8080/api/users/${user.id}'),
+          url,
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $token',
@@ -72,9 +81,13 @@ class AdminProvider with ChangeNotifier {
     try {
       final token = await _storage.read(key: 'auth_token');
 
+      final url = isSecure
+          ? Uri.https(apiAuthority, '/api/users/$userId')
+          : Uri.http(apiAuthority, '/api/users/$userId');
+
       if (token != null) {
         final response = await http.delete(
-          Uri.parse('http://$host:8080/api/users/$userId'),
+          url,
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $token',
@@ -82,7 +95,7 @@ class AdminProvider with ChangeNotifier {
         );
 
         if (response.statusCode == 204) {
-          return true; // Suppression réussie
+          return true;
         } else {
           print('Failed to delete user: ${response.statusCode}');
           return false;

@@ -188,7 +188,7 @@ func (h *AuthHandler) Profile(c *gin.Context) {
 		"role_id":    u.RoleID,
 		"groupe_voyage": func() []uint {
 			var ids []uint
-			for _, gv := range u.GroupVoyage {
+			for _, gv := range u.GroupeVoyage {
 				ids = append(ids, gv.ID)
 			}
 			return ids

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/providers/auth_provider.dart';
 import 'package:flutter_app/views/login/components/login_form.dart';
 import 'package:provider/provider.dart';
-import '../../providers/auth_provider.dart';
 
 class LoginScreen extends StatelessWidget {
   static const String routeName = '/';
@@ -15,66 +15,45 @@ class LoginScreen extends StatelessWidget {
     AuthProvider authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: size.height,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Spacer(flex: 2),
-            Text(
-              "LOGIN",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 26,
+      body: Stack(
+        children: [
+          Container(
+            width: double.infinity,
+            height: size.height,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/background.jpg'),
+                fit: BoxFit.cover,
               ),
             ),
-            SizedBox(height: size.height * 0.03),
-/*            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: [
-                  TextField(
-                    controller: usernameController,
-                    decoration: InputDecoration(labelText: "Username"),
+          ),
+          Container(
+            width: double.infinity,
+            height: size.height,
+            color: Colors.white.withOpacity(0.5),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Spacer(flex: 2),
+                const Text(
+                  "CONNEXION",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 32,
+                    color: Colors.black,
                   ),
-                  TextField(
-                    controller: passwordController,
-                    decoration: InputDecoration(labelText: "Password"),
-                    obscureText: true,
-                  ),
-                ],
-              ),
-            ),*/
-            SizedBox(height: size.height * 0.03),
-            LoginForm(),
-
-/*
-            ElevatedButton(
-              onPressed: () {
-                authProvider.login(
-                  usernameController.text,
-                  passwordController.text,
-                );
-
-                if (authProvider.isAuthenticated) {
-                  Navigator.pushReplacementNamed(
-                    context,
-                    authProvider.isAdmin ? '/admin_dashboard' : '/',
-                  );
-                } else {
-                  // Afficher un message d'erreur si la connexion échoue
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Invalid username or password')),
-                  );
-                }
-              },
-              child: Text('Login'),
+                ),
+                SizedBox(height: size.height * 0.03),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 30),
+                  child: LoginForm(),
+                ),
+                SizedBox(height: size.height * 0.03),
+                Spacer(flex: 3)
+              ],
             ),
-*/
-            Spacer(flex: 3),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
