@@ -3,7 +3,6 @@ package main
 import (
 	"example/hello/api/controllers/sockets"
 	"example/hello/api/routes"
-	"example/hello/config"
 	_ "example/hello/docs"
 	initializers2 "example/hello/internal/initializers"
 	"log"
@@ -16,10 +15,12 @@ import (
 	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"gorm.io/gorm"
 )
 
+var db *gorm.DB
+
 func init() {
-	config.LoadConfig()
 	initializers2.LoadEnvVariables()
 	initializers2.ConnectToDatabase()
 }
@@ -60,27 +61,20 @@ func main() {
 
 	server.Static("/images", "./assets/images")
 
+	// Enregistrer les routes
 	routes.RegisterRoutes(server)
 	routes.VoyageRoutes(server)
 	routes.DestinationRoutes(server)
 	routes.ActivityRoutes(server)
 	routes.FlippingRoutes(server)
-	routes.UsersRoutes(server)
 	routes.SocketRoutes(server)
 
-	// Route pour gérer les connexions WebSocket
 	go sockets.HandleMessages()
 
+	// Swagger documentation
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-
-		log.Printf("Listening on port %s", port)
-		if err := server.Run(":" + port); err != nil {
-			log.Fatal(err)
-		}
-
+	err := server.Run(":8080")
+	if err != nil {
+		panic(err)
 	}
 }
