@@ -26,7 +26,7 @@ Inviter des personnes : Les utilisateurs peuvent inviter d'autres personnes à r
 
 ## Fonctionnalités et membres
 
-| Fonctionnalité                                                                                                          | Développeur.s                               |
+| Fonctionnalité                                                                                                          | Développeur                                 |
 |-------------------------------------------------------------------------------------------------------------------------|---------------------------------------------|
 | Mise en place des apis utilitaires Auth(register , login ,reset-password,profil) et Groupe Voyage                       | Eddy Gomet (front et back)                  |
 | Mise en place du chat et l'envoi de notifications push lors d'envoi de message et du la creation d'un groupe dans l'app | Eddy (back et front)                        |
